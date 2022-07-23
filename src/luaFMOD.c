@@ -34,6 +34,8 @@ static void createMethodsTable(lua_State *L, const char *name, const luaL_reg *m
     lua_setfield(L, -2, "__index"); /* set the __index field */
 
     luaL_register(L, NULL, methods);
+
+    lua_remove(L, -1);
 }
 
 USE_FUNCTION_TABLE(SystemStaticFunctions);
@@ -41,6 +43,8 @@ USE_FUNCTION_TABLE(SystemMethods);
 USE_FUNCTION_TABLE(BankMethods);
 USE_FUNCTION_TABLE(EventDescriptionMethods);
 USE_FUNCTION_TABLE(EventInstanceMethods);
+
+extern void createConstantTables(lua_State *L);
 
 extern int luaopen_FMOD(lua_State *L)
 {
@@ -65,6 +69,9 @@ extern int luaopen_FMOD(lua_State *L)
     createMethodsTable(L, EVENTDESCRIPTION_METATABLE, EventDescriptionMethods);
     createMethodsTable(L, EVENTINSTANCE_METATABLE, EventInstanceMethods);
     createMethodsTable(L, SYSTEM_METATABLE, SystemMethods);
+
+    /* Create constants */
+    createConstantTables(L);
 
     return 1;
 }
