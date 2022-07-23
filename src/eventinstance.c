@@ -31,6 +31,19 @@ static int start(lua_State *L)
     return 1;
 }
 
+static int stop(lua_State *L)
+{
+    GET_SELF(EVENTINSTANCE);
+
+    int mode = luaL_checkint(L, 2);
+
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_Stop(self, mode));
+
+    lua_pushboolean(L, 1);
+
+    return 1;
+}
+
 static int setParameterByName(lua_State *L)
 {
     GET_SELF(EVENTINSTANCE);
@@ -48,5 +61,6 @@ static int setParameterByName(lua_State *L)
 
 FUNCTION_TABLE_BEGIN(EventInstanceMethods)
     FUNCTION_TABLE_ENTRY(start)
+    FUNCTION_TABLE_ENTRY(stop)
     FUNCTION_TABLE_ENTRY(setParameterByName)
 FUNCTION_TABLE_END
