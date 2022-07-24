@@ -30,6 +30,14 @@ DEALINGS IN THE SOFTWARE.
 #define EVENTINSTANCE_METATABLE "FMOD.Studio.EventInstance"
 #define SYSTEM_METATABLE "FMOD.Studio.System"
 
+#define STRINGIZE(x) STRINGIZE_IMPL(x)
+
+#define STRINGIZE_IMPL(x) #x
+
+#define FLAGS_METATABLE_NAME(tableName) "FMOD_" STRINGIZE(tableName) "_FLAGS"
+
+#define CHECK_FLAG(index, type) *(int*)luaL_checkudata(L, index, FLAGS_METATABLE_NAME(type));
+
 /* If an FMOD error is encountered, raise a Lua error */
 #define REQUIRE_OK(result) \
     do { \

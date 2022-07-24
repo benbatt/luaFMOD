@@ -18,8 +18,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <fmod_studio_common.h>
-#include <lauxlib.h>
+#include "common.h"
 
 struct Constant {
     const char *name;
@@ -31,43 +30,75 @@ struct Constant {
 
 #define JOIN_IMPL(a, b) a ## b
 
-#define STRINGIZE(x) STRINGIZE_IMPL(x)
+#define FLAGS_ENTRY_VALUE(name) JOIN4(FMOD_, FLAGS_TABLE_NAME, _, name)
 
-#define STRINGIZE_IMPL(x) #x
+/* Begins a new flags table.
+   FLAGS_TABLE_NAME must be redefined before each table.
+*/
 
-// redefine CONSTANT_TABLE_NAME before each table
-#define CONSTANT_TABLE_BEGIN \
+#define FLAGS_TABLE_BEGIN(name) \
     do { \
+        createFlagsMetatable(L, FLAGS_METATABLE_NAME(FLAGS_TABLE_NAME)); \
         lua_createtable(L, 0, 0); \
+        lua_pushvalue(L, -1); \
+        lua_setfield(L, -3, name); \
     } while(0)
 
-#define CONSTANT_TABLE_ENTRY(name) \
+#define FLAGS_TABLE_ENTRY(name) \
     do { \
-        lua_pushinteger(L, JOIN4(FMOD_STUDIO_, CONSTANT_TABLE_NAME, _, name)); \
+        *(int*)lua_newuserdata(L, sizeof(int)) = FLAGS_ENTRY_VALUE(name); \
+        luaL_getmetatable(L, FLAGS_METATABLE_NAME(FLAGS_TABLE_NAME)); \
+        lua_setmetatable(L, -2); \
         lua_setfield(L, -2, #name); \
     } while(0)
 
-#define CONSTANT_TABLE_END \
+#define FLAGS_TABLE_END \
     do { \
-        lua_setfield(L, -2, STRINGIZE(CONSTANT_TABLE_NAME)); \
+        lua_pop(L, 1); \
     } while(0)
+
+void createFlagsMetatable(lua_State *L, const char *name)
+{
+    luaL_newmetatable(L, name);
+    lua_pop(L, 1);
+}
 
 void createConstantTables(lua_State *L)
 {
-    /* The FMOD table should be on top of the stack; get the FMOD.Studio table */
+    /* The FMOD table should be on top of the stack, so define FMOD constants first */
+
+#define FLAGS_TABLE_NAME INIT
+
+    FLAGS_TABLE_BEGIN("INIT");
+        FLAGS_TABLE_ENTRY(NORMAL);
+        FLAGS_TABLE_ENTRY(STREAM_FROM_UPDATE);
+        FLAGS_TABLE_ENTRY(MIX_FROM_UPDATE);
+        FLAGS_TABLE_ENTRY(3D_RIGHTHANDED);
+        FLAGS_TABLE_ENTRY(CHANNEL_LOWPASS);
+        FLAGS_TABLE_ENTRY(CHANNEL_DISTANCEFILTER);
+        FLAGS_TABLE_ENTRY(PROFILE_ENABLE);
+        FLAGS_TABLE_ENTRY(VOL0_BECOMES_VIRTUAL);
+        FLAGS_TABLE_ENTRY(GEOMETRY_USECLOSEST);
+        FLAGS_TABLE_ENTRY(PREFER_DOLBY_DOWNMIX);
+        FLAGS_TABLE_ENTRY(THREAD_UNSAFE);
+        FLAGS_TABLE_ENTRY(PROFILE_METER_ALL);
+        FLAGS_TABLE_ENTRY(MEMORY_TRACKING);
+    FLAGS_TABLE_END;
+
+    /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
 
-#define CONSTANT_TABLE_NAME INIT
+#define FLAGS_TABLE_NAME STUDIO_INIT
 
-    CONSTANT_TABLE_BEGIN;
-        CONSTANT_TABLE_ENTRY(NORMAL);
-        CONSTANT_TABLE_ENTRY(LIVEUPDATE);
-        CONSTANT_TABLE_ENTRY(ALLOW_MISSING_PLUGINS);
-        CONSTANT_TABLE_ENTRY(SYNCHRONOUS_UPDATE);
-        CONSTANT_TABLE_ENTRY(DEFERRED_CALLBACKS);
-        CONSTANT_TABLE_ENTRY(LOAD_FROM_UPDATE);
-        CONSTANT_TABLE_ENTRY(MEMORY_TRACKING);
-    CONSTANT_TABLE_END;
+    FLAGS_TABLE_BEGIN("INIT");
+        FLAGS_TABLE_ENTRY(NORMAL);
+        FLAGS_TABLE_ENTRY(LIVEUPDATE);
+        FLAGS_TABLE_ENTRY(ALLOW_MISSING_PLUGINS);
+        FLAGS_TABLE_ENTRY(SYNCHRONOUS_UPDATE);
+        FLAGS_TABLE_ENTRY(DEFERRED_CALLBACKS);
+        FLAGS_TABLE_ENTRY(LOAD_FROM_UPDATE);
+        FLAGS_TABLE_ENTRY(MEMORY_TRACKING);
+    FLAGS_TABLE_END;
 
     /* Tidy up the FMOD.Studio table */
     lua_pop(L, 1);

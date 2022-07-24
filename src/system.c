@@ -36,8 +36,8 @@ static int initialize(lua_State *L)
     GET_SELF(SYSTEM);
 
     int maxchannels = luaL_checkint(L, 2);
-    int studioflags = luaL_checkint(L, 3);
-    int coreflags = luaL_checkint(L, 4);
+    int studioflags = CHECK_FLAG(3, STUDIO_INIT);
+    int coreflags = CHECK_FLAG(4, INIT);
 
     /* TODO extradriverdata? */
 
