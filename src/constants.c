@@ -30,34 +30,50 @@ struct Constant {
 
 #define JOIN_IMPL(a, b) a ## b
 
-#define FLAGS_ENTRY_VALUE(name) JOIN4(FMOD_, FLAGS_TABLE_NAME, _, name)
+#define TABLE_ENTRY_VALUE(name) JOIN4(FMOD_, TABLE_NAME, _, name)
 
-/* Begins a new flags table.
-   FLAGS_TABLE_NAME must be redefined before each table.
-*/
-
-#define FLAGS_TABLE_BEGIN(name) \
+#define TABLE_BEGIN(name, createMetatable, metatableName) \
     do { \
-        createFlagsMetatable(L, FLAGS_METATABLE_NAME(FLAGS_TABLE_NAME)); \
+        createMetatable(L, metatableName); \
         lua_createtable(L, 0, 0); \
         lua_pushvalue(L, -1); \
         lua_setfield(L, -3, #name); \
     } while(0)
 
-#define FLAGS_TABLE_ENTRY(name) \
+#define TABLE_ENTRY(name, metatable) \
     do { \
-        *(int*)lua_newuserdata(L, sizeof(int)) = FLAGS_ENTRY_VALUE(name); \
-        luaL_getmetatable(L, FLAGS_METATABLE_NAME(FLAGS_TABLE_NAME)); \
+        *(int*)lua_newuserdata(L, sizeof(int)) = TABLE_ENTRY_VALUE(name); \
+        luaL_getmetatable(L, metatable); \
         lua_setmetatable(L, -2); \
         lua_setfield(L, -2, #name); \
     } while(0)
 
-#define FLAGS_TABLE_END \
+#define TABLE_END \
     do { \
         lua_pop(L, 1); \
     } while(0)
 
+/* Begins a new flags table.
+   TABLE_NAME must be redefined before each table.
+*/
+
+#define FLAGS_TABLE_BEGIN(name) TABLE_BEGIN(name, createFlagsMetatable, FLAGS_METATABLE_NAME(TABLE_NAME))
+#define FLAGS_TABLE_ENTRY(name) TABLE_ENTRY(name, FLAGS_METATABLE_NAME(TABLE_NAME))
+
 void createFlagsMetatable(lua_State *L, const char *name)
+{
+    luaL_newmetatable(L, name);
+    lua_pop(L, 1);
+}
+
+/* Begins a new enum table.
+   TABLE_NAME must be redefined before each table.
+*/
+
+#define ENUM_TABLE_BEGIN(name) TABLE_BEGIN(name, createEnumMetatable, ENUM_METATABLE_NAME(TABLE_NAME))
+#define ENUM_TABLE_ENTRY(name) TABLE_ENTRY(name, ENUM_METATABLE_NAME(TABLE_NAME))
+
+void createEnumMetatable(lua_State *L, const char *name)
 {
     luaL_newmetatable(L, name);
     lua_pop(L, 1);
@@ -67,7 +83,7 @@ void createConstantTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD constants first */
 
-#define FLAGS_TABLE_NAME INIT
+#define TABLE_NAME INIT
 
     FLAGS_TABLE_BEGIN(INIT);
         FLAGS_TABLE_ENTRY(NORMAL);
@@ -83,13 +99,13 @@ void createConstantTables(lua_State *L)
         FLAGS_TABLE_ENTRY(THREAD_UNSAFE);
         FLAGS_TABLE_ENTRY(PROFILE_METER_ALL);
         FLAGS_TABLE_ENTRY(MEMORY_TRACKING);
-    FLAGS_TABLE_END;
+    TABLE_END;
 
     /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
 
-#undef FLAGS_TABLE_NAME
-#define FLAGS_TABLE_NAME STUDIO_INIT
+#undef TABLE_NAME
+#define TABLE_NAME STUDIO_INIT
 
     FLAGS_TABLE_BEGIN(INIT);
         FLAGS_TABLE_ENTRY(NORMAL);
@@ -99,17 +115,25 @@ void createConstantTables(lua_State *L)
         FLAGS_TABLE_ENTRY(DEFERRED_CALLBACKS);
         FLAGS_TABLE_ENTRY(LOAD_FROM_UPDATE);
         FLAGS_TABLE_ENTRY(MEMORY_TRACKING);
-    FLAGS_TABLE_END;
+    TABLE_END;
 
-#undef FLAGS_TABLE_NAME
-#define FLAGS_TABLE_NAME STUDIO_LOAD_BANK
+#undef TABLE_NAME
+#define TABLE_NAME STUDIO_LOAD_BANK
 
     FLAGS_TABLE_BEGIN(LOAD_BANK);
         FLAGS_TABLE_ENTRY(NORMAL);
         FLAGS_TABLE_ENTRY(NONBLOCKING);
         FLAGS_TABLE_ENTRY(DECOMPRESS_SAMPLES);
         FLAGS_TABLE_ENTRY(UNENCRYPTED);
-    FLAGS_TABLE_END;
+    TABLE_END;
+
+#undef TABLE_NAME
+#define TABLE_NAME STUDIO_STOP
+
+    ENUM_TABLE_BEGIN(STOP);
+        ENUM_TABLE_ENTRY(ALLOWFADEOUT);
+        ENUM_TABLE_ENTRY(IMMEDIATE);
+    TABLE_END;
 
     /* Tidy up the FMOD.Studio table */
     lua_pop(L, 1);
