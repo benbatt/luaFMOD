@@ -35,7 +35,7 @@ static void createMethodsTable(lua_State *L, const char *name, const luaL_reg *m
 
     luaL_register(L, NULL, methods);
 
-    lua_remove(L, -1);
+    lua_pop(L, 1);
 }
 
 USE_FUNCTION_TABLE(SystemStaticFunctions);

@@ -70,5 +70,5 @@ void createConstantTables(lua_State *L)
     CONSTANT_TABLE_END;
 
     /* Tidy up the FMOD.Studio table */
-    lua_remove(L, -1);
+    lua_pop(L, 1);
 }
