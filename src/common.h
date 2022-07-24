@@ -34,11 +34,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define STRINGIZE_IMPL(x) #x
 
-#define FLAGS_METATABLE_NAME(type) "FMOD_" STRINGIZE(type) "_FLAGS"
-#define ENUM_METATABLE_NAME(type) "FMOD_" STRINGIZE(type)
-
-#define CHECK_FLAG(index, type) *(int*)luaL_checkudata(L, index, FLAGS_METATABLE_NAME(type));
-#define CHECK_ENUM(index, type) *(int*)luaL_checkudata(L, index, ENUM_METATABLE_NAME(type));
+#define CHECK_CONSTANT(index, metatableName) *(int*)luaL_checkudata(L, index, #metatableName);
 
 /* If an FMOD error is encountered, raise a Lua error */
 #define REQUIRE_OK(result) \

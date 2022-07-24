@@ -35,7 +35,7 @@ static int stop(lua_State *L)
 {
     GET_SELF(EVENTINSTANCE);
 
-    int mode = CHECK_ENUM(2, STUDIO_STOP);
+    int mode = CHECK_CONSTANT(2, FMOD_STUDIO_STOP_MODE);
 
     RETURN_IF_ERROR(FMOD_Studio_EventInstance_Stop(self, mode));
 

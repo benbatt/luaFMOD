@@ -30,109 +30,122 @@ struct Constant {
 
 #define JOIN_IMPL(a, b) a ## b
 
-#define TABLE_ENTRY_VALUE(name) JOIN4(FMOD_, TABLE_NAME, _, name)
+#define TABLE_ENTRY_VALUE(name) JOIN(TABLE_VALUE_PREFIX, name)
 
-#define TABLE_BEGIN(name, createMetatable, metatableName) \
+/* Expects (parent, metatable) on the stack.
+   Creates a new constants table and sets it as parent[name].
+   Leaves (parent, metatable, constants table) on the stack.
+*/
+#define TABLE_BEGIN(name) \
     do { \
-        createMetatable(L, metatableName); \
         lua_createtable(L, 0, 0); \
         lua_pushvalue(L, -1); \
-        lua_setfield(L, -3, #name); \
+        lua_setfield(L, -4, #name); \
     } while(0)
 
-#define TABLE_ENTRY(name, metatable) \
+/* Expects (parent, metatable, constants table) on the stack.
+   Leaves the stack unchanged.
+*/
+#define TABLE_ENTRY(name) \
     do { \
         *(int*)lua_newuserdata(L, sizeof(int)) = TABLE_ENTRY_VALUE(name); \
-        luaL_getmetatable(L, metatable); \
+        lua_pushvalue(L, -3); \
         lua_setmetatable(L, -2); \
         lua_setfield(L, -2, #name); \
     } while(0)
 
+/* Expects (parent, metatable, constants table) on the stack.
+   Leaves (parent) on the stack.
+*/
 #define TABLE_END \
     do { \
-        lua_pop(L, 1); \
+        lua_pop(L, 2); \
     } while(0)
 
 /* Begins a new flags table.
-   TABLE_NAME must be redefined before each table.
+   TABLE_VALUE_PREFIX must be redefined before each table.
 */
 
-#define FLAGS_TABLE_BEGIN(name) TABLE_BEGIN(name, createFlagsMetatable, FLAGS_METATABLE_NAME(TABLE_NAME))
-#define FLAGS_TABLE_ENTRY(name) TABLE_ENTRY(name, FLAGS_METATABLE_NAME(TABLE_NAME))
+#define FLAGS_TABLE_BEGIN(name, metatableName) \
+    do { \
+        createFlagsMetatable(L, #metatableName); \
+        TABLE_BEGIN(name); \
+    } while(0)
 
 void createFlagsMetatable(lua_State *L, const char *name)
 {
     luaL_newmetatable(L, name);
-    lua_pop(L, 1);
 }
 
 /* Begins a new enum table.
-   TABLE_NAME must be redefined before each table.
+   TABLE_VALUE_PREFIX must be redefined before each table.
 */
 
-#define ENUM_TABLE_BEGIN(name) TABLE_BEGIN(name, createEnumMetatable, ENUM_METATABLE_NAME(TABLE_NAME))
-#define ENUM_TABLE_ENTRY(name) TABLE_ENTRY(name, ENUM_METATABLE_NAME(TABLE_NAME))
+#define ENUM_TABLE_BEGIN(name, metatableName) \
+    do { \
+        createEnumMetatable(L, #metatableName); \
+        TABLE_BEGIN(name); \
+    } while(0)
 
 void createEnumMetatable(lua_State *L, const char *name)
 {
     luaL_newmetatable(L, name);
-    lua_pop(L, 1);
 }
 
 void createConstantTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD constants first */
 
-#define TABLE_NAME INIT
+#define TABLE_VALUE_PREFIX FMOD_INIT_
 
-    FLAGS_TABLE_BEGIN(INIT);
-        FLAGS_TABLE_ENTRY(NORMAL);
-        FLAGS_TABLE_ENTRY(STREAM_FROM_UPDATE);
-        FLAGS_TABLE_ENTRY(MIX_FROM_UPDATE);
-        FLAGS_TABLE_ENTRY(3D_RIGHTHANDED);
-        FLAGS_TABLE_ENTRY(CHANNEL_LOWPASS);
-        FLAGS_TABLE_ENTRY(CHANNEL_DISTANCEFILTER);
-        FLAGS_TABLE_ENTRY(PROFILE_ENABLE);
-        FLAGS_TABLE_ENTRY(VOL0_BECOMES_VIRTUAL);
-        FLAGS_TABLE_ENTRY(GEOMETRY_USECLOSEST);
-        FLAGS_TABLE_ENTRY(PREFER_DOLBY_DOWNMIX);
-        FLAGS_TABLE_ENTRY(THREAD_UNSAFE);
-        FLAGS_TABLE_ENTRY(PROFILE_METER_ALL);
-        FLAGS_TABLE_ENTRY(MEMORY_TRACKING);
+    FLAGS_TABLE_BEGIN(INIT, FMOD_INITFLAGS);
+        TABLE_ENTRY(NORMAL);
+        TABLE_ENTRY(STREAM_FROM_UPDATE);
+        TABLE_ENTRY(MIX_FROM_UPDATE);
+        TABLE_ENTRY(3D_RIGHTHANDED);
+        TABLE_ENTRY(CHANNEL_LOWPASS);
+        TABLE_ENTRY(CHANNEL_DISTANCEFILTER);
+        TABLE_ENTRY(PROFILE_ENABLE);
+        TABLE_ENTRY(VOL0_BECOMES_VIRTUAL);
+        TABLE_ENTRY(GEOMETRY_USECLOSEST);
+        TABLE_ENTRY(PREFER_DOLBY_DOWNMIX);
+        TABLE_ENTRY(THREAD_UNSAFE);
+        TABLE_ENTRY(PROFILE_METER_ALL);
+        TABLE_ENTRY(MEMORY_TRACKING);
     TABLE_END;
 
     /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
 
-#undef TABLE_NAME
-#define TABLE_NAME STUDIO_INIT
+#undef TABLE_VALUE_PREFIX
+#define TABLE_VALUE_PREFIX FMOD_STUDIO_INIT_
 
-    FLAGS_TABLE_BEGIN(INIT);
-        FLAGS_TABLE_ENTRY(NORMAL);
-        FLAGS_TABLE_ENTRY(LIVEUPDATE);
-        FLAGS_TABLE_ENTRY(ALLOW_MISSING_PLUGINS);
-        FLAGS_TABLE_ENTRY(SYNCHRONOUS_UPDATE);
-        FLAGS_TABLE_ENTRY(DEFERRED_CALLBACKS);
-        FLAGS_TABLE_ENTRY(LOAD_FROM_UPDATE);
-        FLAGS_TABLE_ENTRY(MEMORY_TRACKING);
+    FLAGS_TABLE_BEGIN(INIT, FMOD_STUDIO_INITFLAGS);
+        TABLE_ENTRY(NORMAL);
+        TABLE_ENTRY(LIVEUPDATE);
+        TABLE_ENTRY(ALLOW_MISSING_PLUGINS);
+        TABLE_ENTRY(SYNCHRONOUS_UPDATE);
+        TABLE_ENTRY(DEFERRED_CALLBACKS);
+        TABLE_ENTRY(LOAD_FROM_UPDATE);
+        TABLE_ENTRY(MEMORY_TRACKING);
     TABLE_END;
 
-#undef TABLE_NAME
-#define TABLE_NAME STUDIO_LOAD_BANK
+#undef TABLE_VALUE_PREFIX
+#define TABLE_VALUE_PREFIX FMOD_STUDIO_LOAD_BANK_
 
-    FLAGS_TABLE_BEGIN(LOAD_BANK);
-        FLAGS_TABLE_ENTRY(NORMAL);
-        FLAGS_TABLE_ENTRY(NONBLOCKING);
-        FLAGS_TABLE_ENTRY(DECOMPRESS_SAMPLES);
-        FLAGS_TABLE_ENTRY(UNENCRYPTED);
+    FLAGS_TABLE_BEGIN(LOAD_BANK, FMOD_STUDIO_LOAD_BANK_FLAGS);
+        TABLE_ENTRY(NORMAL);
+        TABLE_ENTRY(NONBLOCKING);
+        TABLE_ENTRY(DECOMPRESS_SAMPLES);
+        TABLE_ENTRY(UNENCRYPTED);
     TABLE_END;
 
-#undef TABLE_NAME
-#define TABLE_NAME STUDIO_STOP
+#undef TABLE_VALUE_PREFIX
+#define TABLE_VALUE_PREFIX FMOD_STUDIO_STOP_
 
-    ENUM_TABLE_BEGIN(STOP);
-        ENUM_TABLE_ENTRY(ALLOWFADEOUT);
-        ENUM_TABLE_ENTRY(IMMEDIATE);
+    ENUM_TABLE_BEGIN(STOP, FMOD_STUDIO_STOP_MODE);
+        TABLE_ENTRY(ALLOWFADEOUT);
+        TABLE_ENTRY(IMMEDIATE);
     TABLE_END;
 
     /* Tidy up the FMOD.Studio table */
