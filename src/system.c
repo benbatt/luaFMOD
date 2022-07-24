@@ -69,7 +69,7 @@ static int loadBankFile(lua_State *L)
     GET_SELF(SYSTEM);
 
     const char *filename = luaL_checkstring(L, 2);
-    int flags = luaL_checkint(L, 3);
+    int flags = CHECK_FLAG(3, STUDIO_LOAD_BANK);
 
     FMOD_STUDIO_BANK *bank = NULL;
     RETURN_IF_ERROR(FMOD_Studio_System_LoadBankFile(self, filename, flags, &bank));

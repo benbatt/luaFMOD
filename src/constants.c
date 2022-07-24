@@ -41,7 +41,7 @@ struct Constant {
         createFlagsMetatable(L, FLAGS_METATABLE_NAME(FLAGS_TABLE_NAME)); \
         lua_createtable(L, 0, 0); \
         lua_pushvalue(L, -1); \
-        lua_setfield(L, -3, name); \
+        lua_setfield(L, -3, #name); \
     } while(0)
 
 #define FLAGS_TABLE_ENTRY(name) \
@@ -69,7 +69,7 @@ void createConstantTables(lua_State *L)
 
 #define FLAGS_TABLE_NAME INIT
 
-    FLAGS_TABLE_BEGIN("INIT");
+    FLAGS_TABLE_BEGIN(INIT);
         FLAGS_TABLE_ENTRY(NORMAL);
         FLAGS_TABLE_ENTRY(STREAM_FROM_UPDATE);
         FLAGS_TABLE_ENTRY(MIX_FROM_UPDATE);
@@ -88,9 +88,10 @@ void createConstantTables(lua_State *L)
     /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
 
+#undef FLAGS_TABLE_NAME
 #define FLAGS_TABLE_NAME STUDIO_INIT
 
-    FLAGS_TABLE_BEGIN("INIT");
+    FLAGS_TABLE_BEGIN(INIT);
         FLAGS_TABLE_ENTRY(NORMAL);
         FLAGS_TABLE_ENTRY(LIVEUPDATE);
         FLAGS_TABLE_ENTRY(ALLOW_MISSING_PLUGINS);
@@ -98,6 +99,16 @@ void createConstantTables(lua_State *L)
         FLAGS_TABLE_ENTRY(DEFERRED_CALLBACKS);
         FLAGS_TABLE_ENTRY(LOAD_FROM_UPDATE);
         FLAGS_TABLE_ENTRY(MEMORY_TRACKING);
+    FLAGS_TABLE_END;
+
+#undef FLAGS_TABLE_NAME
+#define FLAGS_TABLE_NAME STUDIO_LOAD_BANK
+
+    FLAGS_TABLE_BEGIN(LOAD_BANK);
+        FLAGS_TABLE_ENTRY(NORMAL);
+        FLAGS_TABLE_ENTRY(NONBLOCKING);
+        FLAGS_TABLE_ENTRY(DECOMPRESS_SAMPLES);
+        FLAGS_TABLE_ENTRY(UNENCRYPTED);
     FLAGS_TABLE_END;
 
     /* Tidy up the FMOD.Studio table */
