@@ -72,9 +72,35 @@ struct Constant {
         TABLE_BEGIN(name); \
     } while(0)
 
+int combineFlags(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TUSERDATA);
+    luaL_checktype(L, 2, LUA_TUSERDATA);
+
+    lua_getmetatable(L, 1);
+    lua_getmetatable(L, 2);
+
+    if (!lua_rawequal(L, -1, -2))
+    {
+        luaL_error(L, "Attempt to combine flags of different types");
+    }
+
+    int result = (*(int*)lua_touserdata(L, 1)) | (*(int*)lua_touserdata(L, 2));
+
+    *(int*)lua_newuserdata(L, sizeof(result)) = result;
+
+    lua_getmetatable(L, 1);
+    lua_setmetatable(L, -2);
+
+    return 1;
+}
+
 void createFlagsMetatable(lua_State *L, const char *name)
 {
     luaL_newmetatable(L, name);
+
+    lua_pushcfunction(L, combineFlags);
+    lua_setfield(L, -2, "__add");
 }
 
 /* Begins a new enum table.
