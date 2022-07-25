@@ -58,6 +58,12 @@ DEALINGS IN THE SOFTWARE.
         } \
     } while(0)
 
+#define RETURN_TRUE \
+    do { \
+        lua_pushboolean(L, 1); \
+        return 1; \
+    } while(0)
+
 #define GET_SELF(type) \
     type *self = *((type **)luaL_checkudata(L, 1, type ## _METATABLE));
 

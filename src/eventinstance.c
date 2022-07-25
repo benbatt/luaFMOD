@@ -26,9 +26,7 @@ static int start(lua_State *L)
 
     RETURN_IF_ERROR(FMOD_Studio_EventInstance_Start(self));
 
-    lua_pushboolean(L, 1);
-
-    return 1;
+    RETURN_TRUE;
 }
 
 static int stop(lua_State *L)
@@ -39,9 +37,16 @@ static int stop(lua_State *L)
 
     RETURN_IF_ERROR(FMOD_Studio_EventInstance_Stop(self, mode));
 
-    lua_pushboolean(L, 1);
+    RETURN_TRUE;
+}
 
-    return 1;
+static int release(lua_State *L)
+{
+    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
+
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_Release(self));
+
+    RETURN_TRUE;
 }
 
 static int setParameterByName(lua_State *L)
@@ -54,13 +59,12 @@ static int setParameterByName(lua_State *L)
 
     RETURN_IF_ERROR(FMOD_Studio_EventInstance_SetParameterByName(self, name, value, ignoreseekspeed));
 
-    lua_pushboolean(L, 1);
-
-    return 1;
+    RETURN_TRUE;
 }
 
 FUNCTION_TABLE_BEGIN(EventInstanceMethods)
     FUNCTION_TABLE_ENTRY(start)
     FUNCTION_TABLE_ENTRY(stop)
+    FUNCTION_TABLE_ENTRY(release)
     FUNCTION_TABLE_ENTRY(setParameterByName)
 FUNCTION_TABLE_END

@@ -32,6 +32,16 @@ static int createInstance(lua_State *L)
     return 1;
 }
 
+static int loadSampleData(lua_State *L)
+{
+    GET_SELF(FMOD_STUDIO_EVENTDESCRIPTION);
+
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_LoadSampleData(self));
+
+    RETURN_TRUE;
+}
+
 FUNCTION_TABLE_BEGIN(EventDescriptionMethods)
     FUNCTION_TABLE_ENTRY(createInstance)
+    FUNCTION_TABLE_ENTRY(loadSampleData)
 FUNCTION_TABLE_END
