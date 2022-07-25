@@ -140,6 +140,21 @@ void createConstantTables(lua_State *L)
         TABLE_ENTRY(MEMORY_TRACKING);
     TABLE_END;
 
+#undef TABLE_VALUE_PREFIX
+#define TABLE_VALUE_PREFIX FMOD_SPEAKERMODE_
+
+    ENUM_TABLE_BEGIN(SPEAKERMODE, FMOD_SPEAKERMODE);
+        TABLE_ENTRY(DEFAULT);
+        TABLE_ENTRY(RAW);
+        TABLE_ENTRY(MONO);
+        TABLE_ENTRY(STEREO);
+        TABLE_ENTRY(QUAD);
+        TABLE_ENTRY(SURROUND);
+        TABLE_ENTRY(5POINT1);
+        TABLE_ENTRY(7POINT1);
+        TABLE_ENTRY(7POINT1POINT4);
+    TABLE_END;
+
     /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
 

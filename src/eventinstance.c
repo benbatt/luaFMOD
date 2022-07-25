@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 static int start(lua_State *L)
 {
-    GET_SELF(EVENTINSTANCE);
+    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
 
     RETURN_IF_ERROR(FMOD_Studio_EventInstance_Start(self));
 
@@ -33,7 +33,7 @@ static int start(lua_State *L)
 
 static int stop(lua_State *L)
 {
-    GET_SELF(EVENTINSTANCE);
+    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
 
     int mode = CHECK_CONSTANT(2, FMOD_STUDIO_STOP_MODE);
 
@@ -46,7 +46,7 @@ static int stop(lua_State *L)
 
 static int setParameterByName(lua_State *L)
 {
-    GET_SELF(EVENTINSTANCE);
+    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
 
     const char *name = luaL_checkstring(L, 2);
     float value = (float)luaL_checknumber(L, 3);

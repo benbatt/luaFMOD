@@ -38,11 +38,12 @@ static void createMethodsTable(lua_State *L, const char *name, const luaL_reg *m
     lua_pop(L, 1);
 }
 
-USE_FUNCTION_TABLE(SystemStaticFunctions);
-USE_FUNCTION_TABLE(SystemMethods);
+USE_FUNCTION_TABLE(StudioSystemStaticFunctions);
+USE_FUNCTION_TABLE(StudioSystemMethods);
 USE_FUNCTION_TABLE(BankMethods);
 USE_FUNCTION_TABLE(EventDescriptionMethods);
 USE_FUNCTION_TABLE(EventInstanceMethods);
+USE_FUNCTION_TABLE(CoreSystemMethods);
 
 extern void createConstantTables(lua_State *L);
 
@@ -56,7 +57,7 @@ extern int luaopen_FMOD(lua_State *L)
 
     /* The FMOD.Studio.System table */
     lua_createtable(L, 0, 1);
-    luaL_register(L, NULL, SystemStaticFunctions);
+    luaL_register(L, NULL, StudioSystemStaticFunctions);
 
     /* Set FMOD.Studio.System */
     lua_setfield(L, -2, "System");
@@ -65,10 +66,11 @@ extern int luaopen_FMOD(lua_State *L)
     lua_setfield(L, -2, "Studio");
 
     /* Create the class method tables */
-    createMethodsTable(L, BANK_METATABLE, BankMethods);
-    createMethodsTable(L, EVENTDESCRIPTION_METATABLE, EventDescriptionMethods);
-    createMethodsTable(L, EVENTINSTANCE_METATABLE, EventInstanceMethods);
-    createMethodsTable(L, SYSTEM_METATABLE, SystemMethods);
+    createMethodsTable(L, FMOD_STUDIO_BANK_METATABLE, BankMethods);
+    createMethodsTable(L, FMOD_STUDIO_EVENTDESCRIPTION_METATABLE, EventDescriptionMethods);
+    createMethodsTable(L, FMOD_STUDIO_EVENTINSTANCE_METATABLE, EventInstanceMethods);
+    createMethodsTable(L, FMOD_STUDIO_SYSTEM_METATABLE, StudioSystemMethods);
+    createMethodsTable(L, FMOD_SYSTEM_METATABLE, CoreSystemMethods);
 
     /* Create constants */
     createConstantTables(L);

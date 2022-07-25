@@ -26,14 +26,14 @@ static int create(lua_State *L)
 
     REQUIRE_OK(FMOD_Studio_System_Create(&system, FMOD_VERSION));
 
-    CREATE_USERDATA(SYSTEM, system);
+    CREATE_USERDATA(FMOD_STUDIO_SYSTEM, system);
 
     return 1;
 }
 
 static int initialize(lua_State *L)
 {
-    GET_SELF(SYSTEM);
+    GET_SELF(FMOD_STUDIO_SYSTEM);
 
     int maxchannels = luaL_checkint(L, 2);
     int studioflags = CHECK_CONSTANT(3, FMOD_STUDIO_INITFLAGS);
@@ -48,7 +48,7 @@ static int initialize(lua_State *L)
 
 static int release(lua_State *L)
 {
-    GET_SELF(SYSTEM);
+    GET_SELF(FMOD_STUDIO_SYSTEM);
 
     REQUIRE_OK(FMOD_Studio_System_Release(self));
 
@@ -57,7 +57,7 @@ static int release(lua_State *L)
 
 static int update(lua_State *L)
 {
-    GET_SELF(SYSTEM);
+    GET_SELF(FMOD_STUDIO_SYSTEM);
 
     REQUIRE_OK(FMOD_Studio_System_Update(self));
 
@@ -66,7 +66,7 @@ static int update(lua_State *L)
 
 static int loadBankFile(lua_State *L)
 {
-    GET_SELF(SYSTEM);
+    GET_SELF(FMOD_STUDIO_SYSTEM);
 
     const char *filename = luaL_checkstring(L, 2);
     int flags = CHECK_CONSTANT(3, FMOD_STUDIO_LOAD_BANK_FLAGS);
@@ -74,33 +74,46 @@ static int loadBankFile(lua_State *L)
     FMOD_STUDIO_BANK *bank = NULL;
     RETURN_IF_ERROR(FMOD_Studio_System_LoadBankFile(self, filename, flags, &bank));
 
-    CREATE_USERDATA(BANK, bank);
+    CREATE_USERDATA(FMOD_STUDIO_BANK, bank);
+
+    return 1;
+}
+
+static int getCoreSystem(lua_State *L)
+{
+    GET_SELF(FMOD_STUDIO_SYSTEM);
+
+    FMOD_SYSTEM *system = NULL;
+    REQUIRE_OK(FMOD_Studio_System_GetCoreSystem(self, &system));
+
+    CREATE_USERDATA(FMOD_SYSTEM, system);
 
     return 1;
 }
 
 static int getEvent(lua_State *L)
 {
-    GET_SELF(SYSTEM);
+    GET_SELF(FMOD_STUDIO_SYSTEM);
 
     const char *path = luaL_checkstring(L, 2);
 
     FMOD_STUDIO_EVENTDESCRIPTION *description = NULL;
     RETURN_IF_ERROR(FMOD_Studio_System_GetEvent(self, path, &description));
 
-    CREATE_USERDATA(EVENTDESCRIPTION, description);
+    CREATE_USERDATA(FMOD_STUDIO_EVENTDESCRIPTION, description);
 
     return 1;
 }
 
-FUNCTION_TABLE_BEGIN(SystemStaticFunctions)
+FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
 
-FUNCTION_TABLE_BEGIN(SystemMethods)
+FUNCTION_TABLE_BEGIN(StudioSystemMethods)
     FUNCTION_TABLE_ENTRY(initialize)
     FUNCTION_TABLE_ENTRY(release)
     FUNCTION_TABLE_ENTRY(update)
     FUNCTION_TABLE_ENTRY(loadBankFile)
+    FUNCTION_TABLE_ENTRY(getCoreSystem)
     FUNCTION_TABLE_ENTRY(getEvent)
 FUNCTION_TABLE_END

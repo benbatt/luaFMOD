@@ -20,18 +20,19 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 
-static int createInstance(lua_State *L)
+static int setSoftwareFormat(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_EVENTDESCRIPTION);
+    GET_SELF(FMOD_SYSTEM);
 
-    FMOD_STUDIO_EVENTINSTANCE *instance = NULL;
-    RETURN_IF_ERROR(FMOD_Studio_EventDescription_CreateInstance(self, &instance));
+    int samplerate = luaL_checkint(L, 2);
+    int speakermode = CHECK_CONSTANT(3, FMOD_SPEAKERMODE);
+    int numrawspeakers = luaL_checkint(L, 4);
 
-    CREATE_USERDATA(FMOD_STUDIO_EVENTINSTANCE, instance);
+    REQUIRE_OK(FMOD_System_SetSoftwareFormat(self, samplerate, speakermode, numrawspeakers));
 
-    return 1;
+    return 0;
 }
 
-FUNCTION_TABLE_BEGIN(EventDescriptionMethods)
-    FUNCTION_TABLE_ENTRY(createInstance)
+FUNCTION_TABLE_BEGIN(CoreSystemMethods)
+    FUNCTION_TABLE_ENTRY(setSoftwareFormat)
 FUNCTION_TABLE_END

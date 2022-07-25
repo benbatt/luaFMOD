@@ -25,10 +25,12 @@ DEALINGS IN THE SOFTWARE.
 #include <fmod_studio.h>
 #include <lauxlib.h>
 
-#define BANK_METATABLE "FMOD.Studio.Bank"
-#define EVENTDESCRIPTION_METATABLE "FMOD.Studio.EventDescription"
-#define EVENTINSTANCE_METATABLE "FMOD.Studio.EventInstance"
-#define SYSTEM_METATABLE "FMOD.Studio.System"
+#define FMOD_STUDIO_BANK_METATABLE "FMOD.Studio.Bank"
+#define FMOD_STUDIO_EVENTDESCRIPTION_METATABLE "FMOD.Studio.EventDescription"
+#define FMOD_STUDIO_EVENTINSTANCE_METATABLE "FMOD.Studio.EventInstance"
+#define FMOD_STUDIO_SYSTEM_METATABLE "FMOD.Studio.System"
+
+#define FMOD_SYSTEM_METATABLE "FMOD.System"
 
 #define STRINGIZE(x) STRINGIZE_IMPL(x)
 
@@ -57,11 +59,11 @@ DEALINGS IN THE SOFTWARE.
     } while(0)
 
 #define GET_SELF(type) \
-    FMOD_STUDIO_ ## type *self = *((FMOD_STUDIO_ ## type **)luaL_checkudata(L, 1, type ## _METATABLE));
+    type *self = *((type **)luaL_checkudata(L, 1, type ## _METATABLE));
 
 #define CREATE_USERDATA(type, value) \
     do { \
-        *((FMOD_STUDIO_ ## type **)lua_newuserdata(L, sizeof(value))) = (value); \
+        *((type **)lua_newuserdata(L, sizeof(value))) = (value); \
         luaL_getmetatable(L, type ## _METATABLE); \
         lua_setmetatable(L, -2); \
     } while(0)
