@@ -46,6 +46,7 @@ USE_FUNCTION_TABLE(EventInstanceMethods);
 USE_FUNCTION_TABLE(CoreSystemMethods);
 
 extern void createConstantTables(lua_State *L);
+extern void createStructTables(lua_State *L);
 
 extern int luaopen_FMOD(lua_State *L)
 {
@@ -74,6 +75,9 @@ extern int luaopen_FMOD(lua_State *L)
 
     /* Create constants */
     createConstantTables(L);
+
+    /* Create structs */
+    createStructTables(L);
 
     return 1;
 }
