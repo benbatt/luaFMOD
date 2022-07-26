@@ -20,11 +20,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 
-struct Constant {
-    const char *name;
-    unsigned int value;
-};
-
 #define JOIN(a, b) JOIN_IMPL(a, b)
 #define JOIN4(a, b, c, d) JOIN(JOIN(a, b), JOIN(c, d))
 
