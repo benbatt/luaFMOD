@@ -227,11 +227,17 @@ STRUCT_BEGIN(FMOD_3D_ATTRIBUTES)
     STRUCT_FIELD(up, FMOD_VECTOR)
 STRUCT_END
 
+STRUCT_BEGIN(FMOD_DSP_PARAMETER_3DATTRIBUTES)
+    STRUCT_FIELD(relative, FMOD_3D_ATTRIBUTES)
+    STRUCT_FIELD(absolute, FMOD_3D_ATTRIBUTES)
+STRUCT_END
+
 void createStructTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD structs first */
     FMOD_VECTOR_create(L, "VECTOR");
     FMOD_3D_ATTRIBUTES_create(L, "_3D_ATTRIBUTES");
+    FMOD_DSP_PARAMETER_3DATTRIBUTES_create(L, "DSP_PARAMETER_3DATTRIBUTES");
 
     /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
