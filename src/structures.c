@@ -215,38 +215,6 @@ static int STRUCT_access_cstring(lua_State *L, const char **data, int parentInde
 
 #include "array.c"
 
-// FIXME FMOD_STUDIO_PARAMETER_TYPE should be defined as a constant
-static int STRUCT_access_FMOD_STUDIO_PARAMETER_TYPE(lua_State *L,
-    FMOD_STUDIO_PARAMETER_TYPE *data, int parentIndex, int set, int valueIndex)
-{
-    if (set)
-    {
-        *data = luaL_checkint(L, valueIndex);
-        return 0;
-    }
-    else
-    {
-        lua_pushinteger(L, *data);
-        return 1;
-    }
-}
-
-// FIXME FMOD_STUDIO_PARAMETER_FLAGS should be defined as a constant
-static int STRUCT_access_FMOD_STUDIO_PARAMETER_FLAGS(lua_State *L,
-    FMOD_STUDIO_PARAMETER_FLAGS *data, int parentIndex, int set, int valueIndex)
-{
-    if (set)
-    {
-        *data = luaL_checkint(L, valueIndex);
-        return 0;
-    }
-    else
-    {
-        lua_pushinteger(L, *data);
-        return 1;
-    }
-}
-
 #define STRUCT_BEGIN(type) \
     STRUCT_NEW(type) \
     STRUCT_NEWREF(type) \
@@ -331,6 +299,12 @@ static int STRUCT_access_FMOD_STUDIO_PARAMETER_FLAGS(lua_State *L,
             return STRUCT_access_ ## type(L, &data->name, index, set, index + 2); \
         }
 
+#define STRUCT_FIELD_CONSTANT(name, type) \
+        if (strncmp(# name, field, length) == 0) \
+        { \
+            return CONSTANT_access_ ## type(L, &data->name, set, index + 2); \
+        }
+
 #define STRUCT_FIELDACCESS_END \
         return luaL_error(L, "Invalid field %s.%s", typeName, field); \
     }
@@ -371,8 +345,8 @@ STRUCT_BEGIN(FMOD_STUDIO_PARAMETER_DESCRIPTION)
     STRUCT_FIELD(minimum, float)
     STRUCT_FIELD(maximum, float)
     STRUCT_FIELD(defaultvalue, float)
-    STRUCT_FIELD(type, FMOD_STUDIO_PARAMETER_TYPE)
-    STRUCT_FIELD(flags, FMOD_STUDIO_PARAMETER_FLAGS)
+    STRUCT_FIELD_CONSTANT(type, FMOD_STUDIO_PARAMETER_TYPE)
+    STRUCT_FIELD_CONSTANT(flags, FMOD_STUDIO_PARAMETER_FLAGS)
     STRUCT_FIELD(guid, FMOD_GUID)
 STRUCT_END
 

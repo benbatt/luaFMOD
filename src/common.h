@@ -32,6 +32,12 @@ DEALINGS IN THE SOFTWARE.
 
 #define FMOD_SYSTEM_METATABLE "FMOD.System"
 
+#define CONSTANT_ACCESS_DECLARE(type) \
+    int CONSTANT_access_ ## type(lua_State *L, type *data, int set, int valueIndex)
+
+CONSTANT_ACCESS_DECLARE(FMOD_STUDIO_PARAMETER_TYPE);
+CONSTANT_ACCESS_DECLARE(FMOD_STUDIO_PARAMETER_FLAGS);
+
 #define STRUCT_REQUIRED 1
 #define STRUCT_OPTIONAL 0
 
@@ -58,7 +64,7 @@ STRUCT_TODATA_DECLARE(FMOD_STUDIO_PARAMETER_ID);
 
 #define JOIN_IMPL(a, b) a ## b
 
-#define CHECK_CONSTANT(index, metatableName) *(int*)luaL_checkudata(L, index, #metatableName);
+#define CHECK_CONSTANT(index, type) *(int*)luaL_checkudata(L, index, # type)
 
 /* If an FMOD error is encountered, raise a Lua error */
 #define REQUIRE_OK(result) \
