@@ -52,9 +52,7 @@ static int loadSampleData(lua_State *L)
 {
     GET_SELF;
 
-    RETURN_IF_ERROR(FMOD_Studio_EventDescription_LoadSampleData(self));
-
-    RETURN_TRUE;
+    RETURN_STATUS(FMOD_Studio_EventDescription_LoadSampleData(self));
 }
 
 FUNCTION_TABLE_BEGIN(EventDescriptionMethods)

@@ -28,18 +28,14 @@ static int set3DAttributes(lua_State *L)
 
     FMOD_3D_ATTRIBUTES *attributes = FMOD_3D_ATTRIBUTES_todata(L, 2, STRUCT_REQUIRED);
 
-    RETURN_IF_ERROR(FMOD_Studio_EventInstance_Set3DAttributes(self, attributes));
-
-    RETURN_TRUE;
+    RETURN_STATUS(FMOD_Studio_EventInstance_Set3DAttributes(self, attributes));
 }
 
 static int start(lua_State *L)
 {
     GET_SELF;
 
-    RETURN_IF_ERROR(FMOD_Studio_EventInstance_Start(self));
-
-    RETURN_TRUE;
+    RETURN_STATUS(FMOD_Studio_EventInstance_Start(self));
 }
 
 static int stop(lua_State *L)
@@ -48,18 +44,14 @@ static int stop(lua_State *L)
 
     int mode = CHECK_CONSTANT(2, FMOD_STUDIO_STOP_MODE);
 
-    RETURN_IF_ERROR(FMOD_Studio_EventInstance_Stop(self, mode));
-
-    RETURN_TRUE;
+    RETURN_STATUS(FMOD_Studio_EventInstance_Stop(self, mode));
 }
 
 static int release(lua_State *L)
 {
     GET_SELF;
 
-    RETURN_IF_ERROR(FMOD_Studio_EventInstance_Release(self));
-
-    RETURN_TRUE;
+    RETURN_STATUS(FMOD_Studio_EventInstance_Release(self));
 }
 
 static int setParameterByID(lua_State *L)
@@ -70,9 +62,7 @@ static int setParameterByID(lua_State *L)
     float value = (float)luaL_checknumber(L, 3);
     int ignoreseekspeed = lua_toboolean(L, 4);
 
-    RETURN_IF_ERROR(FMOD_Studio_EventInstance_SetParameterByID(self, *id, value, ignoreseekspeed));
-
-    RETURN_TRUE;
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByID(self, *id, value, ignoreseekspeed));
 }
 
 static int setParameterByName(lua_State *L)
@@ -83,9 +73,7 @@ static int setParameterByName(lua_State *L)
     float value = (float)luaL_checknumber(L, 3);
     int ignoreseekspeed = lua_toboolean(L, 4);
 
-    RETURN_IF_ERROR(FMOD_Studio_EventInstance_SetParameterByName(self, name, value, ignoreseekspeed));
-
-    RETURN_TRUE;
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByName(self, name, value, ignoreseekspeed));
 }
 
 FUNCTION_TABLE_BEGIN(EventInstanceMethods)

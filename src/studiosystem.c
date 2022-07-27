@@ -116,9 +116,7 @@ static int setListenerAttributes(lua_State *L)
     FMOD_3D_ATTRIBUTES *attributes = FMOD_3D_ATTRIBUTES_todata(L, 3, STRUCT_REQUIRED);
     FMOD_VECTOR *attenuationposition = FMOD_VECTOR_todata(L, 4, STRUCT_OPTIONAL);
 
-    RETURN_IF_ERROR(FMOD_Studio_System_SetListenerAttributes(self, listener, attributes, attenuationposition));
-
-    RETURN_TRUE;
+    RETURN_STATUS(FMOD_Studio_System_SetListenerAttributes(self, listener, attributes, attenuationposition));
 }
 
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)

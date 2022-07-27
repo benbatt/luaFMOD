@@ -80,10 +80,17 @@ STRUCT_TODATA_DECLARE(FMOD_STUDIO_PARAMETER_ID);
         } \
     } while(0)
 
-#define RETURN_TRUE \
+#define RETURN_STATUS(result) \
     do { \
-        lua_pushboolean(L, 1); \
-        return 1; \
+        FMOD_RESULT _result = (result); \
+        if (_result == FMOD_OK) { \
+            lua_pushboolean(L, 1); \
+            return 1; \
+        } else { \
+            lua_pushnil(L); \
+            lua_pushinteger(L, _result); \
+            return 2; \
+        } \
     } while(0)
 
 #define GET_SELF \
