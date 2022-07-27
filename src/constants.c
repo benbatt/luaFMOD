@@ -47,6 +47,21 @@ static int CONSTANT_new(lua_State *L, const char *metatable, int value)
     return 1;
 }
 
+static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char *name, int value)
+{
+    CONSTANT_new(L, metatable, value);
+    lua_setfield(L, -2, name);
+
+    /* Set metatable[value] = name for __tostring to use */
+    luaL_getmetatable(L, metatable);
+    lua_pushinteger(L, value);
+    lua_pushstring(L, name);
+    lua_settable(L, -3);
+
+    /* Tidy up the metatable */
+    lua_pop(L, 1);
+}
+
 #define TABLE_ENTRY_VALUE(name) JOIN(TABLE_VALUE_PREFIX, name)
 
 /* Expects parent on the stack.
@@ -88,8 +103,7 @@ static int CONSTANT_new(lua_State *L, const char *metatable, int value)
    Leaves the stack unchanged.
 */
 #define TABLE_ENTRY(name) \
-        CONSTANT_new(L, metatable, TABLE_ENTRY_VALUE(name)); \
-        lua_setfield(L, -2, #name);
+    CONSTANT_TABLE_entry(L, metatable, # name, TABLE_ENTRY_VALUE(name));
 
 /* Expects (parent, constants table) on the stack.
    Leaves (parent) on the stack.
@@ -135,6 +149,59 @@ int combineFlags(lua_State *L)
     return 1;
 }
 
+int flagsToString(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TUSERDATA);
+
+    unsigned int value = *(unsigned int*)lua_touserdata(L, 1);
+
+    if (value == 0)
+    {
+        lua_pushstring(L, "(none)");
+        return 1;
+    }
+
+    lua_getmetatable(L, 1);
+    int metatable = lua_gettop(L);
+
+    luaL_Buffer buffer;
+    luaL_buffinit(L, &buffer);
+
+    luaL_addchar(&buffer, '(');
+
+    int first = 1;
+
+    for (unsigned int mask = 1; mask <= value; mask = mask << 1)
+    {
+        if ((mask & value) != 0)
+        {
+            if (!first)
+            {
+                luaL_addstring(&buffer, " + ");
+            }
+
+            lua_pushinteger(L, mask);
+            lua_gettable(L, metatable);
+
+            if (lua_isnil(L, -1))
+            {
+                lua_pop(L, 1);
+                lua_pushfstring(L, "(unknown: %d)", mask);
+            }
+
+            luaL_addvalue(&buffer);
+
+            first = 0;
+        }
+    }
+
+    luaL_addchar(&buffer, ')');
+
+    luaL_pushresult(&buffer);
+
+    return 1;
+}
+
 void createFlagsMetatable(lua_State *L, const char *name)
 {
     luaL_newmetatable(L, name);
@@ -142,12 +209,37 @@ void createFlagsMetatable(lua_State *L, const char *name)
     lua_pushcfunction(L, combineFlags);
     lua_setfield(L, -2, "__add");
 
+    lua_pushcfunction(L, flagsToString);
+    lua_setfield(L, -2, "__tostring");
+
     lua_pop(L, 1);
+}
+
+int enumToString(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TUSERDATA);
+
+    int value = *(int*)lua_touserdata(L, 1);
+
+    lua_getmetatable(L, 1);
+    lua_pushinteger(L, value);
+    lua_gettable(L, -2);
+
+    if (lua_isnil(L, -1))
+    {
+        lua_pushfstring(L, "unknown (%d)", value);
+    }
+
+    return 1;
 }
 
 void createEnumMetatable(lua_State *L, const char *name)
 {
     luaL_newmetatable(L, name);
+
+    lua_pushcfunction(L, enumToString);
+    lua_setfield(L, -2, "__tostring");
+
     lua_pop(L, 1);
 }
 
