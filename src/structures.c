@@ -21,42 +21,42 @@ DEALINGS IN THE SOFTWARE.
 #include "common.h"
 #include <string.h>
 
-static int FMOD_VECTOR_new(lua_State *L)
+static int STRUCT_new(lua_State *L, const char *metatable, size_t size)
 {
-    int *reference = (int*)lua_newuserdata(L, sizeof(int) + sizeof(FMOD_VECTOR));
+    int *reference = (int*)lua_newuserdata(L, sizeof(int) + size);
 
     *reference = LUA_NOREF;
 
-    FMOD_VECTOR *data = (FMOD_VECTOR*)(reference + 1);
+    void *data = (void*)(reference + 1);
 
-    memset(data, 0, sizeof(*data));
+    memset(data, 0, size);
 
-    luaL_getmetatable(L, "FMOD_VECTOR");
+    luaL_getmetatable(L, metatable);
     lua_setmetatable(L, -2);
 
     return 1;
 }
 
 /* Expects the containing object at parentIndex */
-static int FMOD_VECTOR_newref(lua_State *L, int parentIndex, FMOD_VECTOR *data)
+static int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data)
 {
-    int *reference = (int*)lua_newuserdata(L, sizeof(int) + sizeof(FMOD_VECTOR*));
+    int *reference = (int*)lua_newuserdata(L, sizeof(int) + sizeof(data));
 
     /* Store a reference to the containing object */
     lua_pushvalue(L, parentIndex);
     *reference = luaL_ref(L, LUA_REGISTRYINDEX);
 
-    *((FMOD_VECTOR**)(reference + 1)) = data;
+    *((void**)(reference + 1)) = data;
 
-    luaL_getmetatable(L, "FMOD_VECTOR");
+    luaL_getmetatable(L, metatable);
     lua_setmetatable(L, -2);
 
     return 1;
 }
 
-static int FMOD_VECTOR_gc(lua_State *L)
+static int STRUCT_gc(lua_State *L, const char *metatable)
 {
-    int *reference = (int*)luaL_checkudata(L, 1, "FMOD_VECTOR");
+    int *reference = (int*)luaL_checkudata(L, 1, metatable);
 
     if (*reference != LUA_NOREF)
     {
@@ -66,233 +66,172 @@ static int FMOD_VECTOR_gc(lua_State *L)
     return 0;
 }
 
-static FMOD_VECTOR *FMOD_VECTOR_data(lua_State *L, int index)
+static void *STRUCT_data(lua_State *L, const char *metatable, int index)
 {
-    int *reference = (int*)luaL_checkudata(L, index, "FMOD_VECTOR");
+    int *reference = (int*)luaL_checkudata(L, index, metatable);
 
     if (*reference == LUA_NOREF)
     {
-        return (FMOD_VECTOR*)(reference + 1);
+        return reference + 1;
     }
     else
     {
-        return *((FMOD_VECTOR**)(reference + 1));
+        return *((void**)(reference + 1));
     }
 }
 
-static int FMOD_VECTOR_index(lua_State *L)
-{
-    FMOD_VECTOR *data = FMOD_VECTOR_data(L, 1);
-
-    luaL_argcheck(L, lua_type(L, 2) == LUA_TSTRING, 2, "Field name must be a string");
-
-    size_t length = 0;
-    const char *field = lua_tolstring(L, 2, &length);
-
-    if (strncmp(field, "x", length) == 0)
-    {
-        lua_pushnumber(L, data->x);
-        return 1;
-    }
-    if (strncmp(field, "y", length) == 0)
-    {
-        lua_pushnumber(L, data->y);
-        return 1;
-    }
-    if (strncmp(field, "z", length) == 0)
-    {
-        lua_pushnumber(L, data->z);
-        return 1;
-    }
-
-    return luaL_error(L, "Invalid field %s.%s", "FMOD_VECTOR", field);
-}
-
-static int FMOD_VECTOR_newindex(lua_State *L)
-{
-    FMOD_VECTOR *data = FMOD_VECTOR_data(L, 1);
-
-    luaL_argcheck(L, lua_type(L, 2) == LUA_TSTRING, 2, "Field name must be a string");
-
-    size_t length = 0;
-    const char *field = lua_tolstring(L, 2, &length);
-
-    if (strncmp(field, "x", length) == 0)
-    {
-        data->x = luaL_checknumber(L, 3);
-        return 0;
-    }
-    if (strncmp(field, "y", length) == 0)
-    {
-        data->y = luaL_checknumber(L, 3);
-        return 0;
-    }
-    if (strncmp(field, "z", length) == 0)
-    {
-        data->z = luaL_checknumber(L, 3);
-        return 0;
-    }
-
-    return luaL_error(L, "Invalid field %s.%s", "FMOD_VECTOR", field);
-}
-
-static void FMOD_VECTOR_create(lua_State *L)
+static void STRUCT_create(lua_State *L, const char *fieldName, const char *metatable,
+    lua_CFunction new, lua_CFunction gc, lua_CFunction index, lua_CFunction newindex)
 {
     lua_createtable(L, 0, 0);
 
-    lua_pushcfunction(L, FMOD_VECTOR_new);
+    lua_pushcfunction(L, new);
     lua_setfield(L, -2, "new");
 
-    lua_setfield(L, -2, "VECTOR");
+    lua_setfield(L, -2, fieldName);
 
-    /* Create the metatable for FMOD_VECTOR objects */
-    luaL_newmetatable(L, "FMOD_VECTOR");
+    /* Create the instance metatable  */
+    luaL_newmetatable(L, metatable);
 
-    lua_pushcfunction(L, FMOD_VECTOR_gc);
+    lua_pushcfunction(L, gc);
     lua_setfield(L, -2, "__gc");
 
-    lua_pushcfunction(L, FMOD_VECTOR_index);
+    lua_pushcfunction(L, index);
     lua_setfield(L, -2, "__index");
 
-    lua_pushcfunction(L, FMOD_VECTOR_newindex);
+    lua_pushcfunction(L, newindex);
     lua_setfield(L, -2, "__newindex");
 
     lua_pop(L, 1);
 }
 
-static int FMOD_3D_ATTRIBUTES_new(lua_State *L)
+static const char *STRUCT_fieldname(lua_State *L, int index, size_t *length)
 {
-    int *reference = (int*)lua_newuserdata(L, sizeof(int) + sizeof(FMOD_3D_ATTRIBUTES));
+    luaL_argcheck(L, lua_type(L, index) == LUA_TSTRING, index, "Field name must be a string");
 
-    *reference = LUA_NOREF;
-
-    FMOD_3D_ATTRIBUTES *data = (FMOD_3D_ATTRIBUTES*)(reference + 1);
-
-    memset(data, 0, sizeof(*data));
-
-    luaL_getmetatable(L, "FMOD_3D_ATTRIBUTES");
-    lua_setmetatable(L, -2);
-
-    return 1;
+    return lua_tolstring(L, index, length);
 }
 
-static int FMOD_3D_ATTRIBUTES_gc(lua_State *L)
+static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int set, int valueIndex)
 {
-    int *reference = (int*)luaL_checkudata(L, 1, "FMOD_3D_ATTRIBUTES");
-
-    if (*reference != LUA_NOREF)
+    if (set)
     {
-        luaL_unref(L, LUA_REGISTRYINDEX, *reference);
-    }
-
-    return 0;
-}
-
-static FMOD_3D_ATTRIBUTES *FMOD_3D_ATTRIBUTES_data(lua_State *L, int index)
-{
-    int *reference = (int*)luaL_checkudata(L, index, "FMOD_3D_ATTRIBUTES");
-
-    if (*reference == LUA_NOREF)
-    {
-        return (FMOD_3D_ATTRIBUTES*)(reference + 1);
+        *data = luaL_checknumber(L, valueIndex);
+        return 0;
     }
     else
     {
-        return *((FMOD_3D_ATTRIBUTES**)(reference + 1));
+        lua_pushnumber(L, *data);
+        return 1;
     }
 }
 
-static int FMOD_3D_ATTRIBUTES_index(lua_State *L)
-{
-    FMOD_3D_ATTRIBUTES *data = FMOD_3D_ATTRIBUTES_data(L, 1);
+#define STRUCT_BEGIN(type) \
+    STRUCT_NEW(type) \
+    STRUCT_NEWREF(type) \
+    STRUCT_GC(type) \
+    STRUCT_DATA(type) \
+    static int type ## _fieldaccess(lua_State *L, int index, int set); \
+    STRUCT_INDEX(type) \
+    STRUCT_NEWINDEX(type) \
+    STRUCT_ACCESS(type) \
+    STRUCT_CREATE(type) \
+    STRUCT_FIELDACCESS_BEGIN(type)
 
-    luaL_argcheck(L, lua_type(L, 2) == LUA_TSTRING, 2, "Field name must be a string");
+#define STRUCT_END STRUCT_FIELDACCESS_END
 
-    size_t length = 0;
-    const char *field = lua_tolstring(L, 2, &length);
-
-    if (strncmp(field, "position", length) == 0)
-    {
-        return FMOD_VECTOR_newref(L, 1, &data->position);
-    }
-    if (strncmp(field, "velocity", length) == 0)
-    {
-        return FMOD_VECTOR_newref(L, 1, &data->velocity);
-    }
-    if (strncmp(field, "forward", length) == 0)
-    {
-        return FMOD_VECTOR_newref(L, 1, &data->forward);
-    }
-    if (strncmp(field, "up", length) == 0)
-    {
-        return FMOD_VECTOR_newref(L, 1, &data->up);
+#define STRUCT_NEW(type) \
+    static int type ## _new(lua_State *L) \
+    { \
+        return STRUCT_new(L, # type, sizeof(type)); \
     }
 
-    return luaL_error(L, "Invalid field %s.%s", "FMOD_3D_ATTRIBUTES", field);
-}
-
-static int FMOD_3D_ATTRIBUTES_newindex(lua_State *L)
-{
-    FMOD_3D_ATTRIBUTES *data = FMOD_3D_ATTRIBUTES_data(L, 1);
-
-    luaL_argcheck(L, lua_type(L, 2) == LUA_TSTRING, 2, "Field name must be a string");
-
-    size_t length = 0;
-    const char *field = lua_tolstring(L, 2, &length);
-
-    if (strncmp(field, "position", length) == 0)
-    {
-        data->position = *FMOD_VECTOR_data(L, 3);
-        return 0;
-    }
-    if (strncmp(field, "velocity", length) == 0)
-    {
-        data->velocity = *FMOD_VECTOR_data(L, 3);
-        return 0;
-    }
-    if (strncmp(field, "forward", length) == 0)
-    {
-        data->forward = *FMOD_VECTOR_data(L, 3);
-        return 0;
-    }
-    if (strncmp(field, "up", length) == 0)
-    {
-        data->up = *FMOD_VECTOR_data(L, 3);
-        return 0;
+#define STRUCT_NEWREF(type) \
+    static int type ## _newref(lua_State *L, int parentIndex, FMOD_VECTOR *data) \
+    { \
+        return STRUCT_newref(L, # type, parentIndex, data); \
     }
 
-    return luaL_error(L, "Invalid field %s.%s", "FMOD_3D_ATTRIBUTES", field);
-}
+#define STRUCT_GC(type) \
+    static int type ## _gc(lua_State *L) \
+    { \
+        return STRUCT_gc(L, # type); \
+    }
 
-static void FMOD_3D_ATTRIBUTES_create(lua_State *L)
-{
-    lua_createtable(L, 0, 0);
+#define STRUCT_DATA(type) \
+    static type *type ## _data(lua_State *L, int index) \
+    { \
+        return (type*)STRUCT_data(L, # type, index); \
+    }
 
-    lua_pushcfunction(L, FMOD_3D_ATTRIBUTES_new);
-    lua_setfield(L, -2, "new");
+#define STRUCT_INDEX(type) \
+    static int type ## _index(lua_State *L) \
+    { \
+        return type ## _fieldaccess(L, 1, 0); \
+    }
 
-    lua_setfield(L, -2, "_3D_ATTRIBUTES");
+#define STRUCT_NEWINDEX(type) \
+    static int type ## _newindex(lua_State *L) \
+    { \
+        return type ## _fieldaccess(L, 1, 1); \
+    }
 
-    /* Create the metatable for FMOD_3D_ATTRIBUTES objects */
-    luaL_newmetatable(L, "FMOD_3D_ATTRIBUTES");
+#define STRUCT_ACCESS(type) \
+    static int STRUCT_access_ ## type(lua_State *L, type *data, int parentIndex, int set, int valueIndex) \
+    { \
+        if (set) \
+        { \
+            *data = *type ## _data(L, valueIndex); \
+            return 0; \
+        } \
+        else \
+        { \
+            return type ## _newref(L, parentIndex, data); \
+        } \
+    }
 
-    lua_pushcfunction(L, FMOD_3D_ATTRIBUTES_gc);
-    lua_setfield(L, -2, "__gc");
+#define STRUCT_CREATE(type) \
+    static void type ## _create(lua_State *L, const char *fieldName) \
+    { \
+        STRUCT_create(L, fieldName, # type, type ## _new, type ## _gc, type ## _index, type ## _newindex); \
+    }
 
-    lua_pushcfunction(L, FMOD_3D_ATTRIBUTES_index);
-    lua_setfield(L, -2, "__index");
+#define STRUCT_FIELDACCESS_BEGIN(type) \
+    static int type ## _fieldaccess(lua_State *L, int index, int set) \
+    { \
+        static const char *typeName = # type; \
+        type *data = type ## _data(L, index); \
+        size_t length = 0; \
+        const char *field = STRUCT_fieldname(L, index + 1, &length);
 
-    lua_pushcfunction(L, FMOD_3D_ATTRIBUTES_newindex);
-    lua_setfield(L, -2, "__newindex");
+#define STRUCT_FIELD(name, type) \
+        if (strncmp(# name, field, length) == 0) \
+        { \
+            return STRUCT_access_ ## type(L, &data->name, index, set, index + 2); \
+        }
 
-    lua_pop(L, 1);
-}
+#define STRUCT_FIELDACCESS_END \
+        return luaL_error(L, "Invalid field %s.%s", typeName, field); \
+    }
+
+STRUCT_BEGIN(FMOD_VECTOR)
+    STRUCT_FIELD(x, float)
+    STRUCT_FIELD(y, float)
+    STRUCT_FIELD(z, float)
+STRUCT_END
+
+STRUCT_BEGIN(FMOD_3D_ATTRIBUTES)
+    STRUCT_FIELD(position, FMOD_VECTOR)
+    STRUCT_FIELD(velocity, FMOD_VECTOR)
+    STRUCT_FIELD(forward, FMOD_VECTOR)
+    STRUCT_FIELD(up, FMOD_VECTOR)
+STRUCT_END
 
 void createStructTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD structs first */
-    FMOD_VECTOR_create(L);
-    FMOD_3D_ATTRIBUTES_create(L);
+    FMOD_VECTOR_create(L, "VECTOR");
+    FMOD_3D_ATTRIBUTES_create(L, "_3D_ATTRIBUTES");
 
     /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
