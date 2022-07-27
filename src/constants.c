@@ -149,6 +149,26 @@ int combineFlags(lua_State *L)
     return 1;
 }
 
+int testFlags(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TUSERDATA);
+    luaL_checktype(L, 2, LUA_TUSERDATA);
+
+    lua_getmetatable(L, 1);
+    lua_getmetatable(L, 2);
+
+    if (!lua_rawequal(L, -1, -2))
+    {
+        luaL_error(L, "Attempt to combine flags of different types");
+    }
+
+    int result = (*(int*)lua_touserdata(L, 1)) & (*(int*)lua_touserdata(L, 2));
+
+    lua_pushboolean(L, (result != 0));
+
+    return 1;
+}
+
 int flagsToString(lua_State *L)
 {
     luaL_checktype(L, 1, LUA_TUSERDATA);
@@ -208,6 +228,9 @@ void createFlagsMetatable(lua_State *L, const char *name)
 
     lua_pushcfunction(L, combineFlags);
     lua_setfield(L, -2, "__add");
+
+    lua_pushcfunction(L, testFlags);
+    lua_setfield(L, -2, "__mul");
 
     lua_pushcfunction(L, flagsToString);
     lua_setfield(L, -2, "__tostring");
