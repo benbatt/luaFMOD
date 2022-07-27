@@ -20,6 +20,8 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 
+#define SELF_TYPE FMOD_STUDIO_SYSTEM
+
 static int create(lua_State *L)
 {
     FMOD_STUDIO_SYSTEM *system = NULL;
@@ -33,7 +35,7 @@ static int create(lua_State *L)
 
 static int initialize(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_SYSTEM);
+    GET_SELF;
 
     int maxchannels = luaL_checkint(L, 2);
     int studioflags = CHECK_CONSTANT(3, FMOD_STUDIO_INITFLAGS);
@@ -48,7 +50,7 @@ static int initialize(lua_State *L)
 
 static int release(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_SYSTEM);
+    GET_SELF;
 
     REQUIRE_OK(FMOD_Studio_System_Release(self));
 
@@ -57,7 +59,7 @@ static int release(lua_State *L)
 
 static int update(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_SYSTEM);
+    GET_SELF;
 
     REQUIRE_OK(FMOD_Studio_System_Update(self));
 
@@ -66,7 +68,7 @@ static int update(lua_State *L)
 
 static int loadBankFile(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_SYSTEM);
+    GET_SELF;
 
     const char *filename = luaL_checkstring(L, 2);
     int flags = CHECK_CONSTANT(3, FMOD_STUDIO_LOAD_BANK_FLAGS);
@@ -81,7 +83,7 @@ static int loadBankFile(lua_State *L)
 
 static int getCoreSystem(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_SYSTEM);
+    GET_SELF;
 
     FMOD_SYSTEM *system = NULL;
     REQUIRE_OK(FMOD_Studio_System_GetCoreSystem(self, &system));
@@ -93,7 +95,7 @@ static int getCoreSystem(lua_State *L)
 
 static int getEvent(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_SYSTEM);
+    GET_SELF;
 
     const char *path = luaL_checkstring(L, 2);
 
@@ -107,7 +109,7 @@ static int getEvent(lua_State *L)
 
 static int setListenerAttributes(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_SYSTEM);
+    GET_SELF;
 
     int listener = luaL_checkint(L, 2);
 

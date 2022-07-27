@@ -46,6 +46,11 @@ STRUCT_TODATA_DECLARE(FMOD_DSP_PARAMETER_3DATTRIBUTES);
 
 #define STRINGIZE_IMPL(x) #x
 
+#define JOIN(a, b) JOIN_IMPL(a, b)
+#define JOIN4(a, b, c, d) JOIN(JOIN(a, b), JOIN(c, d))
+
+#define JOIN_IMPL(a, b) a ## b
+
 #define CHECK_CONSTANT(index, metatableName) *(int*)luaL_checkudata(L, index, #metatableName);
 
 /* If an FMOD error is encountered, raise a Lua error */
@@ -74,8 +79,8 @@ STRUCT_TODATA_DECLARE(FMOD_DSP_PARAMETER_3DATTRIBUTES);
         return 1; \
     } while(0)
 
-#define GET_SELF(type) \
-    type *self = *((type **)luaL_checkudata(L, 1, type ## _METATABLE));
+#define GET_SELF \
+    SELF_TYPE *self = *((SELF_TYPE **)luaL_checkudata(L, 1, JOIN(SELF_TYPE, _METATABLE)))
 
 #define CREATE_USERDATA(type, value) \
     do { \

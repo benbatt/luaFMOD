@@ -20,11 +20,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 
-#define JOIN(a, b) JOIN_IMPL(a, b)
-#define JOIN4(a, b, c, d) JOIN(JOIN(a, b), JOIN(c, d))
-
-#define JOIN_IMPL(a, b) a ## b
-
 #define TABLE_ENTRY_VALUE(name) JOIN(TABLE_VALUE_PREFIX, name)
 
 /* Expects (parent, metatable) on the stack.

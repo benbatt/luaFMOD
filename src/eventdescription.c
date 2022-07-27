@@ -20,9 +20,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 
+#define SELF_TYPE FMOD_STUDIO_EVENTDESCRIPTION
+
 static int createInstance(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_EVENTDESCRIPTION);
+    GET_SELF;
 
     FMOD_STUDIO_EVENTINSTANCE *instance = NULL;
     RETURN_IF_ERROR(FMOD_Studio_EventDescription_CreateInstance(self, &instance));
@@ -34,7 +36,7 @@ static int createInstance(lua_State *L)
 
 static int loadSampleData(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_EVENTDESCRIPTION);
+    GET_SELF;
 
     RETURN_IF_ERROR(FMOD_Studio_EventDescription_LoadSampleData(self));
 

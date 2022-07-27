@@ -20,9 +20,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 
+#define SELF_TYPE FMOD_STUDIO_EVENTINSTANCE
+
 static int set3DAttributes(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
+    GET_SELF;
 
     FMOD_3D_ATTRIBUTES *attributes = FMOD_3D_ATTRIBUTES_todata(L, 2, STRUCT_REQUIRED);
 
@@ -33,7 +35,7 @@ static int set3DAttributes(lua_State *L)
 
 static int start(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
+    GET_SELF;
 
     RETURN_IF_ERROR(FMOD_Studio_EventInstance_Start(self));
 
@@ -42,7 +44,7 @@ static int start(lua_State *L)
 
 static int stop(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
+    GET_SELF;
 
     int mode = CHECK_CONSTANT(2, FMOD_STUDIO_STOP_MODE);
 
@@ -53,7 +55,7 @@ static int stop(lua_State *L)
 
 static int release(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
+    GET_SELF;
 
     RETURN_IF_ERROR(FMOD_Studio_EventInstance_Release(self));
 
@@ -62,7 +64,7 @@ static int release(lua_State *L)
 
 static int setParameterByName(lua_State *L)
 {
-    GET_SELF(FMOD_STUDIO_EVENTINSTANCE);
+    GET_SELF;
 
     const char *name = luaL_checkstring(L, 2);
     float value = (float)luaL_checknumber(L, 3);

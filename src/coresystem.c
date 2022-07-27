@@ -20,9 +20,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 
+#define SELF_TYPE FMOD_SYSTEM
+
 static int setSoftwareFormat(lua_State *L)
 {
-    GET_SELF(FMOD_SYSTEM);
+    GET_SELF;
 
     int samplerate = luaL_checkint(L, 2);
     int speakermode = CHECK_CONSTANT(3, FMOD_SPEAKERMODE);
