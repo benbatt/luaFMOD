@@ -62,6 +62,19 @@ static int release(lua_State *L)
     RETURN_TRUE;
 }
 
+static int setParameterByID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *id = FMOD_STUDIO_PARAMETER_ID_todata(L, 2, STRUCT_REQUIRED);
+    float value = (float)luaL_checknumber(L, 3);
+    int ignoreseekspeed = lua_toboolean(L, 4);
+
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_SetParameterByID(self, *id, value, ignoreseekspeed));
+
+    RETURN_TRUE;
+}
+
 static int setParameterByName(lua_State *L)
 {
     GET_SELF;
@@ -80,5 +93,6 @@ FUNCTION_TABLE_BEGIN(EventInstanceMethods)
     FUNCTION_TABLE_ENTRY(start)
     FUNCTION_TABLE_ENTRY(stop)
     FUNCTION_TABLE_ENTRY(release)
+    FUNCTION_TABLE_ENTRY(setParameterByID)
     FUNCTION_TABLE_ENTRY(setParameterByName)
 FUNCTION_TABLE_END

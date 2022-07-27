@@ -22,6 +22,20 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_EVENTDESCRIPTION
 
+static int getParameterDescriptionByName(lua_State *L)
+{
+    GET_SELF;
+
+    const char *name = luaL_checkstring(L, 2);
+
+    FMOD_STUDIO_PARAMETER_DESCRIPTION_new(L);
+    FMOD_STUDIO_PARAMETER_DESCRIPTION *description = FMOD_STUDIO_PARAMETER_DESCRIPTION_todata(L, -1, STRUCT_REQUIRED);
+
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetParameterDescriptionByName(self, name, description));
+
+    return 1;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -44,6 +58,7 @@ static int loadSampleData(lua_State *L)
 }
 
 FUNCTION_TABLE_BEGIN(EventDescriptionMethods)
+    FUNCTION_TABLE_ENTRY(getParameterDescriptionByName)
     FUNCTION_TABLE_ENTRY(createInstance)
     FUNCTION_TABLE_ENTRY(loadSampleData)
 FUNCTION_TABLE_END

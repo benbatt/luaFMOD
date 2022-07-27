@@ -21,6 +21,18 @@ DEALINGS IN THE SOFTWARE.
 #include "common.h"
 #include <string.h>
 
+static void STRUCT_setmetatable(lua_State *L, const char *metatable, int index)
+{
+    luaL_getmetatable(L, metatable);
+
+    if (lua_isnoneornil(L, -1))
+    {
+        luaL_error(L, "The metatable for %s has not been defined", metatable);
+    }
+
+    lua_setmetatable(L, index - 1);
+}
+
 static int STRUCT_new(lua_State *L, const char *metatable, size_t size)
 {
     int *reference = (int*)lua_newuserdata(L, sizeof(int) + size);
@@ -31,8 +43,7 @@ static int STRUCT_new(lua_State *L, const char *metatable, size_t size)
 
     memset(data, 0, size);
 
-    luaL_getmetatable(L, metatable);
-    lua_setmetatable(L, -2);
+    STRUCT_setmetatable(L, metatable, -1);
 
     return 1;
 }
@@ -48,8 +59,7 @@ static int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, v
 
     *((void**)(reference + 1)) = data;
 
-    luaL_getmetatable(L, metatable);
-    lua_setmetatable(L, -2);
+    STRUCT_setmetatable(L, metatable, -1);
 
     return 1;
 }
@@ -88,12 +98,15 @@ static void *STRUCT_todata(lua_State *L, const char *metatable, int index, int r
 static void STRUCT_create(lua_State *L, const char *fieldName, const char *metatable,
     lua_CFunction new, lua_CFunction gc, lua_CFunction index, lua_CFunction newindex)
 {
-    lua_createtable(L, 0, 0);
+    if (fieldName)
+    {
+        lua_createtable(L, 0, 0);
 
-    lua_pushcfunction(L, new);
-    lua_setfield(L, -2, "new");
+        lua_pushcfunction(L, new);
+        lua_setfield(L, -2, "new");
 
-    lua_setfield(L, -2, fieldName);
+        lua_setfield(L, -2, fieldName);
+    }
 
     /* Create the instance metatable  */
     luaL_newmetatable(L, metatable);
@@ -121,12 +134,115 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
 {
     if (set)
     {
-        *data = luaL_checknumber(L, valueIndex);
+        *data = (float)luaL_checknumber(L, valueIndex);
         return 0;
     }
     else
     {
         lua_pushnumber(L, *data);
+        return 1;
+    }
+}
+
+static int STRUCT_access_int(lua_State *L, int *data, int parentIndex, int set, int valueIndex)
+{
+    if (set)
+    {
+        *data = luaL_checkint(L, valueIndex);
+        return 0;
+    }
+    else
+    {
+        lua_pushinteger(L, *data);
+        return 1;
+    }
+}
+
+static int STRUCT_access_uint(lua_State *L, unsigned int *data, int parentIndex, int set, int valueIndex)
+{
+    if (set)
+    {
+        *data = luaL_checkint(L, valueIndex);
+        return 0;
+    }
+    else
+    {
+        lua_pushinteger(L, *data);
+        return 1;
+    }
+}
+
+static int STRUCT_access_ushort(lua_State *L, unsigned short *data, int parentIndex, int set, int valueIndex)
+{
+    if (set)
+    {
+        *data = luaL_checkint(L, valueIndex);
+        return 0;
+    }
+    else
+    {
+        lua_pushinteger(L, *data);
+        return 1;
+    }
+}
+
+static int STRUCT_access_uchar(lua_State *L, unsigned char *data, int parentIndex, int set, int valueIndex)
+{
+    if (set)
+    {
+        *data = luaL_checkint(L, valueIndex);
+        return 0;
+    }
+    else
+    {
+        lua_pushinteger(L, *data);
+        return 1;
+    }
+}
+
+static int STRUCT_access_cstring(lua_State *L, const char **data, int parentIndex, int set, int valueIndex)
+{
+    if (set)
+    {
+        return luaL_error(L, "Attempt to set a read-only field");
+    }
+    else
+    {
+        lua_pushstring(L, *data);
+        return 1;
+    }
+}
+
+#include "array.c"
+
+// FIXME FMOD_STUDIO_PARAMETER_TYPE should be defined as a constant
+static int STRUCT_access_FMOD_STUDIO_PARAMETER_TYPE(lua_State *L,
+    FMOD_STUDIO_PARAMETER_TYPE *data, int parentIndex, int set, int valueIndex)
+{
+    if (set)
+    {
+        *data = luaL_checkint(L, valueIndex);
+        return 0;
+    }
+    else
+    {
+        lua_pushinteger(L, *data);
+        return 1;
+    }
+}
+
+// FIXME FMOD_STUDIO_PARAMETER_FLAGS should be defined as a constant
+static int STRUCT_access_FMOD_STUDIO_PARAMETER_FLAGS(lua_State *L,
+    FMOD_STUDIO_PARAMETER_FLAGS *data, int parentIndex, int set, int valueIndex)
+{
+    if (set)
+    {
+        *data = luaL_checkint(L, valueIndex);
+        return 0;
+    }
+    else
+    {
+        lua_pushinteger(L, *data);
         return 1;
     }
 }
@@ -146,7 +262,7 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
 #define STRUCT_END STRUCT_FIELDACCESS_END
 
 #define STRUCT_NEW(type) \
-    static int type ## _new(lua_State *L) \
+    STRUCT_NEW_DECLARE(type) \
     { \
         return STRUCT_new(L, # type, sizeof(type)); \
     }
@@ -232,9 +348,32 @@ STRUCT_BEGIN(FMOD_3D_ATTRIBUTES)
     STRUCT_FIELD(up, FMOD_VECTOR)
 STRUCT_END
 
+STRUCT_BEGIN(FMOD_GUID)
+    STRUCT_FIELD(Data1, uint)
+    STRUCT_FIELD(Data2, ushort)
+    STRUCT_FIELD(Data3, ushort)
+    STRUCT_FIELD(Data4, ARRAY_uchar8)
+STRUCT_END
+
 STRUCT_BEGIN(FMOD_DSP_PARAMETER_3DATTRIBUTES)
     STRUCT_FIELD(relative, FMOD_3D_ATTRIBUTES)
     STRUCT_FIELD(absolute, FMOD_3D_ATTRIBUTES)
+STRUCT_END
+
+STRUCT_BEGIN(FMOD_STUDIO_PARAMETER_ID)
+    STRUCT_FIELD(data1, uint)
+    STRUCT_FIELD(data2, uint)
+STRUCT_END
+
+STRUCT_BEGIN(FMOD_STUDIO_PARAMETER_DESCRIPTION)
+    STRUCT_FIELD(name, cstring)
+    STRUCT_FIELD(id, FMOD_STUDIO_PARAMETER_ID)
+    STRUCT_FIELD(minimum, float)
+    STRUCT_FIELD(maximum, float)
+    STRUCT_FIELD(defaultvalue, float)
+    STRUCT_FIELD(type, FMOD_STUDIO_PARAMETER_TYPE)
+    STRUCT_FIELD(flags, FMOD_STUDIO_PARAMETER_FLAGS)
+    STRUCT_FIELD(guid, FMOD_GUID)
 STRUCT_END
 
 void createStructTables(lua_State *L)
@@ -242,11 +381,19 @@ void createStructTables(lua_State *L)
     /* The FMOD table should be on top of the stack, so define FMOD structs first */
     FMOD_VECTOR_create(L, "VECTOR");
     FMOD_3D_ATTRIBUTES_create(L, "_3D_ATTRIBUTES");
+    FMOD_GUID_create(L, "GUID");
     FMOD_DSP_PARAMETER_3DATTRIBUTES_create(L, "DSP_PARAMETER_3DATTRIBUTES");
 
     /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
 
+    /* Define FMOD.Studio structs */
+    FMOD_STUDIO_PARAMETER_ID_create(L, "PARAMETER_ID");
+    FMOD_STUDIO_PARAMETER_DESCRIPTION_create(L, "PARAMETER_DESCRIPTION");
+
     /* Tidy up the FMOD.Studio table */
     lua_pop(L, 1);
+
+    /* Define helper structs */
+    ARRAY_uchar8_create(L);
 }
