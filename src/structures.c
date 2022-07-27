@@ -66,8 +66,13 @@ static int STRUCT_gc(lua_State *L, const char *metatable)
     return 0;
 }
 
-static void *STRUCT_data(lua_State *L, const char *metatable, int index)
+static void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required)
 {
+    if (required == STRUCT_OPTIONAL && lua_isnoneornil(L, index))
+    {
+        return NULL;
+    }
+
     int *reference = (int*)luaL_checkudata(L, index, metatable);
 
     if (*reference == LUA_NOREF)
@@ -130,7 +135,7 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
     STRUCT_NEW(type) \
     STRUCT_NEWREF(type) \
     STRUCT_GC(type) \
-    STRUCT_DATA(type) \
+    STRUCT_TODATA(type) \
     static int type ## _fieldaccess(lua_State *L, int index, int set); \
     STRUCT_INDEX(type) \
     STRUCT_NEWINDEX(type) \
@@ -158,10 +163,10 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
         return STRUCT_gc(L, # type); \
     }
 
-#define STRUCT_DATA(type) \
-    static type *type ## _data(lua_State *L, int index) \
+#define STRUCT_TODATA(type) \
+    STRUCT_TODATA_DECLARE(type) \
     { \
-        return (type*)STRUCT_data(L, # type, index); \
+        return (type*)STRUCT_todata(L, # type, index, required); \
     }
 
 #define STRUCT_INDEX(type) \
@@ -181,7 +186,7 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
     { \
         if (set) \
         { \
-            *data = *type ## _data(L, valueIndex); \
+            *data = *type ## _todata(L, valueIndex, STRUCT_REQUIRED); \
             return 0; \
         } \
         else \
@@ -200,7 +205,7 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
     static int type ## _fieldaccess(lua_State *L, int index, int set) \
     { \
         static const char *typeName = # type; \
-        type *data = type ## _data(L, index); \
+        type *data = type ## _todata(L, index, STRUCT_REQUIRED); \
         size_t length = 0; \
         const char *field = STRUCT_fieldname(L, index + 1, &length);
 

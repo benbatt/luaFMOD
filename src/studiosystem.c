@@ -105,6 +105,20 @@ static int getEvent(lua_State *L)
     return 1;
 }
 
+static int setListenerAttributes(lua_State *L)
+{
+    GET_SELF(FMOD_STUDIO_SYSTEM);
+
+    int listener = luaL_checkint(L, 2);
+
+    FMOD_3D_ATTRIBUTES *attributes = FMOD_3D_ATTRIBUTES_todata(L, 3, STRUCT_REQUIRED);
+    FMOD_VECTOR *attenuationposition = FMOD_VECTOR_todata(L, 4, STRUCT_OPTIONAL);
+
+    RETURN_IF_ERROR(FMOD_Studio_System_SetListenerAttributes(self, listener, attributes, attenuationposition));
+
+    RETURN_TRUE;
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -116,4 +130,5 @@ FUNCTION_TABLE_BEGIN(StudioSystemMethods)
     FUNCTION_TABLE_ENTRY(loadBankFile)
     FUNCTION_TABLE_ENTRY(getCoreSystem)
     FUNCTION_TABLE_ENTRY(getEvent)
+    FUNCTION_TABLE_ENTRY(setListenerAttributes)
 FUNCTION_TABLE_END
