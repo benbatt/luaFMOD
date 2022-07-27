@@ -147,7 +147,7 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
     }
 
 #define STRUCT_NEWREF(type) \
-    static int type ## _newref(lua_State *L, int parentIndex, FMOD_VECTOR *data) \
+    static int type ## _newref(lua_State *L, int parentIndex, type *data) \
     { \
         return STRUCT_newref(L, # type, parentIndex, data); \
     }
