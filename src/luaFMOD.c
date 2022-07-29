@@ -19,6 +19,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include "common.h"
+#include "platform.h"
 
 FUNCTION_TABLE_BEGIN(FMODStaticFunctions)
 FUNCTION_TABLE_END
@@ -48,8 +49,10 @@ USE_FUNCTION_TABLE(CoreSystemMethods);
 extern void createConstantTables(lua_State *L);
 extern void createStructTables(lua_State *L);
 
-extern int luaopen_FMOD(lua_State *L)
+extern int LUAFMOD_EXPORT luaopen_luaFMOD(lua_State *L)
 {
+    platformInitialize(L);
+
     /* The FMOD table */
     luaL_register(L, "FMOD", FMODStaticFunctions);
 
