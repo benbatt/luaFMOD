@@ -3,6 +3,7 @@
 #include <lauxlib.h>
 #include <windows.h>
 
+#ifdef LUAFMOD_DYNAMIC
 static int findBasename(const char *path, DWORD length)
 {
     for (int i = length; i >= 0; --i)
@@ -70,11 +71,14 @@ static void loadFMOD(lua_State *L)
 
     alloc(userdata, path, pathSize, 0);
 }
+#endif
 
 
 void platformInitialize(lua_State *L)
 {
+#ifdef LUAFMOD_DYNAMIC
     loadFMOD(L);
+#endif
 
     HRESULT comResult = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
