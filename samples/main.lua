@@ -11,34 +11,6 @@ package.cpath = package.cpath .. ";..\\bin\\?.dll;..\\external\\luaTextLoop\\bin
 require("luaFMOD")
 require("luaTextLoop")
 
-print("FMOD Test")
-
-local system
-
-local ambienceInstance
-local cancelInstance
-local explosion
-local mowerInstance
-local mowerAttributes
-local footstepsInstance
-local surface
-local surfaceValue
-
-local ambienceStarted = true
-local rain = false
-
-local function quit()
-  if system then
-    system:release()
-  end
-  os.exit()
-end
-
-local KeyCode = TextLoop.KeyCode
-
-local function handleKey(key)
-end
-
 local system = FMOD.Studio.System.create()
 
 local coreSystem = assert(system:getCoreSystem())
@@ -63,22 +35,22 @@ for _,path in ipairs(bankPaths) do
 end
 
 local ambience = assert(system:getEvent("event:/Ambience/Forest"))
-ambienceInstance = assert(ambience:createInstance())
+local ambienceInstance = assert(ambience:createInstance())
 
 assert(ambienceInstance:start())
 
 local cancel = assert(system:getEvent("event:/UI/Cancel"))
-cancelInstance = assert(cancel:createInstance())
+local cancelInstance = assert(cancel:createInstance())
 
-explosion = assert(system:getEvent("event:/Weapons/Explosion"))
+local explosion = assert(system:getEvent("event:/Weapons/Explosion"))
 assert(explosion:loadSampleData())
 
 local mower = assert(system:getEvent("event:/Vehicles/Ride-on Mower"))
-mowerInstance = assert(mower:createInstance())
+local mowerInstance = assert(mower:createInstance())
 
 assert(mowerInstance:setParameterByName("RPM", 650))
 
-mowerAttributes = FMOD._3D_ATTRIBUTES.new()
+local mowerAttributes = FMOD._3D_ATTRIBUTES.new()
 mowerAttributes.forward.z = 1
 mowerAttributes.up.y = 1
 mowerAttributes.position.z = 2
@@ -86,63 +58,93 @@ assert(mowerInstance:set3DAttributes(mowerAttributes))
 
 local footsteps = assert(system:getEvent("event:/Character/Player Footsteps"))
 
-surface = footsteps:getParameterDescriptionByName("Surface")
-surfaceID = surface.id
+local surface = footsteps:getParameterDescriptionByName("Surface")
 
-local guid = surface.guid
-print("Parameter GUID:", guid.Data1, guid.Data2, guid.Data3,
-  guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3],
-  guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7])
+local footstepsInstance = assert(footsteps:createInstance())
 
-print("Parameter type:", surface.type)
-print("Parameter flags:", surface.flags)
-print("Parameter is discrete?", tostring(surface.flags * FMOD.Studio.PARAMETER_FLAGS.DISCRETE))
-print("Parameter is readonly?", tostring(surface.flags * FMOD.Studio.PARAMETER_FLAGS.READONLY))
+local surfaceValue = 1
+assert(footstepsInstance:setParameterByID(surface.id, surfaceValue))
 
-footstepsInstance = assert(footsteps:createInstance())
+local menu = {
+  "=============== FMOD Example ===============",
+  ". A: toggle Ambience | R: toggle Rain      .",
+  ". C: play Cancel     | E: play Explosion   .",
+  ". F: play Footsteps  | +/-: change surface .",
+  ". M: toggle Mower                          .",
+  ". Left/Right/Up/Down: move Mower           .",
+  ". Escape: quit                             .",
+  "============================================",
+}
 
-surfaceValue = 1
-assert(footstepsInstance:setParameterByID(surfaceID, surfaceValue))
+menu.x = 80 - #menu[1]
+
+TextLoop.setOverlay(menu)
+
+local ambienceStarted = true
+local rain = false
+local mowerStarted = false
 
 TextLoop.start(10, function(keyCodes)
     for _,key in ipairs(keyCodes) do
+      local KeyCode = TextLoop.KeyCode
+
       if key == KeyCode.Escape then
         return false
       elseif key == KeyCode.C then
+        print("Playing Cancel")
         assert(cancelInstance:start())
       elseif key == KeyCode.E then
+        print("Playing Explosion")
         local instance = assert(explosion:createInstance())
         assert(instance:start())
         assert(instance:release())
       elseif key == KeyCode.F then
+        print("Playing Footsteps")
         assert(footstepsInstance:start())
       elseif key == KeyCode.Plus then
         surfaceValue = math.min(surfaceValue + 1, surface.maximum)
+        print(string.format("Setting surface to %d", surfaceValue))
         assert(footstepsInstance:setParameterByID(surface.id, surfaceValue))
       elseif key == KeyCode.Minus then
         surfaceValue = math.max(surface.minimum, surfaceValue - 1)
+        print(string.format("Setting surface to %d", surfaceValue))
         assert(footstepsInstance:setParameterByID(surface.id, surfaceValue))
       elseif key == KeyCode.M then
-        assert(mowerInstance:start())
+        if mowerStarted then
+          print("Stopping mower")
+          assert(mowerInstance:stop(FMOD.Studio.STOP.ALLOWFADEOUT))
+        else
+          print(string.format("Starting mower at (%.f, %.f)", mowerAttributes.position.x, mowerAttributes.position.z))
+          assert(mowerInstance:start())
+        end
+
+        mowerStarted = not mowerStarted
       elseif key == KeyCode.Left then
         mowerAttributes.position.x = mowerAttributes.position.x - 1
+        print(string.format("Moving mower to (%.f, %.f)", mowerAttributes.position.x, mowerAttributes.position.z))
         assert(mowerInstance:set3DAttributes(mowerAttributes))
       elseif key == KeyCode.Right then
         mowerAttributes.position.x = mowerAttributes.position.x + 1
+        print(string.format("Moving mower to (%.f, %.f)", mowerAttributes.position.x, mowerAttributes.position.z))
         assert(mowerInstance:set3DAttributes(mowerAttributes))
       elseif key == KeyCode.Up then
         mowerAttributes.position.z = mowerAttributes.position.z + 1
+        print(string.format("Moving mower to (%.f, %.f)", mowerAttributes.position.x, mowerAttributes.position.z))
         assert(mowerInstance:set3DAttributes(mowerAttributes))
       elseif key == KeyCode.Down then
         mowerAttributes.position.z = mowerAttributes.position.z - 1
+        print(string.format("Moving mower to (%.f, %.f)", mowerAttributes.position.x, mowerAttributes.position.z))
         assert(mowerInstance:set3DAttributes(mowerAttributes))
       elseif key == KeyCode.R then
         rain = not rain
+        print(string.format("Turning rain %s", rain and "on" or "off"))
         assert(ambienceInstance:setParameterByName("Rain", rain and 1 or 0))
-      elseif key == KeyCode.S then
+      elseif key == KeyCode.A then
         if ambienceStarted then
+          print("Stopping ambience")
           assert(ambienceInstance:stop(FMOD.Studio.STOP.ALLOWFADEOUT))
         else
+          print("Starting ambience")
           assert(ambienceInstance:start())
         end
 
@@ -154,3 +156,5 @@ TextLoop.start(10, function(keyCodes)
 
     return true
   end)
+
+system:release()
