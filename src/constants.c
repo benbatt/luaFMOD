@@ -82,7 +82,7 @@ static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char
 */
 #define TABLE_BEGIN(type, createMetatable) \
     CONSTANT_ACCESS(type) \
-    TABLE_CREATE(type, createMetatable)
+    TABLE_CREATE_BEGIN(type, createMetatable)
 
 #define CONSTANT_ACCESS(type) \
     CONSTANT_ACCESS_DECLARE(type) \
@@ -103,8 +103,8 @@ static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char
    Creates a new instance metatable named "type".
    Leaves (parent, constants table) on the stack.
 */
-#define TABLE_CREATE(type, createMetatable) \
-    static void type ## _table_create(lua_State *L, const char *fieldName) \
+#define TABLE_CREATE_BEGIN(type, createMetatable) \
+    static void CONSTANT_TABLE_create_ ## type(lua_State *L, const char *fieldName) \
     { \
         CONSTANT_TABLE_create(L, fieldName); \
         const char *metatable = # type; \
@@ -141,6 +141,12 @@ static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char
 
 #define ENUM_TABLE_BEGIN(type) \
     TABLE_BEGIN(type, createEnumMetatable)
+
+/* Expects (parent) on the stack.
+   Creates the constants table defined for type and sets it as parent[name].
+   Leaves (parent) on the stack.
+*/
+#define TABLE_CREATE(type, name) CONSTANT_TABLE_create_ ## type(L, name)
 
 int combineFlags(lua_State *L)
 {
@@ -403,19 +409,19 @@ TABLE_END
 void createConstantTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD constants first */
-    FMOD_DEBUG_FLAGS_table_create(L, "DEBUG_FLAGS");
-    FMOD_INITFLAGS_table_create(L, "INIT");
-    FMOD_DEBUG_MODE_table_create(L, "DEBUG_MODE");
-    FMOD_SPEAKERMODE_table_create(L, "SPEAKERMODE");
+    TABLE_CREATE(FMOD_DEBUG_FLAGS, "DEBUG_FLAGS");
+    TABLE_CREATE(FMOD_INITFLAGS, "INIT");
+    TABLE_CREATE(FMOD_DEBUG_MODE, "DEBUG_MODE");
+    TABLE_CREATE(FMOD_SPEAKERMODE, "SPEAKERMODE");
 
     /* Get the FMOD.Studio table */
     lua_getfield(L, -1, "Studio");
 
-    FMOD_STUDIO_INITFLAGS_table_create(L, "INIT");
-    FMOD_STUDIO_PARAMETER_FLAGS_table_create(L, "PARAMETER_FLAGS");
-    FMOD_STUDIO_LOAD_BANK_FLAGS_table_create(L, "LOAD_BANK");
-    FMOD_STUDIO_PARAMETER_TYPE_table_create(L, "PARAMETER_TYPE");
-    FMOD_STUDIO_STOP_MODE_table_create(L, "STOP");
+    TABLE_CREATE(FMOD_STUDIO_INITFLAGS, "INIT");
+    TABLE_CREATE(FMOD_STUDIO_PARAMETER_FLAGS, "PARAMETER_FLAGS");
+    TABLE_CREATE(FMOD_STUDIO_LOAD_BANK_FLAGS, "LOAD_BANK");
+    TABLE_CREATE(FMOD_STUDIO_PARAMETER_TYPE, "PARAMETER_TYPE");
+    TABLE_CREATE(FMOD_STUDIO_STOP_MODE, "STOP");
 
     /* Tidy up the FMOD.Studio table */
     lua_pop(L, 1);
