@@ -20,6 +20,18 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 
+int getOptionalConstant(lua_State *L, int index, const char *metatable, int defaultValue)
+{
+    if (lua_isnoneornil(L, index))
+    {
+        return defaultValue;
+    }
+    else
+    {
+        return *(int*)luaL_checkudata(L, index, metatable);
+    }
+}
+
 /* Expects (parent) on the stack.
    Creates a new constants table and sets it as parent[name].
    Leaves (parent, constants table) on the stack.
@@ -104,6 +116,10 @@ static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char
 */
 #define TABLE_ENTRY(name) \
     CONSTANT_TABLE_entry(L, metatable, # name, TABLE_ENTRY_VALUE(name));
+
+/* Same as TABLE_ENTRY, but name is a string and value is an int. */
+#define TABLE_ENTRY_CUSTOM(name, value) \
+    CONSTANT_TABLE_entry(L, metatable, name, value);
 
 /* Expects (parent, constants table) on the stack.
    Leaves (parent) on the stack.
@@ -266,6 +282,23 @@ void createEnumMetatable(lua_State *L, const char *name)
     lua_pop(L, 1);
 }
 
+#define TABLE_VALUE_PREFIX FMOD_DEBUG_
+
+FLAGS_TABLE_BEGIN(FMOD_DEBUG_FLAGS)
+    TABLE_ENTRY(LEVEL_NONE)
+    TABLE_ENTRY(LEVEL_ERROR)
+    TABLE_ENTRY(LEVEL_WARNING)
+    TABLE_ENTRY(LEVEL_LOG)
+    TABLE_ENTRY(TYPE_MEMORY)
+    TABLE_ENTRY(TYPE_FILE)
+    TABLE_ENTRY(TYPE_CODEC)
+    TABLE_ENTRY(TYPE_TRACE)
+    TABLE_ENTRY(DISPLAY_TIMESTAMPS)
+    TABLE_ENTRY(DISPLAY_LINENUMBERS)
+    TABLE_ENTRY(DISPLAY_THREAD)
+TABLE_END
+
+#undef TABLE_VALUE_PREFIX
 #define TABLE_VALUE_PREFIX FMOD_INIT_
 
 FLAGS_TABLE_BEGIN(FMOD_INITFLAGS)
@@ -282,6 +315,16 @@ FLAGS_TABLE_BEGIN(FMOD_INITFLAGS)
     TABLE_ENTRY(THREAD_UNSAFE)
     TABLE_ENTRY(PROFILE_METER_ALL)
     TABLE_ENTRY(MEMORY_TRACKING)
+TABLE_END
+
+#undef TABLE_VALUE_PREFIX
+#define TABLE_VALUE_PREFIX FMOD_DEBUG_MODE_
+
+ENUM_TABLE_BEGIN(FMOD_DEBUG_MODE)
+    TABLE_ENTRY(TTY)
+    /* Using TABLE_ENTRY(FILE) here would collide with the standard FILE type. */
+    TABLE_ENTRY_CUSTOM("FILE", FMOD_DEBUG_MODE_FILE)
+    TABLE_ENTRY(CALLBACK)
 TABLE_END
 
 #undef TABLE_VALUE_PREFIX
@@ -360,7 +403,9 @@ TABLE_END
 void createConstantTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD constants first */
+    FMOD_DEBUG_FLAGS_table_create(L, "DEBUG_FLAGS");
     FMOD_INITFLAGS_table_create(L, "INIT");
+    FMOD_DEBUG_MODE_table_create(L, "DEBUG_MODE");
     FMOD_SPEAKERMODE_table_create(L, "SPEAKERMODE");
 
     /* Get the FMOD.Studio table */

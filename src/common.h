@@ -64,7 +64,10 @@ STRUCT_TODATA_DECLARE(FMOD_STUDIO_PARAMETER_ID);
 
 #define JOIN_IMPL(a, b) a ## b
 
+int getOptionalConstant(lua_State *L, int index, const char *metatable, int defaultValue);
+
 #define CHECK_CONSTANT(index, type) *(int*)luaL_checkudata(L, index, # type)
+#define OPTIONAL_CONSTANT(index, type, defaultValue) getOptionalConstant(L, index, # type, defaultValue)
 
 /* If an FMOD error is encountered, raise a Lua error */
 #define REQUIRE_OK(result) \

@@ -21,7 +21,25 @@ DEALINGS IN THE SOFTWARE.
 #include "common.h"
 #include "platform.h"
 
+static int Debug_Initialize(lua_State *L)
+{
+    int flags = CHECK_CONSTANT(1, FMOD_DEBUG_FLAGS);
+    int mode = OPTIONAL_CONSTANT(2, FMOD_DEBUG_MODE, FMOD_DEBUG_MODE_TTY);
+
+    if (!lua_isnoneornil(L, 3))
+    {
+        return luaL_error(L, "Setting a debug callback is currently unsupported");
+    }
+
+    const char *filename = lua_tostring(L, 4);
+
+    REQUIRE_OK(FMOD_Debug_Initialize(flags, mode, NULL, filename));
+
+    return 0;
+}
+
 FUNCTION_TABLE_BEGIN(FMODStaticFunctions)
+    FUNCTION_TABLE_ENTRY(Debug_Initialize)
 FUNCTION_TABLE_END
 
 static void createMethodsTable(lua_State *L, const char *name, const luaL_reg *methods)
