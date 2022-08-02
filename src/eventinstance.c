@@ -31,6 +31,15 @@ static int set3DAttributes(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_Set3DAttributes(self, attributes));
 }
 
+static int setPaused(lua_State *L)
+{
+    GET_SELF;
+
+    int paused = lua_toboolean(L, 2);
+
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetPaused(self, paused));
+}
+
 static int start(lua_State *L)
 {
     GET_SELF;
@@ -78,6 +87,7 @@ static int setParameterByName(lua_State *L)
 
 FUNCTION_TABLE_BEGIN(EventInstanceMethods)
     FUNCTION_TABLE_ENTRY(set3DAttributes)
+    FUNCTION_TABLE_ENTRY(setPaused)
     FUNCTION_TABLE_ENTRY(start)
     FUNCTION_TABLE_ENTRY(stop)
     FUNCTION_TABLE_ENTRY(release)
