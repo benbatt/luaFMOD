@@ -84,8 +84,9 @@ int getOptionalConstant(lua_State *L, int index, const char *metatable, int defa
         FMOD_RESULT _result = (result); \
         if (_result != FMOD_OK) { \
             lua_pushnil(L); \
+            lua_pushfstring(L, "FMOD error %d: %s", _result, FMOD_ErrorString(_result)); \
             lua_pushinteger(L, _result); \
-            return 2; \
+            return 3; \
         } \
     } while(0)
 
