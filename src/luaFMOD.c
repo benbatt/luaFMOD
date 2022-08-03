@@ -20,20 +20,23 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 #include "platform.h"
+#include "logging.h"
 
 static int Debug_Initialize(lua_State *L)
 {
     int flags = CHECK_CONSTANT(1, FMOD_DEBUG_FLAGS);
     int mode = OPTIONAL_CONSTANT(2, FMOD_DEBUG_MODE, FMOD_DEBUG_MODE_TTY);
 
-    if (!lua_isnoneornil(L, 3))
-    {
-        return luaL_error(L, "Setting a debug callback is currently unsupported");
+    int callback = 0;
+
+    if (!lua_isnil(L, 3)) {
+        lua_pushvalue(L, 3);
+        callback = luaL_ref(L, LUA_REGISTRYINDEX);
     }
 
     const char *filename = lua_tostring(L, 4);
 
-    REQUIRE_OK(FMOD_Debug_Initialize(flags, mode, NULL, filename));
+    REQUIRE_OK(loggingStart(flags, mode, callback, filename));
 
     return 0;
 }

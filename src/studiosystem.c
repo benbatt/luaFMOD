@@ -19,6 +19,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include "common.h"
+#include "logging.h"
 
 #define SELF_TYPE FMOD_STUDIO_SYSTEM
 
@@ -62,6 +63,8 @@ static int update(lua_State *L)
     GET_SELF;
 
     REQUIRE_OK(FMOD_Studio_System_Update(self));
+
+    loggingPumpMessages(L);
 
     return 0;
 }

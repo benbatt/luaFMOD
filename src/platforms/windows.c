@@ -3,6 +3,8 @@
 #include <lauxlib.h>
 #include <windows.h>
 
+#include "../platform.h"
+
 #ifdef LUAFMOD_DYNAMIC
 static int findBasename(const char *path, DWORD length)
 {
@@ -86,6 +88,39 @@ void platformInitialize(lua_State *L)
     {
         luaL_error(L, "Failed to initialize COM");
     }
+}
+
+LUAFMOD_CRITICAL_SECTION *criticalSectionCreate()
+{
+    CRITICAL_SECTION *c = malloc(sizeof(*c));
+
+    if (!c) {
+        return NULL;
+    }
+
+    InitializeCriticalSection(c);
+
+    return (LUAFMOD_CRITICAL_SECTION*)c;
+}
+
+void criticalSectionRelease(LUAFMOD_CRITICAL_SECTION *criticalSection)
+{
+    CRITICAL_SECTION *c = (CRITICAL_SECTION*)criticalSection;
+
+    DeleteCriticalSection(c);
+    free(c);
+}
+
+void criticalSectionEnter(LUAFMOD_CRITICAL_SECTION *criticalSection)
+{
+    CRITICAL_SECTION *c = (CRITICAL_SECTION*)criticalSection;
+    EnterCriticalSection(c);
+}
+
+void criticalSectionLeave(LUAFMOD_CRITICAL_SECTION *criticalSection)
+{
+    CRITICAL_SECTION *c = (CRITICAL_SECTION*)criticalSection;
+    LeaveCriticalSection(c);
 }
 
 #endif /* WIN32 */

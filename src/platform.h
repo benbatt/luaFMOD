@@ -1,8 +1,15 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-/* This is defined in platforms/<platform>.c */
-extern void platformInitialize(struct lua_State *L);
+/* These are defined in platforms/<platform>.c */
+void platformInitialize(struct lua_State *L);
+
+typedef struct LUAFMOD_CRITICAL_SECTION LUAFMOD_CRITICAL_SECTION;
+
+LUAFMOD_CRITICAL_SECTION *criticalSectionCreate();
+void criticalSectionRelease(LUAFMOD_CRITICAL_SECTION *criticalSection);
+void criticalSectionEnter(LUAFMOD_CRITICAL_SECTION *criticalSection);
+void criticalSectionLeave(LUAFMOD_CRITICAL_SECTION *criticalSection);
 
 #ifdef LUAFMOD_DYNAMIC
     #ifdef _WIN32
