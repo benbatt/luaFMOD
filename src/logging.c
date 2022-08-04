@@ -173,6 +173,10 @@ static void pumpChunkMessages(lua_State *L, Chunk *chunk)
 */
 void loggingPumpMessages(lua_State *L)
 {
+    if (!sCriticalSection) {
+        return;
+    }
+
     criticalSectionEnter(sCriticalSection);
 
     if (sCurrentChunk) {
