@@ -18,6 +18,9 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 DEALINGS IN THE SOFTWARE.
 */
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "common.h"
 #include "logging.h"
 #include "platform.h"
@@ -99,14 +102,14 @@ static FMOD_RESULT F_CALL debugCallback(FMOD_DEBUG_FLAGS flags, const char *file
 
     LogRecord *record = &chunk->records[chunk->count];
     record->flags = flags;
-    record->func = strdup(func);
+    record->func = _strdup(func);
 
     if (!record->func) {
         criticalSectionLeave(sCriticalSection);
         return FMOD_ERR_MEMORY;
     }
 
-    record->message = strdup(message);
+    record->message = _strdup(message);
 
     if (!record->message) {
         criticalSectionLeave(sCriticalSection);
