@@ -2,7 +2,7 @@ Building as a DLL Module on Windows
 -----------------------------------
 
 1. Install [Lua for Windows](https://github.com/rjpcomputing/luaforwindows)
-2. Install the FMOD Engine Windows package from [the FMOD download page](www.fmod.com/download)
+2. Install the FMOD Engine Windows package from [the FMOD download page](https://www.fmod.com/download)
 3. Copy headers and libraries from the FMOD API directory (defaults to `C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api`) into the source tree:
     * Copy all .h files from `<FMOD API>\core\inc` into `external\FMOD\inc`
     * Copy all .h files from `<FMOD API>\studio\inc` into `external\FMOD\inc`
