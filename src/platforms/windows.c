@@ -8,10 +8,8 @@
 #ifdef LUAFMOD_DYNAMIC
 static int findBasename(const char *path, DWORD length)
 {
-    for (int i = length; i >= 0; --i)
-    {
-        if (path[i] == '\\')
-        {
+    for (int i = length; i >= 0; --i) {
+        if (path[i] == '\\') {
             return i + 1;
         }
     }
@@ -36,19 +34,16 @@ static void loadFMOD(lua_State *L)
 
     int basenameLength = max(strlen(fmodDLL), strlen(fmodstudioDLL));
 
-    while (1)
-    {
+    while (1) {
         pathSize = sizeof(*path) * pathCapacity;
         path = alloc(userdata, NULL, 0, pathSize);
 
         DWORD pathLength = GetModuleFileNameA(module, path, pathCapacity);
 
-        if (pathLength < pathCapacity)
-        {
+        if (pathLength < pathCapacity) {
             basenameIndex = findBasename(path, pathLength);
 
-            if (basenameIndex + basenameLength < pathCapacity)
-            {
+            if (basenameIndex + basenameLength < pathCapacity) {
                 break;
             }
         }
@@ -60,8 +55,7 @@ static void loadFMOD(lua_State *L)
 #define LOAD_LIBRARY(basename) \
     do { \
         strcpy_s(path + basenameIndex, pathCapacity - basenameIndex, basename); \
-        if (!LoadLibraryA(path)) \
-        { \
+        if (!LoadLibraryA(path)) { \
             lua_pushfstring(L, "Failed to load %s", path); \
             alloc(userdata, path, pathSize, 0); \
             lua_error(L); \
@@ -84,8 +78,7 @@ void platformInitialize(lua_State *L)
 
     HRESULT comResult = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
-    if (comResult != S_OK && comResult != S_FALSE)
-    {
+    if (comResult != S_OK && comResult != S_FALSE) {
         luaL_error(L, "Failed to initialize COM");
     }
 }

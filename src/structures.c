@@ -25,8 +25,7 @@ static void STRUCT_setmetatable(lua_State *L, const char *metatable, int index)
 {
     luaL_getmetatable(L, metatable);
 
-    if (lua_isnoneornil(L, -1))
-    {
+    if (lua_isnoneornil(L, -1)) {
         luaL_error(L, "The metatable for %s has not been defined", metatable);
     }
 
@@ -68,8 +67,7 @@ static int STRUCT_gc(lua_State *L, const char *metatable)
 {
     int *reference = (int*)luaL_checkudata(L, 1, metatable);
 
-    if (*reference != LUA_NOREF)
-    {
+    if (*reference != LUA_NOREF) {
         luaL_unref(L, LUA_REGISTRYINDEX, *reference);
     }
 
@@ -78,19 +76,15 @@ static int STRUCT_gc(lua_State *L, const char *metatable)
 
 static void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required)
 {
-    if (required == STRUCT_OPTIONAL && lua_isnoneornil(L, index))
-    {
+    if (required == STRUCT_OPTIONAL && lua_isnoneornil(L, index)) {
         return NULL;
     }
 
     int *reference = (int*)luaL_checkudata(L, index, metatable);
 
-    if (*reference == LUA_NOREF)
-    {
+    if (*reference == LUA_NOREF) {
         return reference + 1;
-    }
-    else
-    {
+    } else {
         return *((void**)(reference + 1));
     }
 }
@@ -98,8 +92,7 @@ static void *STRUCT_todata(lua_State *L, const char *metatable, int index, int r
 static void STRUCT_create(lua_State *L, const char *fieldName, const char *metatable,
     lua_CFunction new, lua_CFunction gc, lua_CFunction index, lua_CFunction newindex)
 {
-    if (fieldName)
-    {
+    if (fieldName) {
         lua_createtable(L, 0, 0);
 
         lua_pushcfunction(L, new);
@@ -132,13 +125,10 @@ static const char *STRUCT_fieldname(lua_State *L, int index, size_t *length)
 
 static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int set, int valueIndex)
 {
-    if (set)
-    {
+    if (set) {
         *data = (float)luaL_checknumber(L, valueIndex);
         return 0;
-    }
-    else
-    {
+    } else {
         lua_pushnumber(L, *data);
         return 1;
     }
@@ -146,13 +136,10 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
 
 static int STRUCT_access_int(lua_State *L, int *data, int parentIndex, int set, int valueIndex)
 {
-    if (set)
-    {
+    if (set) {
         *data = luaL_checkint(L, valueIndex);
         return 0;
-    }
-    else
-    {
+    } else {
         lua_pushinteger(L, *data);
         return 1;
     }
@@ -160,13 +147,10 @@ static int STRUCT_access_int(lua_State *L, int *data, int parentIndex, int set, 
 
 static int STRUCT_access_uint(lua_State *L, unsigned int *data, int parentIndex, int set, int valueIndex)
 {
-    if (set)
-    {
+    if (set) {
         *data = luaL_checkint(L, valueIndex);
         return 0;
-    }
-    else
-    {
+    } else {
         lua_pushinteger(L, *data);
         return 1;
     }
@@ -174,13 +158,10 @@ static int STRUCT_access_uint(lua_State *L, unsigned int *data, int parentIndex,
 
 static int STRUCT_access_ushort(lua_State *L, unsigned short *data, int parentIndex, int set, int valueIndex)
 {
-    if (set)
-    {
+    if (set) {
         *data = luaL_checkint(L, valueIndex);
         return 0;
-    }
-    else
-    {
+    } else {
         lua_pushinteger(L, *data);
         return 1;
     }
@@ -188,13 +169,10 @@ static int STRUCT_access_ushort(lua_State *L, unsigned short *data, int parentIn
 
 static int STRUCT_access_uchar(lua_State *L, unsigned char *data, int parentIndex, int set, int valueIndex)
 {
-    if (set)
-    {
+    if (set) {
         *data = luaL_checkint(L, valueIndex);
         return 0;
-    }
-    else
-    {
+    } else {
         lua_pushinteger(L, *data);
         return 1;
     }
@@ -202,12 +180,9 @@ static int STRUCT_access_uchar(lua_State *L, unsigned char *data, int parentInde
 
 static int STRUCT_access_cstring(lua_State *L, const char **data, int parentIndex, int set, int valueIndex)
 {
-    if (set)
-    {
+    if (set) {
         return luaL_error(L, "Attempt to set a read-only field");
-    }
-    else
-    {
+    } else {
         lua_pushstring(L, *data);
         return 1;
     }
@@ -268,13 +243,10 @@ static int STRUCT_access_cstring(lua_State *L, const char **data, int parentInde
 #define STRUCT_ACCESS(type) \
     static int STRUCT_access_ ## type(lua_State *L, type *data, int parentIndex, int set, int valueIndex) \
     { \
-        if (set) \
-        { \
+        if (set) { \
             *data = *type ## _todata(L, valueIndex, STRUCT_REQUIRED); \
             return 0; \
-        } \
-        else \
-        { \
+        } else { \
             return type ## _newref(L, parentIndex, data); \
         } \
     }
@@ -294,14 +266,12 @@ static int STRUCT_access_cstring(lua_State *L, const char **data, int parentInde
         const char *field = STRUCT_fieldname(L, index + 1, &length);
 
 #define STRUCT_FIELD(name, type) \
-        if (strncmp(# name, field, length) == 0) \
-        { \
+        if (strncmp(# name, field, length) == 0) { \
             return STRUCT_access_ ## type(L, &data->name, index, set, index + 2); \
         }
 
 #define STRUCT_FIELD_CONSTANT(name, type) \
-        if (strncmp(# name, field, length) == 0) \
-        { \
+        if (strncmp(# name, field, length) == 0) { \
             return CONSTANT_access_ ## type(L, &data->name, set, index + 2); \
         }
 

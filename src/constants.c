@@ -22,12 +22,9 @@ DEALINGS IN THE SOFTWARE.
 
 int getOptionalConstant(lua_State *L, int index, const char *metatable, int defaultValue)
 {
-    if (lua_isnoneornil(L, index))
-    {
+    if (lua_isnoneornil(L, index)) {
         return defaultValue;
-    }
-    else
-    {
+    } else {
         return *(int*)luaL_checkudata(L, index, metatable);
     }
 }
@@ -49,8 +46,7 @@ static int CONSTANT_new(lua_State *L, const char *metatable, int value)
 
     luaL_getmetatable(L, metatable);
 
-    if (lua_isnoneornil(L, -1))
-    {
+    if (lua_isnoneornil(L, -1)) {
         return luaL_error(L, "The metatable for %s has not been defined", metatable);
     }
 
@@ -87,13 +83,10 @@ static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char
 #define CONSTANT_ACCESS(type) \
     CONSTANT_ACCESS_DECLARE(type) \
     { \
-        if (set) \
-        { \
+        if (set) { \
             *data = CHECK_CONSTANT(valueIndex, type); \
             return 0; \
-        } \
-        else \
-        { \
+        } else { \
             return CONSTANT_new(L, # type, *data); \
         } \
     }
@@ -156,8 +149,7 @@ int combineFlags(lua_State *L)
     lua_getmetatable(L, 1);
     lua_getmetatable(L, 2);
 
-    if (!lua_rawequal(L, -1, -2))
-    {
+    if (!lua_rawequal(L, -1, -2)) {
         luaL_error(L, "Attempt to combine flags of different types");
     }
 
@@ -179,8 +171,7 @@ int testFlags(lua_State *L)
     lua_getmetatable(L, 1);
     lua_getmetatable(L, 2);
 
-    if (!lua_rawequal(L, -1, -2))
-    {
+    if (!lua_rawequal(L, -1, -2)) {
         luaL_error(L, "Attempt to combine flags of different types");
     }
 
@@ -197,8 +188,7 @@ int flagsToString(lua_State *L)
 
     unsigned int value = *(unsigned int*)lua_touserdata(L, 1);
 
-    if (value == 0)
-    {
+    if (value == 0) {
         lua_pushstring(L, "(none)");
         return 1;
     }
@@ -213,20 +203,16 @@ int flagsToString(lua_State *L)
 
     int first = 1;
 
-    for (unsigned int mask = 1; mask <= value; mask = mask << 1)
-    {
-        if ((mask & value) != 0)
-        {
-            if (!first)
-            {
+    for (unsigned int mask = 1; mask <= value; mask = mask << 1) {
+        if ((mask & value) != 0) {
+            if (!first) {
                 luaL_addstring(&buffer, " + ");
             }
 
             lua_pushinteger(L, mask);
             lua_gettable(L, metatable);
 
-            if (lua_isnil(L, -1))
-            {
+            if (lua_isnil(L, -1)) {
                 lua_pop(L, 1);
                 lua_pushfstring(L, "(unknown: %d)", mask);
             }
@@ -270,8 +256,7 @@ int enumToString(lua_State *L)
     lua_pushinteger(L, value);
     lua_gettable(L, -2);
 
-    if (lua_isnil(L, -1))
-    {
+    if (lua_isnil(L, -1)) {
         lua_pushfstring(L, "unknown (%d)", value);
     }
 
