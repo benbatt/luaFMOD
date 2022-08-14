@@ -2,6 +2,7 @@
 This sample requires the following .bank files from the FMOD Engine Windows package:
   * Master.bank
   * Master.strings.bank
+  * Music.bank
   * SFX.bank
   * Vehicles.bank
 --]]
@@ -26,6 +27,7 @@ assert(system:setListenerAttributes(0, attributes))
 local bankPaths = {
   "Master.bank",
   "Master.strings.bank",
+  "Music.bank",
   "SFX.bank",
   "Vehicles.bank",
 }
@@ -65,12 +67,20 @@ local footstepsInstance = assert(footsteps:createInstance())
 local surfaceValue = 1
 assert(footstepsInstance:setParameterByID(surface.id, surfaceValue))
 
+local music = assert(system:getEvent("event:/Music/Level 01"))
+local musicInstance = assert(music:createInstance())
+
+assert(musicInstance:setCallback(
+  function(type, event, parameters)
+    print(string.format("Music callback: type = %s", tostring(type)))
+  end))
+
 local menu = {
   "=============== FMOD Example ===============",
   ". A: toggle Ambience | R: toggle Rain      .",
   ". C: play Cancel     | E: play Explosion   .",
   ". F: play Footsteps  | +/-: change surface .",
-  ". M: toggle Mower                          .",
+  ". M: toggle Mower    | U: toggle Music     .",
   ". Left/Right/Up/Down: move Mower           .",
   ". Escape: quit                             .",
   "============================================",
@@ -83,6 +93,7 @@ TextLoop.setOverlay(menu)
 local ambienceStarted = true
 local rain = false
 local mowerStarted = false
+local musicStarted = false
 
 TextLoop.start(10, function(keyCodes)
     for _,key in ipairs(keyCodes) do
@@ -135,6 +146,16 @@ TextLoop.start(10, function(keyCodes)
         mowerAttributes.position.z = mowerAttributes.position.z - 1
         print(string.format("Moving mower to (%.f, %.f)", mowerAttributes.position.x, mowerAttributes.position.z))
         assert(mowerInstance:set3DAttributes(mowerAttributes))
+      elseif key == KeyCode.U then
+        if musicStarted then
+          print("Stopping music")
+          assert(musicInstance:stop(FMOD.Studio.STOP.ALLOWFADEOUT))
+        else
+          print("Starting music")
+          assert(musicInstance:start())
+        end
+
+        musicStarted = not musicStarted
       elseif key == KeyCode.R then
         rain = not rain
         print(string.format("Turning rain %s", rain and "on" or "off"))
