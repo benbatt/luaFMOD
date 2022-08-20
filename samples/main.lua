@@ -73,7 +73,23 @@ local musicInstance = assert(music:createInstance())
 assert(musicInstance:setCallback(
   function(type, event, parameters)
     print(string.format("Music callback: type = %s", tostring(type)))
+
+    local userData = event:getUserData()
+
+    print(string.format("  message %d is \"%s\"", userData.count, userData.messages[userData.count]))
+
+    userData.count = (userData.count % #userData.messages) + 1
   end))
+
+assert(musicInstance:setUserData{
+    sound = "test.wav",
+    count = 1,
+    messages = {
+      "one",
+      "two",
+      "three",
+    },
+  })
 
 local menu = {
   "=============== FMOD Example ===============",

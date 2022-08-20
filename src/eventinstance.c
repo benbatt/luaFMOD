@@ -114,6 +114,25 @@ static int setCallback(lua_State *L)
     */
 }
 
+static int getUserData(lua_State *L)
+{
+    GET_SELF;
+
+    return callbacks_getUserData(L, self);
+}
+
+static int setUserData(lua_State *L)
+{
+    GET_SELF;
+
+    callbacks_checkUserData(L, 2);
+    callbacks_setUserData(L, 2, self);
+
+    /* RETURN_STATUS(FMOD_Studio_EventInstance_SetUserData(self, something)); */
+
+    RETURN_STATUS(FMOD_OK);
+}
+
 FUNCTION_TABLE_BEGIN(EventInstanceMethods)
     FUNCTION_TABLE_ENTRY(set3DAttributes)
     FUNCTION_TABLE_ENTRY(setPaused)
@@ -123,4 +142,6 @@ FUNCTION_TABLE_BEGIN(EventInstanceMethods)
     FUNCTION_TABLE_ENTRY(setParameterByID)
     FUNCTION_TABLE_ENTRY(setParameterByName)
     FUNCTION_TABLE_ENTRY(setCallback)
+    FUNCTION_TABLE_ENTRY(getUserData)
+    FUNCTION_TABLE_ENTRY(setUserData)
 FUNCTION_TABLE_END
