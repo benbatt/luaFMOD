@@ -258,216 +258,95 @@ int callbackPrepare(lua_State *L, int index, void *owner)
     return reference;
 }
 
-static int isSimpleType(int type)
+static int copyUserDataTable(lua_State *source, lua_State *destination, int currentDepth, int maximumDepth);
+
+static int copyUserDataField(lua_State *source, lua_State *destination, int currentDepth, int maximumDepth)
 {
-    return type == LUA_TNIL
-        || type == LUA_TBOOLEAN
-        || type == LUA_TLIGHTUSERDATA
-        || type == LUA_TNUMBER
-        || type == LUA_TSTRING;
-}
-
-static int checkUserDataTable(lua_State *L, int currentDepth, int maximumDepth);
-
-/* Expects the value to check at the top of the stack, and leaves it on the stack */
-static int checkUserDataField(lua_State *L, int currentDepth, int maximumDepth)
-{
-    int type = lua_type(L, -1);
-
-    if (isSimpleType(type)) {
-        return 0;
-    } else if (type == LUA_TTABLE) {
-        if (currentDepth < maximumDepth) {
-            return checkUserDataTable(L, currentDepth + 1, maximumDepth);
-        } else {
-            return luaL_error(L, "Too many levels of table nesting in userdata (maximum is %d)", maximumDepth);
-        }
-    } else {
-        return luaL_error(L, "Unsupported userdata type: %s", lua_typename(L, type));
-    }
-}
-
-/* Expects the value to check at the top of the stack, and leaves it on the stack */
-static int checkUserDataTable(lua_State *L, int currentDepth, int maximumDepth)
-{
-    if (lua_getmetatable(L, -1)) {
-        return luaL_error(L, "Userdata with a metatable is not supported");
-    }
-
-    lua_pushnil(L);
-
-    while (lua_next(L, -2) != 0) {
-        /* Check the value */
-        checkUserDataField(L, currentDepth, maximumDepth);
-
-        lua_pop(L, 1);
-
-        /* Check the key */
-        checkUserDataField(L, currentDepth, maximumDepth);
-    }
-
-    return 0;
-}
-
-#if 0
-int checkUserData(lua_State *L, int index)
-{
-    int type = lua_type(L, index);
-
-    if (type == LUA_TNONE) {
-        return 0;
-    } else {
-        lua_pushvalue(L, index);
-        int result = checkUserDataField(L, 0, 2);
-        lua_pop(L, 1);
-        return result;
-    }
-}
-#endif
-
-static int chunkListPrintf(lua_State *L, ChunkList *chunkList, const char *format, ...)
-{
-    if (!chunkList) {
-        return 0;
-    }
-
-    enum { FixedBufferSize = 32, MaximumBufferSize = 1024 * 1024 };
-    static char FixedBuffer[FixedBufferSize] = { 0 };
-
-    static int sBufferSize = FixedBufferSize;
-    static char *sBuffer = FixedBuffer;
-
-    va_list args;
-    va_start(args, format);
-
-    int bytesWritten = vsnprintf(sBuffer, sBufferSize, format, args) + 1;
-
-    va_end(args);
-
-    if (sBufferSize < bytesWritten) {
-        if (bytesWritten > MaximumBufferSize) {
-            return luaL_error(L, "Userdata field is too long (%d bytes)", bytesWritten);
-        }
-
-        int newBufferSize = sBufferSize;
-
-        while (newBufferSize < bytesWritten) {
-            newBufferSize *= 2;
-        }
-
-        free(sBuffer);
-        sBuffer = malloc(sizeof(*sBuffer) * newBufferSize);
-
-        if (!sBuffer) {
-            sBuffer = FixedBuffer;
-            sBufferSize = FixedBufferSize;
-
-            return luaL_error(L, "Failed allocating %d bytes for serialisation buffer", newBufferSize);
-        }
-
-        sBufferSize = newBufferSize;
-
-        va_start(args, format);
-
-        bytesWritten = vsnprintf(sBuffer, sBufferSize, format, args) + 1;
-
-        va_end(args);
-
-        if (sBufferSize < bytesWritten) {
-            return luaL_error(L, "Failed serialising userdata field with format \"%s\"", format);
-        }
-    }
-
-    /* Skip null terminator */
-    --bytesWritten;
-
-    if (chunkListWrite(L, sBuffer, bytesWritten, chunkList) != 0) {
-        return luaL_error(L, "Failed serialising userdata field: \"%s\"", sBuffer);
-    }
-
-    return 0;
-}
-
-static int serialiseUserDataTable(lua_State *L, ChunkList *chunkList, int currentDepth, int maximumDepth);
-
-static int serialiseUserDataField(lua_State *L, ChunkList *chunkList, int currentDepth, int maximumDepth)
-{
-    int type = lua_type(L, -1);
+    int type = lua_type(source, -1);
 
     switch (type) {
         case LUA_TNIL:
-            chunkListPrintf(L, chunkList, "nil");
+            if (destination) {
+                lua_pushnil(destination);
+            }
             break;
         case LUA_TBOOLEAN:
-            chunkListPrintf(L, chunkList, "%s", lua_toboolean(L, -1) ? "true" : "false");
+            if (destination) {
+                lua_pushboolean(destination, lua_toboolean(source, -1));
+            }
             break;
         case LUA_TLIGHTUSERDATA:
-            chunkListPrintf(L, chunkList, "%p", lua_touserdata(L, -1));
+            if (destination) {
+                lua_pushlightuserdata(destination, lua_touserdata(source, -1));
+            }
             break;
         case LUA_TNUMBER:
-            chunkListPrintf(L, chunkList, "%f", lua_tonumber(L, -1));
+            if (destination) {
+                lua_pushnumber(destination, lua_tonumber(source, -1));
+            }
             break;
         case LUA_TSTRING:
-            chunkListPrintf(L, chunkList, "\"%s\"", lua_tostring(L, -1));
+            if (destination) {
+                size_t length = 0;
+                const char *string = lua_tolstring(source, -1, &length);
+                lua_pushlstring(destination, string, length);
+            }
             break;
         case LUA_TTABLE:
             if (currentDepth < maximumDepth) {
-                return serialiseUserDataTable(L, chunkList, currentDepth + 1, maximumDepth);
+                return copyUserDataTable(source, destination, currentDepth + 1, maximumDepth);
             } else {
-                return luaL_error(L, "Too many levels of table nesting in userdata (maximum is %d)", maximumDepth);
+                return luaL_error(source, "Too many levels of table nesting in userdata (maximum is %d)", maximumDepth);
             }
             break;
         default:
-            return luaL_error(L, "Unsupported userdata type: %s", lua_typename(L, type));
+            return luaL_error(source, "Unsupported userdata type: %s", lua_typename(source, type));
     }
 
     return 0;
 }
 
-static int serialiseUserDataTable(lua_State *L, ChunkList *chunkList, int currentDepth, int maximumDepth)
+static int copyUserDataTable(lua_State *source, lua_State *destination, int currentDepth, int maximumDepth)
 {
-    if (lua_getmetatable(L, -1)) {
-        return luaL_error(L, "Userdata with a metatable is not supported");
+    if (lua_getmetatable(source, -1)) {
+        return luaL_error(source, "Userdata with a metatable is not supported");
     }
 
-    chunkListPrintf(L, chunkList, "{\n");
-
-    lua_pushnil(L);
-
-    while (lua_next(L, -2) != 0) {
-        /* Serialise the key */
-        lua_pushvalue(L, -2);
-        chunkListPrintf(L, chunkList, "[");
-        serialiseUserDataField(L, chunkList, currentDepth, maximumDepth);
-        chunkListPrintf(L, chunkList, "] = ");
-        lua_pop(L, 1);
-
-        /* Serialise the value */
-        serialiseUserDataField(L, chunkList, currentDepth, maximumDepth);
-        chunkListPrintf(L, chunkList, ",\n");
-
-        lua_pop(L, 1);
+    if (destination) {
+        lua_newtable(destination);
     }
 
-    chunkListPrintf(L, chunkList, "}");
+    lua_pushnil(source);
+
+    while (lua_next(source, -2) != 0) {
+        /* Copy the key */
+        lua_pushvalue(source, -2);
+        copyUserDataField(source, destination, currentDepth, maximumDepth);
+        lua_pop(source, 1);
+
+        /* Copy the value */
+        copyUserDataField(source, destination, currentDepth, maximumDepth);
+        lua_pop(source, 1);
+
+        /* Set the destination table field */
+        if (destination) {
+            lua_settable(destination, -3);
+        }
+    }
 
     return 0;
 }
 
-static int serialiseUserData(lua_State *L, int index, ChunkList *chunkList)
+static int copyUserData(lua_State *source, int index, lua_State *destination)
 {
-    int type = lua_type(L, index);
+    int type = lua_type(source, index);
 
     if (type == LUA_TNONE) {
         return 0;
     } else {
-        chunkListPrintf(L, chunkList, "return ");
-
-        lua_pushvalue(L, index);
-        int result = serialiseUserDataField(L, chunkList, 0, 2);
-        lua_pop(L, 1);
-
-        chunkListPrintf(L, chunkList, "\n");
+        lua_pushvalue(source, index);
+        int result = copyUserDataField(source, destination, 0, 2);
+        lua_pop(source, 1);
 
         return result;
     }
@@ -475,7 +354,7 @@ static int serialiseUserData(lua_State *L, int index, ChunkList *chunkList)
 
 int callbacks_checkUserData(lua_State *L, int index)
 {
-    return serialiseUserData(L, index, NULL);
+    return copyUserData(L, index, NULL);
 }
 
 int callbacks_setUserData(lua_State *L, int index, void *owner)
@@ -497,33 +376,14 @@ int callbacks_setUserData(lua_State *L, int index, void *owner)
 
     affirmUserdataTable();
 
-    ChunkList chunkList = { 0 };
-
-    int result = serialiseUserData(L, index, &chunkList);
-
-    if (result != 0) {
-        chunkListFree(&chunkList);
-        return result;
-    }
-
     lua_getfield(sCallbackState, LUA_REGISTRYINDEX, USERDATA_TABLE);
     lua_pushlightuserdata(sCallbackState, owner);
 
-    if (chunkListLoad(sCallbackState, &chunkList, "userdata") != 0) {
-        criticalSectionLeave(sCriticalSection);
-        return lua_error(L);
-    }
-
-    if (lua_pcall(sCallbackState, 0, 1, 0) != 0) {
-        criticalSectionLeave(sCriticalSection);
-        return lua_error(L);
-    }
+    copyUserData(L, index, sCallbackState);
 
     lua_settable(sCallbackState, -3);
 
     criticalSectionLeave(sCriticalSection);
-
-    chunkListFree(&chunkList);
 
     return 0;
 }
