@@ -66,6 +66,8 @@ USE_FUNCTION_TABLE(BankMethods);
 USE_FUNCTION_TABLE(EventDescriptionMethods);
 USE_FUNCTION_TABLE(EventInstanceMethods);
 USE_FUNCTION_TABLE(CoreSystemMethods);
+USE_FUNCTION_TABLE(SoundMethods);
+USE_FUNCTION_TABLE(ChannelMethods);
 
 extern void createConstantTables(lua_State *L);
 extern void createStructTables(lua_State *L);
@@ -96,6 +98,8 @@ extern int LUAFMOD_EXPORT luaopen_luaFMOD(lua_State *L)
     createMethodsTable(L, FMOD_STUDIO_EVENTINSTANCE_METATABLE, EventInstanceMethods);
     createMethodsTable(L, FMOD_STUDIO_SYSTEM_METATABLE, StudioSystemMethods);
     createMethodsTable(L, FMOD_SYSTEM_METATABLE, CoreSystemMethods);
+    createMethodsTable(L, FMOD_SOUND_METATABLE, SoundMethods);
+    createMethodsTable(L, FMOD_CHANNEL_METATABLE, ChannelMethods);
 
     /* Create constants */
     createConstantTables(L);

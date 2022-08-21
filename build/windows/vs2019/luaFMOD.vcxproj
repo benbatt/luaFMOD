@@ -184,6 +184,7 @@ xcopy /y external\FMOD\lib\fmodstudio.dll bin</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\src\bank.c" />
+    <ClCompile Include="..\..\..\src\channel.c" />
     <ClCompile Include="..\..\..\src\constants.c" />
     <ClCompile Include="..\..\..\src\coresystem.c" />
     <ClCompile Include="..\..\..\src\eventdescription.c" />
@@ -191,6 +192,7 @@ xcopy /y external\FMOD\lib\fmodstudio.dll bin</Command>
     <ClCompile Include="..\..\..\src\logging.c" />
     <ClCompile Include="..\..\..\src\luaFMOD.c" />
     <ClCompile Include="..\..\..\src\platforms\windows.c" />
+    <ClCompile Include="..\..\..\src\sound.c" />
     <ClCompile Include="..\..\..\src\structures.c" />
     <ClCompile Include="..\..\..\src\studiosystem.c" />
     <ClCompile Include="..\dllmain.c" />

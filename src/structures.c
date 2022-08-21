@@ -299,6 +299,44 @@ STRUCT_BEGIN(FMOD_GUID)
     STRUCT_FIELD(Data4, ARRAY_uchar8)
 STRUCT_END
 
+STRUCT_BEGIN(FMOD_CREATESOUNDEXINFO)
+    STRUCT_FIELD(length, uint)
+    STRUCT_FIELD(fileoffset, uint)
+    STRUCT_FIELD(numchannels, int)
+    STRUCT_FIELD(defaultfrequency, int)
+    STRUCT_FIELD_CONSTANT(format, FMOD_SOUND_FORMAT)
+    STRUCT_FIELD(decodebuffersize, uint)
+    STRUCT_FIELD(initialsubsound, int)
+    STRUCT_FIELD(numsubsounds, int)
+    // TODO combine these two
+    //STRUCT_FIELD_ARRAY_DYNAMIC(inclusionlist, inclusionlistnum, int)
+    // TODO FMOD_SOUND_PCMREAD_CALLBACK    pcmreadcallback;
+    // TODO FMOD_SOUND_PCMSETPOS_CALLBACK  pcmsetposcallback;
+    // TODO FMOD_SOUND_NONBLOCK_CALLBACK   nonblockcallback;
+    STRUCT_FIELD(dlsname, cstring)
+    STRUCT_FIELD(encryptionkey, cstring)
+    STRUCT_FIELD(maxpolyphony, int)
+    // TODO void                          *userdata;
+    STRUCT_FIELD_CONSTANT(suggestedsoundtype, FMOD_SOUND_TYPE)
+    // TODO FMOD_FILE_OPEN_CALLBACK        fileuseropen;
+    // TODO FMOD_FILE_CLOSE_CALLBACK       fileuserclose;
+    // TODO FMOD_FILE_READ_CALLBACK        fileuserread;
+    // TODO FMOD_FILE_SEEK_CALLBACK        fileuserseek;
+    // TODO FMOD_FILE_ASYNCREAD_CALLBACK   fileuserasyncread;
+    // TODO FMOD_FILE_ASYNCCANCEL_CALLBACK fileuserasynccancel;
+    // TODO void                          *fileuserdata;
+    STRUCT_FIELD(filebuffersize, int)
+    STRUCT_FIELD_CONSTANT(channelorder, FMOD_CHANNELORDER)
+    // TODO FMOD_SOUNDGROUP               *initialsoundgroup;
+    STRUCT_FIELD(initialseekposition, uint)
+    STRUCT_FIELD_CONSTANT(initialseekpostype, FMOD_TIMEUNIT)
+    STRUCT_FIELD(ignoresetfilesystem, int)
+    STRUCT_FIELD(audioqueuepolicy, uint)
+    STRUCT_FIELD(minmidigranularity, uint)
+    STRUCT_FIELD(nonblockthreadid, int)
+    // TODO FMOD_GUID                     *fsbguid;
+STRUCT_END
+
 STRUCT_BEGIN(FMOD_DSP_PARAMETER_3DATTRIBUTES)
     STRUCT_FIELD(relative, FMOD_3D_ATTRIBUTES)
     STRUCT_FIELD(absolute, FMOD_3D_ATTRIBUTES)
@@ -326,6 +364,7 @@ void createStructTables(lua_State *L)
     FMOD_VECTOR_create(L, "VECTOR");
     FMOD_3D_ATTRIBUTES_create(L, "_3D_ATTRIBUTES");
     FMOD_GUID_create(L, "GUID");
+    FMOD_CREATESOUNDEXINFO_create(L, "CREATESOUNDEXINFO");
     FMOD_DSP_PARAMETER_3DATTRIBUTES_create(L, "DSP_PARAMETER_3DATTRIBUTES");
 
     /* Get the FMOD.Studio table */

@@ -35,6 +35,45 @@ static int setSoftwareFormat(lua_State *L)
     return 0;
 }
 
+static int createSound(lua_State *L)
+{
+    GET_SELF;
+
+    size_t name_or_data_length = 0;
+    const char *name_or_data = luaL_checklstring(L, 2, &name_or_data_length);
+    int mode = CHECK_CONSTANT(3, FMOD_MODE);
+
+    FMOD_CREATESOUNDEXINFO *exinfo = FMOD_CREATESOUNDEXINFO_todata(L, 4, 0);
+    if (exinfo) {
+        exinfo->cbsize = sizeof(*exinfo);
+    }
+
+    FMOD_SOUND *sound = NULL;
+    RETURN_IF_ERROR(FMOD_System_CreateSound(self, name_or_data, mode, exinfo, &sound));
+
+    CREATE_USERDATA(FMOD_SOUND, sound);
+
+    return 1;
+}
+
+static int playSound(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_SOUND *sound = *((FMOD_SOUND**)luaL_checkudata(L, 2, FMOD_SOUND_METATABLE));
+    int paused = lua_toboolean(L, 3);
+
+    FMOD_CHANNEL *channel = NULL;
+    // TODO channelgroup
+    RETURN_IF_ERROR(FMOD_System_PlaySound(self, sound, NULL, paused, &channel));
+
+    CREATE_USERDATA(FMOD_CHANNEL, channel);
+
+    return 1;
+}
+
 FUNCTION_TABLE_BEGIN(CoreSystemMethods)
     FUNCTION_TABLE_ENTRY(setSoftwareFormat)
+    FUNCTION_TABLE_ENTRY(createSound)
+    FUNCTION_TABLE_ENTRY(playSound)
 FUNCTION_TABLE_END
