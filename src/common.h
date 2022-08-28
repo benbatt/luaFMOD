@@ -97,15 +97,9 @@ int getOptionalConstant(lua_State *L, int index, const char *metatable, int defa
 
 #define RETURN_STATUS(result) \
     do { \
-        FMOD_RESULT _result = (result); \
-        if (_result == FMOD_OK) { \
-            lua_pushboolean(L, 1); \
-            return 1; \
-        } else { \
-            lua_pushnil(L); \
-            lua_pushinteger(L, _result); \
-            return 2; \
-        } \
+        RETURN_IF_ERROR(result); \
+        lua_pushboolean(L, 1); \
+        return 1; \
     } while(0)
 
 #define CHECK_HANDLE(L, index, type) *((type **)luaL_checkudata(L, index, STRINGIZE(type)))
