@@ -47,14 +47,18 @@ static int STRUCT_new(lua_State *L, const char *metatable, size_t size)
     return 1;
 }
 
-/* Expects the containing object at parentIndex */
+/* parentIndex is the stack index of the containing object, or 0 for no containing object */
 static int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data)
 {
     int *reference = (int*)lua_newuserdata(L, sizeof(int) + sizeof(data));
 
-    /* Store a reference to the containing object */
-    lua_pushvalue(L, parentIndex);
-    *reference = luaL_ref(L, LUA_REGISTRYINDEX);
+    if (parentIndex != 0) {
+        /* Store a reference to the containing object */
+        lua_pushvalue(L, parentIndex);
+        *reference = luaL_ref(L, LUA_REGISTRYINDEX);
+    } else {
+        *reference = LUA_REFNIL;
+    }
 
     *((void**)(reference + 1)) = data;
 
@@ -66,10 +70,7 @@ static int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, v
 static int STRUCT_gc(lua_State *L, const char *metatable)
 {
     int *reference = (int*)luaL_checkudata(L, 1, metatable);
-
-    if (*reference != LUA_NOREF) {
-        luaL_unref(L, LUA_REGISTRYINDEX, *reference);
-    }
+    luaL_unref(L, LUA_REGISTRYINDEX, *reference);
 
     return 0;
 }
@@ -188,6 +189,27 @@ static int STRUCT_access_cstring(lua_State *L, const char **data, int parentInde
     }
 }
 
+int createHandle(lua_State *L, const char *metatable, void *value)
+{
+    *((void**)lua_newuserdata(L, sizeof(value))) = value;
+    luaL_getmetatable(L, metatable);
+    lua_setmetatable(L, -2);
+
+    return 0;
+}
+
+static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable, int parentIndex, int set,
+    int valueIndex)
+{
+    if (set) {
+        *data = *((void**)luaL_checkudata(L, valueIndex, metatable));
+        return 0;
+    } else {
+        createHandle(L, metatable, *data);
+        return 1;
+    }
+}
+
 #include "array.c"
 
 #define STRUCT_BEGIN(type) \
@@ -211,7 +233,7 @@ static int STRUCT_access_cstring(lua_State *L, const char **data, int parentInde
     }
 
 #define STRUCT_NEWREF(type) \
-    static int type ## _newref(lua_State *L, int parentIndex, type *data) \
+    STRUCT_NEWREF_DECLARE(type) \
     { \
         return STRUCT_newref(L, # type, parentIndex, data); \
     }
@@ -268,6 +290,11 @@ static int STRUCT_access_cstring(lua_State *L, const char **data, int parentInde
 #define STRUCT_FIELD(name, type) \
         if (strncmp(# name, field, length) == 0) { \
             return STRUCT_access_ ## type(L, &data->name, index, set, index + 2); \
+        }
+
+#define STRUCT_FIELD_HANDLE(name, type) \
+        if (strncmp(# name, field, length) == 0) { \
+            return STRUCT_access_handle(L, &data->name, type ## _METATABLE, index, set, index + 2); \
         }
 
 #define STRUCT_FIELD_CONSTANT(name, type) \
@@ -358,6 +385,12 @@ STRUCT_BEGIN(FMOD_STUDIO_PARAMETER_DESCRIPTION)
     STRUCT_FIELD(guid, FMOD_GUID)
 STRUCT_END
 
+STRUCT_BEGIN(FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES)
+    STRUCT_FIELD(name, cstring)
+    STRUCT_FIELD_HANDLE(sound, FMOD_SOUND)
+    STRUCT_FIELD(subsoundIndex, int)
+STRUCT_END
+
 void createStructTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD structs first */
@@ -373,6 +406,7 @@ void createStructTables(lua_State *L)
     /* Define FMOD.Studio structs */
     FMOD_STUDIO_PARAMETER_ID_create(L, "PARAMETER_ID");
     FMOD_STUDIO_PARAMETER_DESCRIPTION_create(L, "PARAMETER_DESCRIPTION");
+    FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES_create(L, "PROGRAMMER_SOUND_PROPERTIES");
 
     /* Tidy up the FMOD.Studio table */
     lua_pop(L, 1);

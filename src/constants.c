@@ -141,6 +141,26 @@ static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char
 */
 #define TABLE_CREATE(type, name) CONSTANT_TABLE_create_ ## type(L, name)
 
+int equalFlags(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TUSERDATA);
+    luaL_checktype(L, 2, LUA_TUSERDATA);
+
+    lua_getmetatable(L, 1);
+    lua_getmetatable(L, 2);
+
+    if (!lua_rawequal(L, -1, -2)) {
+        luaL_error(L, "Attempt to compare flags of different types");
+    }
+
+    int value1 = (*(int*)lua_touserdata(L, 1));
+    int value2 = (*(int*)lua_touserdata(L, 2));
+
+    lua_pushboolean(L, value1 == value2);
+
+    return 1;
+}
+
 int combineFlags(lua_State *L)
 {
     luaL_checktype(L, 1, LUA_TUSERDATA);
@@ -233,6 +253,9 @@ int flagsToString(lua_State *L)
 void createFlagsMetatable(lua_State *L, const char *name)
 {
     luaL_newmetatable(L, name);
+
+    lua_pushcfunction(L, equalFlags);
+    lua_setfield(L, -2, "__eq");
 
     lua_pushcfunction(L, combineFlags);
     lua_setfield(L, -2, "__add");
@@ -452,6 +475,32 @@ FLAGS_TABLE_BEGIN(FMOD_STUDIO_INITFLAGS)
 TABLE_END
 
 #undef TABLE_VALUE_PREFIX
+#define TABLE_VALUE_PREFIX FMOD_STUDIO_EVENT_CALLBACK_
+
+FLAGS_TABLE_BEGIN(FMOD_STUDIO_EVENT_CALLBACK_TYPE)
+    TABLE_ENTRY(CREATED)
+    TABLE_ENTRY(DESTROYED)
+    TABLE_ENTRY(STARTING)
+    TABLE_ENTRY(STARTED)
+    TABLE_ENTRY(RESTARTED)
+    TABLE_ENTRY(STOPPED)
+    TABLE_ENTRY(START_FAILED)
+    TABLE_ENTRY(CREATE_PROGRAMMER_SOUND)
+    TABLE_ENTRY(DESTROY_PROGRAMMER_SOUND)
+    TABLE_ENTRY(PLUGIN_CREATED)
+    TABLE_ENTRY(PLUGIN_DESTROYED)
+    TABLE_ENTRY(TIMELINE_MARKER)
+    TABLE_ENTRY(TIMELINE_BEAT)
+    TABLE_ENTRY(SOUND_PLAYED)
+    TABLE_ENTRY(SOUND_STOPPED)
+    TABLE_ENTRY(REAL_TO_VIRTUAL)
+    TABLE_ENTRY(VIRTUAL_TO_REAL)
+    TABLE_ENTRY(START_EVENT_COMMAND)
+    TABLE_ENTRY(NESTED_TIMELINE_BEAT)
+    TABLE_ENTRY(ALL)
+TABLE_END
+
+#undef TABLE_VALUE_PREFIX
 #define TABLE_VALUE_PREFIX FMOD_STUDIO_PARAMETER_
 
 FLAGS_TABLE_BEGIN(FMOD_STUDIO_PARAMETER_FLAGS)
@@ -513,6 +562,7 @@ void createConstantTables(lua_State *L)
     lua_getfield(L, -1, "Studio");
 
     TABLE_CREATE(FMOD_STUDIO_INITFLAGS, "INIT");
+    TABLE_CREATE(FMOD_STUDIO_EVENT_CALLBACK_TYPE, "EVENT_CALLBACK");
     TABLE_CREATE(FMOD_STUDIO_PARAMETER_FLAGS, "PARAMETER_FLAGS");
     TABLE_CREATE(FMOD_STUDIO_LOAD_BANK_FLAGS, "LOAD_BANK");
     TABLE_CREATE(FMOD_STUDIO_PARAMETER_TYPE, "PARAMETER_TYPE");

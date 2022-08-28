@@ -1,9 +1,13 @@
 --[[
-This sample requires the following .bank files from the FMOD Engine Windows package:
+This sample requires the following files from the FMOD Engine Windows package:
   * Master.bank
   * Master.strings.bank
   * SFX.bank
   * Vehicles.bank
+  * sequence-one.ogg
+  * sequence-two.ogg
+  * sequence-three.ogg
+  * sequence-four.ogg
 --]]
 
 package.cpath = package.cpath .. ";..\\bin\\?.dll;..\\external\\luaTextLoop\\bin\\?.dll"
@@ -65,12 +69,40 @@ local footstepsInstance = assert(footsteps:createInstance())
 local surfaceValue = 1
 assert(footstepsInstance:setParameterByID(surface.id, surfaceValue))
 
+local dialogue = assert(system:getEvent("event:/Character/Dialogue"))
+local dialogueInstance = assert(dialogue:createInstance())
+
+assert(dialogueInstance:setCallback(
+  function(type, event, parameters)
+    print(string.format("Dialogue callback: type = %s", tostring(type)))
+
+    local userData = event:getUserData()
+
+    if type == FMOD.Studio.EVENT_CALLBACK.CREATE_PROGRAMMER_SOUND then
+      print(string.format("  Returning sound %d", userData.count))
+      parameters.sound = userData.sounds[userData.count]
+      userData.count = (userData.count % #userData.sounds) + 1
+    end
+  end))
+
+local dialogueData = {
+  count = 1,
+  sounds = {
+    assert(coreSystem:createSound("sequence-one.ogg", FMOD.MODE.DEFAULT)),
+    assert(coreSystem:createSound("sequence-two.ogg", FMOD.MODE.DEFAULT)),
+    assert(coreSystem:createSound("sequence-three.ogg", FMOD.MODE.DEFAULT)),
+    assert(coreSystem:createSound("sequence-four.ogg", FMOD.MODE.DEFAULT)),
+  },
+}
+
+assert(dialogueInstance:setUserData(dialogueData))
+
 local menu = {
   "=============== FMOD Example ===============",
   ". A: toggle Ambience | R: toggle Rain      .",
   ". C: play Cancel     | E: play Explosion   .",
   ". F: play Footsteps  | +/-: change surface .",
-  ". M: toggle Mower                          .",
+  ". M: toggle Mower    | D: play Dialogue    .",
   ". Left/Right/Up/Down: move Mower           .",
   ". Escape: quit                             .",
   "============================================",
@@ -135,6 +167,9 @@ TextLoop.start(10, function(keyCodes)
         mowerAttributes.position.z = mowerAttributes.position.z - 1
         print(string.format("Moving mower to (%.f, %.f)", mowerAttributes.position.x, mowerAttributes.position.z))
         assert(mowerInstance:set3DAttributes(mowerAttributes))
+      elseif key == KeyCode.D then
+        print("Playing dialogue")
+        assert(dialogueInstance:start())
       elseif key == KeyCode.R then
         rain = not rain
         print(string.format("Turning rain %s", rain and "on" or "off"))

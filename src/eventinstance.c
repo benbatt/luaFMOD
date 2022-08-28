@@ -18,6 +18,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 DEALINGS IN THE SOFTWARE.
 */
 
+#include "callbacks.h"
 #include "common.h"
 
 #define SELF_TYPE FMOD_STUDIO_EVENTINSTANCE
@@ -85,6 +86,53 @@ static int setParameterByName(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByName(self, name, value, ignoreseekspeed));
 }
 
+static int setCallback(lua_State *L)
+{
+    GET_SELF;
+
+    int reference = callbackPrepare(L, 2, self);
+
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetCallback(self, eventCallback, FMOD_STUDIO_EVENT_CALLBACK_ALL));
+
+    /*  TODO
+        * lock the callback lua_State mutex
+        * affirm the callback lua_State
+        * copy the function to the callback lua_State (if it's not already there):
+            * lua_dump the function into a buffer (or call string.dump)
+            * lua_load it into the callback lua_State (or call loadstring)
+        * affirm the event instance's callback helper table (in the callback lua_State)
+            * the event instance's userdata holds a reference to the callback helper table
+            * or it might be better to have a callback table and a userdata table,
+              both indexed by FMOD handles (EventInstance or EventDescription)
+                * need to copy userdata when creating instances, but avoid setting
+                  userdata on an instance also modifying the description
+        * store the copied function in the event instance's callback helper table
+        * set the event instance's callback to a function that:
+            * locks the callback lua_State mutex
+            * gets the function from the event instance's callback helper table
+            * calls the function with the userdata from the event instance's callback helper table
+    */
+}
+
+static int getUserData(lua_State *L)
+{
+    GET_SELF;
+
+    return callbacks_getUserData(L, self);
+}
+
+static int setUserData(lua_State *L)
+{
+    GET_SELF;
+
+    callbacks_checkUserData(L, 2);
+    callbacks_setUserData(L, 2, self);
+
+    /* RETURN_STATUS(FMOD_Studio_EventInstance_SetUserData(self, something)); */
+
+    RETURN_STATUS(FMOD_OK);
+}
+
 FUNCTION_TABLE_BEGIN(EventInstanceMethods)
     FUNCTION_TABLE_ENTRY(set3DAttributes)
     FUNCTION_TABLE_ENTRY(setPaused)
@@ -93,4 +141,7 @@ FUNCTION_TABLE_BEGIN(EventInstanceMethods)
     FUNCTION_TABLE_ENTRY(release)
     FUNCTION_TABLE_ENTRY(setParameterByID)
     FUNCTION_TABLE_ENTRY(setParameterByName)
+    FUNCTION_TABLE_ENTRY(setCallback)
+    FUNCTION_TABLE_ENTRY(getUserData)
+    FUNCTION_TABLE_ENTRY(setUserData)
 FUNCTION_TABLE_END
