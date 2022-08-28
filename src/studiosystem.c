@@ -29,7 +29,7 @@ static int create(lua_State *L)
 
     REQUIRE_OK(FMOD_Studio_System_Create(&system, FMOD_VERSION));
 
-    CREATE_USERDATA(FMOD_STUDIO_SYSTEM, system);
+    CREATE_USERDATA(L, FMOD_STUDIO_SYSTEM, system);
 
     return 1;
 }
@@ -79,7 +79,7 @@ static int loadBankFile(lua_State *L)
     FMOD_STUDIO_BANK *bank = NULL;
     RETURN_IF_ERROR(FMOD_Studio_System_LoadBankFile(self, filename, flags, &bank));
 
-    CREATE_USERDATA(FMOD_STUDIO_BANK, bank);
+    CREATE_USERDATA(L, FMOD_STUDIO_BANK, bank);
 
     return 1;
 }
@@ -91,7 +91,7 @@ static int getCoreSystem(lua_State *L)
     FMOD_SYSTEM *system = NULL;
     REQUIRE_OK(FMOD_Studio_System_GetCoreSystem(self, &system));
 
-    CREATE_USERDATA(FMOD_SYSTEM, system);
+    CREATE_USERDATA(L, FMOD_SYSTEM, system);
 
     return 1;
 }
@@ -105,7 +105,7 @@ static int getEvent(lua_State *L)
     FMOD_STUDIO_EVENTDESCRIPTION *description = NULL;
     RETURN_IF_ERROR(FMOD_Studio_System_GetEvent(self, path, &description));
 
-    CREATE_USERDATA(FMOD_STUDIO_EVENTDESCRIPTION, description);
+    CREATE_USERDATA(L, FMOD_STUDIO_EVENTDESCRIPTION, description);
 
     return 1;
 }

@@ -190,7 +190,7 @@ FMOD_RESULT F_CALLBACK eventCallback(FMOD_STUDIO_EVENT_CALLBACK_TYPE type, FMOD_
 
     if (!lua_isnil(L, -1)) {
         CONSTANT_access_FMOD_STUDIO_EVENT_CALLBACK_TYPE(L, &type, 0, 0);
-        CREATE_USERDATA(FMOD_STUDIO_EVENTINSTANCE, event);
+        CREATE_USERDATA(L, FMOD_STUDIO_EVENTINSTANCE, event);
 
         if (type == FMOD_STUDIO_EVENT_CALLBACK_CREATE_PROGRAMMER_SOUND) {
             FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES_newref(L, 0, (FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES*)parameters);
@@ -276,8 +276,7 @@ static int copyFMODHandle(lua_State *source, lua_State *destination, int current
 
             if (destination) {
                 FMOD_SOUND *sound = *((FMOD_SOUND**)lua_touserdata(source, -1));
-                lua_State *L = destination;
-                CREATE_USERDATA(FMOD_SOUND, sound);
+                CREATE_USERDATA(destination, FMOD_SOUND, sound);
             }
 
             return 0;
