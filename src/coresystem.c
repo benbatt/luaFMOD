@@ -60,7 +60,7 @@ static int playSound(lua_State *L)
 {
     GET_SELF;
 
-    FMOD_SOUND *sound = *((FMOD_SOUND**)luaL_checkudata(L, 2, FMOD_SOUND_METATABLE));
+    FMOD_SOUND *sound = CHECK_HANDLE(L, 2, FMOD_SOUND);
     int paused = lua_toboolean(L, 3);
 
     FMOD_CHANNEL *channel = NULL;

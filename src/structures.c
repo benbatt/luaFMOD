@@ -294,7 +294,7 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
 
 #define STRUCT_FIELD_HANDLE(name, type) \
         if (strncmp(# name, field, length) == 0) { \
-            return STRUCT_access_handle(L, &data->name, type ## _METATABLE, index, set, index + 2); \
+            return STRUCT_access_handle(L, &data->name, #type, index, set, index + 2); \
         }
 
 #define STRUCT_FIELD_CONSTANT(name, type) \

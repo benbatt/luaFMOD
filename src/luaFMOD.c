@@ -60,6 +60,8 @@ static void createMethodsTable(lua_State *L, const char *name, const luaL_reg *m
     lua_pop(L, 1);
 }
 
+#define CREATE_METHODS_TABLE(L, type, methods) createMethodsTable(L, #type, methods)
+
 USE_FUNCTION_TABLE(StudioSystemStaticFunctions);
 USE_FUNCTION_TABLE(StudioSystemMethods);
 USE_FUNCTION_TABLE(BankMethods);
@@ -93,13 +95,13 @@ extern int LUAFMOD_EXPORT luaopen_luaFMOD(lua_State *L)
     lua_setfield(L, -2, "Studio");
 
     /* Create the class method tables */
-    createMethodsTable(L, FMOD_STUDIO_BANK_METATABLE, BankMethods);
-    createMethodsTable(L, FMOD_STUDIO_EVENTDESCRIPTION_METATABLE, EventDescriptionMethods);
-    createMethodsTable(L, FMOD_STUDIO_EVENTINSTANCE_METATABLE, EventInstanceMethods);
-    createMethodsTable(L, FMOD_STUDIO_SYSTEM_METATABLE, StudioSystemMethods);
-    createMethodsTable(L, FMOD_SYSTEM_METATABLE, CoreSystemMethods);
-    createMethodsTable(L, FMOD_SOUND_METATABLE, SoundMethods);
-    createMethodsTable(L, FMOD_CHANNEL_METATABLE, ChannelMethods);
+    CREATE_METHODS_TABLE(L, FMOD_STUDIO_BANK, BankMethods);
+    CREATE_METHODS_TABLE(L, FMOD_STUDIO_EVENTDESCRIPTION, EventDescriptionMethods);
+    CREATE_METHODS_TABLE(L, FMOD_STUDIO_EVENTINSTANCE, EventInstanceMethods);
+    CREATE_METHODS_TABLE(L, FMOD_STUDIO_SYSTEM, StudioSystemMethods);
+    CREATE_METHODS_TABLE(L, FMOD_SYSTEM, CoreSystemMethods);
+    CREATE_METHODS_TABLE(L, FMOD_SOUND, SoundMethods);
+    CREATE_METHODS_TABLE(L, FMOD_CHANNEL, ChannelMethods);
 
     /* Create constants */
     createConstantTables(L);

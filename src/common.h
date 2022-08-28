@@ -25,15 +25,6 @@ DEALINGS IN THE SOFTWARE.
 #include <fmod_studio.h>
 #include <lauxlib.h>
 
-#define FMOD_STUDIO_BANK_METATABLE "FMOD.Studio.Bank"
-#define FMOD_STUDIO_EVENTDESCRIPTION_METATABLE "FMOD.Studio.EventDescription"
-#define FMOD_STUDIO_EVENTINSTANCE_METATABLE "FMOD.Studio.EventInstance"
-#define FMOD_STUDIO_SYSTEM_METATABLE "FMOD.Studio.System"
-
-#define FMOD_SYSTEM_METATABLE "FMOD.System"
-#define FMOD_SOUND_METATABLE "FMOD.Sound"
-#define FMOD_CHANNEL_METATABLE "FMOD.Channel"
-
 #define CONSTANT_ACCESS_DECLARE(type) \
     int CONSTANT_access_ ## type(lua_State *L, type *data, int set, int valueIndex)
 
@@ -117,13 +108,15 @@ int getOptionalConstant(lua_State *L, int index, const char *metatable, int defa
         } \
     } while(0)
 
+#define CHECK_HANDLE(L, index, type) *((type **)luaL_checkudata(L, index, STRINGIZE(type)))
+
 #define GET_SELF \
-    SELF_TYPE *self = *((SELF_TYPE **)luaL_checkudata(L, 1, JOIN(SELF_TYPE, _METATABLE)))
+    SELF_TYPE *self = CHECK_HANDLE(L, 1, SELF_TYPE)
 
 #define CREATE_USERDATA(type, value) \
     do { \
         *((type **)lua_newuserdata(L, sizeof(value))) = (value); \
-        luaL_getmetatable(L, type ## _METATABLE); \
+        luaL_getmetatable(L, #type); \
         lua_setmetatable(L, -2); \
     } while(0)
 

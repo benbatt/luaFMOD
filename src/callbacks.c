@@ -269,7 +269,7 @@ static int copyUserDataTable(lua_State *source, lua_State *destination, int curr
 static int copyFMODHandle(lua_State *source, lua_State *destination, int currentDepth, int maximumDepth)
 {
     if (lua_getmetatable(source, -1) != 0) {
-        luaL_getmetatable(source, FMOD_SOUND_METATABLE);
+        luaL_getmetatable(source, "FMOD_SOUND");
 
         if (lua_rawequal(source, -1, -2)) {
             lua_pop(source, 2);
