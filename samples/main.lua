@@ -1,10 +1,13 @@
 --[[
-This sample requires the following .bank files from the FMOD Engine Windows package:
+This sample requires the following files from the FMOD Engine Windows package:
   * Master.bank
   * Master.strings.bank
-  * Music.bank
   * SFX.bank
   * Vehicles.bank
+  * sequence-one.ogg
+  * sequence-two.ogg
+  * sequence-three.ogg
+  * sequence-four.ogg
 --]]
 
 package.cpath = package.cpath .. ";..\\bin\\?.dll;..\\external\\luaTextLoop\\bin\\?.dll"
@@ -27,7 +30,6 @@ assert(system:setListenerAttributes(0, attributes))
 local bankPaths = {
   "Master.bank",
   "Master.strings.bank",
-  "Music.bank",
   "SFX.bank",
   "Vehicles.bank",
 }
@@ -67,36 +69,40 @@ local footstepsInstance = assert(footsteps:createInstance())
 local surfaceValue = 1
 assert(footstepsInstance:setParameterByID(surface.id, surfaceValue))
 
-local music = assert(system:getEvent("event:/Music/Level 01"))
-local musicInstance = assert(music:createInstance())
+local dialogue = assert(system:getEvent("event:/Character/Dialogue"))
+local dialogueInstance = assert(dialogue:createInstance())
 
-assert(musicInstance:setCallback(
+assert(dialogueInstance:setCallback(
   function(type, event, parameters)
-    print(string.format("Music callback: type = %s", tostring(type)))
+    print(string.format("Dialogue callback: type = %s", tostring(type)))
 
     local userData = event:getUserData()
 
-    print(string.format("  message %d is \"%s\"", userData.count, userData.messages[userData.count]))
-
-    userData.count = (userData.count % #userData.messages) + 1
+    if type == FMOD.Studio.EVENT_CALLBACK.CREATE_PROGRAMMER_SOUND then
+      print(string.format("  Returning sound %d", userData.count))
+      parameters.sound = userData.sounds[userData.count]
+      userData.count = (userData.count % #userData.sounds) + 1
+    end
   end))
 
-assert(musicInstance:setUserData{
-    sound = "test.wav",
-    count = 1,
-    messages = {
-      "one",
-      "two",
-      "three",
-    },
-  })
+local dialogueData = {
+  count = 1,
+  sounds = {
+    assert(coreSystem:createSound("sequence-one.ogg", FMOD.MODE.DEFAULT)),
+    assert(coreSystem:createSound("sequence-two.ogg", FMOD.MODE.DEFAULT)),
+    assert(coreSystem:createSound("sequence-three.ogg", FMOD.MODE.DEFAULT)),
+    assert(coreSystem:createSound("sequence-four.ogg", FMOD.MODE.DEFAULT)),
+  },
+}
+
+assert(dialogueInstance:setUserData(dialogueData))
 
 local menu = {
   "=============== FMOD Example ===============",
   ". A: toggle Ambience | R: toggle Rain      .",
   ". C: play Cancel     | E: play Explosion   .",
   ". F: play Footsteps  | +/-: change surface .",
-  ". M: toggle Mower    | U: toggle Music     .",
+  ". M: toggle Mower    | D: play Dialogue    .",
   ". Left/Right/Up/Down: move Mower           .",
   ". Escape: quit                             .",
   "============================================",
@@ -109,7 +115,6 @@ TextLoop.setOverlay(menu)
 local ambienceStarted = true
 local rain = false
 local mowerStarted = false
-local musicStarted = false
 
 TextLoop.start(10, function(keyCodes)
     for _,key in ipairs(keyCodes) do
@@ -162,16 +167,9 @@ TextLoop.start(10, function(keyCodes)
         mowerAttributes.position.z = mowerAttributes.position.z - 1
         print(string.format("Moving mower to (%.f, %.f)", mowerAttributes.position.x, mowerAttributes.position.z))
         assert(mowerInstance:set3DAttributes(mowerAttributes))
-      elseif key == KeyCode.U then
-        if musicStarted then
-          print("Stopping music")
-          assert(musicInstance:stop(FMOD.Studio.STOP.ALLOWFADEOUT))
-        else
-          print("Starting music")
-          assert(musicInstance:start())
-        end
-
-        musicStarted = not musicStarted
+      elseif key == KeyCode.D then
+        print("Playing dialogue")
+        assert(dialogueInstance:start())
       elseif key == KeyCode.R then
         rain = not rain
         print(string.format("Turning rain %s", rain and "on" or "off"))

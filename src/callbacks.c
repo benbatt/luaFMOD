@@ -192,7 +192,13 @@ FMOD_RESULT F_CALLBACK eventCallback(FMOD_STUDIO_EVENT_CALLBACK_TYPE type, FMOD_
         CONSTANT_access_FMOD_STUDIO_EVENT_CALLBACK_TYPE(L, &type, 0, 0);
         CREATE_USERDATA(FMOD_STUDIO_EVENTINSTANCE, event);
 
-        if (lua_pcall(L, 2, 0, 0) != 0) {
+        if (type == FMOD_STUDIO_EVENT_CALLBACK_CREATE_PROGRAMMER_SOUND) {
+            FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES_newref(L, 0, (FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES*)parameters);
+        } else {
+            lua_pushnil(L);
+        }
+
+        if (lua_pcall(L, 3, 0, 0) != 0) {
             const char *error = lua_tostring(L, -1);
             int breakHere = 1;
         }
@@ -260,6 +266,27 @@ int callbackPrepare(lua_State *L, int index, void *owner)
 
 static int copyUserDataTable(lua_State *source, lua_State *destination, int currentDepth, int maximumDepth);
 
+static int copyFMODHandle(lua_State *source, lua_State *destination, int currentDepth, int maximumDepth)
+{
+    if (lua_getmetatable(source, -1) != 0) {
+        luaL_getmetatable(source, FMOD_SOUND_METATABLE);
+
+        if (lua_rawequal(source, -1, -2)) {
+            lua_pop(source, 2);
+
+            if (destination) {
+                FMOD_SOUND *sound = *((FMOD_SOUND**)lua_touserdata(source, -1));
+                lua_State *L = destination;
+                CREATE_USERDATA(FMOD_SOUND, sound);
+            }
+
+            return 0;
+        }
+    }
+
+    return luaL_error(source, "Unrecognised userdata type");
+}
+
 static int copyUserDataField(lua_State *source, lua_State *destination, int currentDepth, int maximumDepth)
 {
     int type = lua_type(source, -1);
@@ -299,6 +326,8 @@ static int copyUserDataField(lua_State *source, lua_State *destination, int curr
                 return luaL_error(source, "Too many levels of table nesting in userdata (maximum is %d)", maximumDepth);
             }
             break;
+        case LUA_TUSERDATA:
+            return copyFMODHandle(source, destination, currentDepth, maximumDepth);
         default:
             return luaL_error(source, "Unsupported userdata type: %s", lua_typename(source, type));
     }

@@ -141,6 +141,26 @@ static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char
 */
 #define TABLE_CREATE(type, name) CONSTANT_TABLE_create_ ## type(L, name)
 
+int equalFlags(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TUSERDATA);
+    luaL_checktype(L, 2, LUA_TUSERDATA);
+
+    lua_getmetatable(L, 1);
+    lua_getmetatable(L, 2);
+
+    if (!lua_rawequal(L, -1, -2)) {
+        luaL_error(L, "Attempt to compare flags of different types");
+    }
+
+    int value1 = (*(int*)lua_touserdata(L, 1));
+    int value2 = (*(int*)lua_touserdata(L, 2));
+
+    lua_pushboolean(L, value1 == value2);
+
+    return 1;
+}
+
 int combineFlags(lua_State *L)
 {
     luaL_checktype(L, 1, LUA_TUSERDATA);
@@ -233,6 +253,9 @@ int flagsToString(lua_State *L)
 void createFlagsMetatable(lua_State *L, const char *name)
 {
     luaL_newmetatable(L, name);
+
+    lua_pushcfunction(L, equalFlags);
+    lua_setfield(L, -2, "__eq");
 
     lua_pushcfunction(L, combineFlags);
     lua_setfield(L, -2, "__add");
