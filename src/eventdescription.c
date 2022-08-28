@@ -45,7 +45,7 @@ static int createInstance(lua_State *L)
     FMOD_STUDIO_EVENTINSTANCE *instance = NULL;
     RETURN_IF_ERROR(FMOD_Studio_EventDescription_CreateInstance(self, &instance));
 
-    CREATE_USERDATA(L, FMOD_STUDIO_EVENTINSTANCE, instance);
+    PUSH_USERDATA(L, FMOD_STUDIO_EVENTINSTANCE, instance);
 
     return 1;
 }

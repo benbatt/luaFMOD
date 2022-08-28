@@ -113,7 +113,7 @@ int getOptionalConstant(lua_State *L, int index, const char *metatable, int defa
 #define GET_SELF \
     SELF_TYPE *self = CHECK_HANDLE(L, 1, SELF_TYPE)
 
-#define CREATE_USERDATA(L, type, value) \
+#define PUSH_USERDATA(L, type, value) \
     do { \
         *((type **)lua_newuserdata(L, sizeof(value))) = (value); \
         luaL_getmetatable(L, #type); \

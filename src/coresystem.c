@@ -51,7 +51,7 @@ static int createSound(lua_State *L)
     FMOD_SOUND *sound = NULL;
     RETURN_IF_ERROR(FMOD_System_CreateSound(self, name_or_data, mode, exinfo, &sound));
 
-    CREATE_USERDATA(L, FMOD_SOUND, sound);
+    PUSH_USERDATA(L, FMOD_SOUND, sound);
 
     return 1;
 }
@@ -67,7 +67,7 @@ static int playSound(lua_State *L)
     // TODO channelgroup
     RETURN_IF_ERROR(FMOD_System_PlaySound(self, sound, NULL, paused, &channel));
 
-    CREATE_USERDATA(L, FMOD_CHANNEL, channel);
+    PUSH_USERDATA(L, FMOD_CHANNEL, channel);
 
     return 1;
 }
