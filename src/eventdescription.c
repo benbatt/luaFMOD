@@ -57,8 +57,8 @@ static int loadSampleData(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventDescription_LoadSampleData(self));
 }
 
-FUNCTION_TABLE_BEGIN(EventDescriptionMethods)
-    FUNCTION_TABLE_ENTRY(getParameterDescriptionByName)
-    FUNCTION_TABLE_ENTRY(createInstance)
-    FUNCTION_TABLE_ENTRY(loadSampleData)
-FUNCTION_TABLE_END
+METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(getParameterDescriptionByName)
+    METHODS_TABLE_ENTRY(createInstance)
+    METHODS_TABLE_ENTRY(loadSampleData)
+METHODS_TABLE_END

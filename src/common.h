@@ -124,6 +124,8 @@ int getOptionalConstant(lua_State *L, int index, const char *metatable, int defa
 #define FUNCTION_TABLE_ENTRY(function) { #function, function },
 #define FUNCTION_TABLE_END { NULL, NULL } };
 
-#define USE_FUNCTION_TABLE(name) extern const struct luaL_reg name[];
+#define METHODS_TABLE_BEGIN FUNCTION_TABLE_BEGIN(JOIN(SELF_TYPE, _methods))
+#define METHODS_TABLE_ENTRY(method) FUNCTION_TABLE_ENTRY(method)
+#define METHODS_TABLE_END FUNCTION_TABLE_END
 
 #endif /* COMMON_H */

@@ -31,6 +31,6 @@ int setPaused(lua_State *L)
     RETURN_STATUS(FMOD_Channel_SetPaused(self, paused));
 }
 
-FUNCTION_TABLE_BEGIN(ChannelMethods)
-    FUNCTION_TABLE_ENTRY(setPaused)
-FUNCTION_TABLE_END
+METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(setPaused)
+METHODS_TABLE_END

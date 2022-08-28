@@ -72,8 +72,8 @@ static int playSound(lua_State *L)
     return 1;
 }
 
-FUNCTION_TABLE_BEGIN(CoreSystemMethods)
-    FUNCTION_TABLE_ENTRY(setSoftwareFormat)
-    FUNCTION_TABLE_ENTRY(createSound)
-    FUNCTION_TABLE_ENTRY(playSound)
-FUNCTION_TABLE_END
+METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(setSoftwareFormat)
+    METHODS_TABLE_ENTRY(createSound)
+    METHODS_TABLE_ENTRY(playSound)
+METHODS_TABLE_END

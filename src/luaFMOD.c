@@ -45,7 +45,13 @@ FUNCTION_TABLE_BEGIN(FMODStaticFunctions)
     FUNCTION_TABLE_ENTRY(Debug_Initialize)
 FUNCTION_TABLE_END
 
-static void createMethodsTable(lua_State *L, const char *name, const luaL_reg *methods)
+#define REGISTER_FUNCTION_TABLE(L, name, table) \
+    do { \
+        extern const struct luaL_reg table[]; \
+        luaL_register(L, name, table); \
+    } while (0)
+
+static void registerMethodsTable(lua_State *L, const char *name, const luaL_reg *methods)
 {
     luaL_newmetatable(L, name);
 
@@ -60,16 +66,11 @@ static void createMethodsTable(lua_State *L, const char *name, const luaL_reg *m
     lua_pop(L, 1);
 }
 
-#define CREATE_METHODS_TABLE(L, type, methods) createMethodsTable(L, #type, methods)
-
-USE_FUNCTION_TABLE(StudioSystemStaticFunctions);
-USE_FUNCTION_TABLE(StudioSystemMethods);
-USE_FUNCTION_TABLE(BankMethods);
-USE_FUNCTION_TABLE(EventDescriptionMethods);
-USE_FUNCTION_TABLE(EventInstanceMethods);
-USE_FUNCTION_TABLE(CoreSystemMethods);
-USE_FUNCTION_TABLE(SoundMethods);
-USE_FUNCTION_TABLE(ChannelMethods);
+#define REGISTER_METHODS_TABLE(L, type) \
+    do { \
+        extern const struct luaL_reg type ## _methods[]; \
+        registerMethodsTable(L, #type, type ## _methods); \
+    } while (0)
 
 extern void createConstantTables(lua_State *L);
 extern void createStructTables(lua_State *L);
@@ -79,14 +80,14 @@ extern int LUAFMOD_EXPORT luaopen_luaFMOD(lua_State *L)
     platformInitialize(L);
 
     /* The FMOD table */
-    luaL_register(L, "FMOD", FMODStaticFunctions);
+    REGISTER_FUNCTION_TABLE(L, "FMOD", FMODStaticFunctions);
 
     /* The FMOD.Studio table */
     lua_createtable(L, 0, 1);
 
     /* The FMOD.Studio.System table */
     lua_createtable(L, 0, 1);
-    luaL_register(L, NULL, StudioSystemStaticFunctions);
+    REGISTER_FUNCTION_TABLE(L, NULL, StudioSystemStaticFunctions);
 
     /* Set FMOD.Studio.System */
     lua_setfield(L, -2, "System");
@@ -95,13 +96,13 @@ extern int LUAFMOD_EXPORT luaopen_luaFMOD(lua_State *L)
     lua_setfield(L, -2, "Studio");
 
     /* Create the class method tables */
-    CREATE_METHODS_TABLE(L, FMOD_STUDIO_BANK, BankMethods);
-    CREATE_METHODS_TABLE(L, FMOD_STUDIO_EVENTDESCRIPTION, EventDescriptionMethods);
-    CREATE_METHODS_TABLE(L, FMOD_STUDIO_EVENTINSTANCE, EventInstanceMethods);
-    CREATE_METHODS_TABLE(L, FMOD_STUDIO_SYSTEM, StudioSystemMethods);
-    CREATE_METHODS_TABLE(L, FMOD_SYSTEM, CoreSystemMethods);
-    CREATE_METHODS_TABLE(L, FMOD_SOUND, SoundMethods);
-    CREATE_METHODS_TABLE(L, FMOD_CHANNEL, ChannelMethods);
+    REGISTER_METHODS_TABLE(L, FMOD_STUDIO_BANK);
+    REGISTER_METHODS_TABLE(L, FMOD_STUDIO_EVENTDESCRIPTION);
+    REGISTER_METHODS_TABLE(L, FMOD_STUDIO_EVENTINSTANCE);
+    REGISTER_METHODS_TABLE(L, FMOD_STUDIO_SYSTEM);
+    REGISTER_METHODS_TABLE(L, FMOD_SYSTEM);
+    REGISTER_METHODS_TABLE(L, FMOD_SOUND);
+    REGISTER_METHODS_TABLE(L, FMOD_CHANNEL);
 
     /* Create constants */
     createConstantTables(L);
