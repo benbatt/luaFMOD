@@ -36,7 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #define GET_SELF \
     SELF_TYPE *self = CHECK_HANDLE(L, 1, SELF_TYPE)
 
-#define PUSH_USERDATA(L, type, value) \
+#define PUSH_HANDLE(L, type, value) \
     do { \
         *((type **)lua_newuserdata(L, sizeof(value))) = (value); \
         luaL_getmetatable(L, #type); \
