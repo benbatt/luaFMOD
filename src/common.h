@@ -25,13 +25,23 @@ DEALINGS IN THE SOFTWARE.
 #include <fmod_studio.h>
 #include <lauxlib.h>
 
-#define CONSTANT_ACCESS_DECLARE(type) \
-    int CONSTANT_access_ ## type(lua_State *L, type *data, int set, int valueIndex)
+#define STRINGIZE(x) STRINGIZE_IMPL(x)
+#define STRINGIZE_IMPL(x) #x
 
-#define STRUCT_REQUIRED 1
-#define STRUCT_OPTIONAL 0
+#define JOIN(a, b) JOIN_IMPL(a, b)
+#define JOIN_IMPL(a, b) a ## b
 
-void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required);
+#define CHECK_HANDLE(L, index, type) *((type **)luaL_checkudata(L, index, STRINGIZE(type)))
+
+#define GET_SELF \
+    SELF_TYPE *self = CHECK_HANDLE(L, 1, SELF_TYPE)
+
+#define PUSH_USERDATA(L, type, value) \
+    do { \
+        *((type **)lua_newuserdata(L, sizeof(value))) = (value); \
+        luaL_getmetatable(L, #type); \
+        lua_setmetatable(L, -2); \
+    } while(0)
 
 #define CHECK_STRUCT(L, index, type) ((type*)STRUCT_todata(L, # type, index, STRUCT_REQUIRED))
 #define OPTIONAL_STRUCT(L, index, type) ((type*)STRUCT_todata(L, # type, index, STRUCT_OPTIONAL))
@@ -45,21 +55,8 @@ void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required
 STRUCT_NEW_DECLARE(FMOD_STUDIO_PARAMETER_DESCRIPTION);
 STRUCT_NEWREF_DECLARE(FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES);
 
-#define STRINGIZE(x) STRINGIZE_IMPL(x)
-
-#define STRINGIZE_IMPL(x) #x
-
-#define JOIN(a, b) JOIN_IMPL(a, b)
-#define JOIN4(a, b, c, d) JOIN(JOIN(a, b), JOIN(c, d))
-
-#define JOIN_IMPL(a, b) a ## b
-
-int getOptionalConstant(lua_State *L, int index, const char *metatable, int defaultValue);
-
 #define CHECK_CONSTANT(index, type) *(int*)luaL_checkudata(L, index, # type)
 #define OPTIONAL_CONSTANT(index, type, defaultValue) getOptionalConstant(L, index, # type, defaultValue)
-
-int CONSTANT_new(lua_State *L, const char *metatable, int value);
 
 #define PUSH_CONSTANT(L, type, value) CONSTANT_new(L, #type, value)
 
@@ -91,18 +88,6 @@ int CONSTANT_new(lua_State *L, const char *metatable, int value);
         return 1; \
     } while(0)
 
-#define CHECK_HANDLE(L, index, type) *((type **)luaL_checkudata(L, index, STRINGIZE(type)))
-
-#define GET_SELF \
-    SELF_TYPE *self = CHECK_HANDLE(L, 1, SELF_TYPE)
-
-#define PUSH_USERDATA(L, type, value) \
-    do { \
-        *((type **)lua_newuserdata(L, sizeof(value))) = (value); \
-        luaL_getmetatable(L, #type); \
-        lua_setmetatable(L, -2); \
-    } while(0)
-
 #define FUNCTION_TABLE_BEGIN(name) const struct luaL_reg name[] = {
 #define FUNCTION_TABLE_ENTRY(function) { #function, function },
 #define FUNCTION_TABLE_END { NULL, NULL } };
@@ -110,5 +95,16 @@ int CONSTANT_new(lua_State *L, const char *metatable, int value);
 #define METHODS_TABLE_BEGIN FUNCTION_TABLE_BEGIN(JOIN(SELF_TYPE, _methods))
 #define METHODS_TABLE_ENTRY(method) FUNCTION_TABLE_ENTRY(method)
 #define METHODS_TABLE_END FUNCTION_TABLE_END
+
+#define CONSTANT_ACCESS_DECLARE(type) \
+    int CONSTANT_access_ ## type(lua_State *L, type *data, int set, int valueIndex)
+
+#define STRUCT_REQUIRED 1
+#define STRUCT_OPTIONAL 0
+
+void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required);
+
+int getOptionalConstant(lua_State *L, int index, const char *metatable, int defaultValue);
+int CONSTANT_new(lua_State *L, const char *metatable, int value);
 
 #endif /* COMMON_H */
