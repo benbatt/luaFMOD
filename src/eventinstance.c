@@ -27,7 +27,7 @@ static int set3DAttributes(lua_State *L)
 {
     GET_SELF;
 
-    FMOD_3D_ATTRIBUTES *attributes = FMOD_3D_ATTRIBUTES_todata(L, 2, STRUCT_REQUIRED);
+    FMOD_3D_ATTRIBUTES *attributes = CHECK_STRUCT(L, 2, FMOD_3D_ATTRIBUTES);
 
     RETURN_STATUS(FMOD_Studio_EventInstance_Set3DAttributes(self, attributes));
 }
@@ -68,7 +68,7 @@ static int setParameterByID(lua_State *L)
 {
     GET_SELF;
 
-    FMOD_STUDIO_PARAMETER_ID *id = FMOD_STUDIO_PARAMETER_ID_todata(L, 2, STRUCT_REQUIRED);
+    FMOD_STUDIO_PARAMETER_ID *id = CHECK_STRUCT(L, 2, FMOD_STUDIO_PARAMETER_ID);
     float value = (float)luaL_checknumber(L, 3);
     int ignoreseekspeed = lua_toboolean(L, 4);
 

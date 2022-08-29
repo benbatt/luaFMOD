@@ -43,7 +43,7 @@ static int createSound(lua_State *L)
     const char *name_or_data = luaL_checklstring(L, 2, &name_or_data_length);
     int mode = CHECK_CONSTANT(3, FMOD_MODE);
 
-    FMOD_CREATESOUNDEXINFO *exinfo = FMOD_CREATESOUNDEXINFO_todata(L, 4, 0);
+    FMOD_CREATESOUNDEXINFO *exinfo = OPTIONAL_STRUCT(L, 4, FMOD_CREATESOUNDEXINFO);
     if (exinfo) {
         exinfo->cbsize = sizeof(*exinfo);
     }

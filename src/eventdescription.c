@@ -33,7 +33,7 @@ static int getParameterDescriptionByName(lua_State *L)
     RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetParameterDescriptionByName(self, name, &description));
 
     FMOD_STUDIO_PARAMETER_DESCRIPTION_new(L);
-    *FMOD_STUDIO_PARAMETER_DESCRIPTION_todata(L, -1, STRUCT_REQUIRED) = description;
+    *CHECK_STRUCT(L, -1, FMOD_STUDIO_PARAMETER_DESCRIPTION) = description;
 
     return 1;
 }

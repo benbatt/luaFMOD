@@ -75,7 +75,7 @@ static int STRUCT_gc(lua_State *L, const char *metatable)
     return 0;
 }
 
-static void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required)
+void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required)
 {
     if (required == STRUCT_OPTIONAL && lua_isnoneornil(L, index)) {
         return NULL;
@@ -216,7 +216,6 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
     STRUCT_NEW(type) \
     STRUCT_NEWREF(type) \
     STRUCT_GC(type) \
-    STRUCT_TODATA(type) \
     static int type ## _fieldaccess(lua_State *L, int index, int set); \
     STRUCT_INDEX(type) \
     STRUCT_NEWINDEX(type) \
@@ -244,12 +243,6 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
         return STRUCT_gc(L, # type); \
     }
 
-#define STRUCT_TODATA(type) \
-    STRUCT_TODATA_DECLARE(type) \
-    { \
-        return (type*)STRUCT_todata(L, # type, index, required); \
-    }
-
 #define STRUCT_INDEX(type) \
     static int type ## _index(lua_State *L) \
     { \
@@ -266,7 +259,7 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
     static int STRUCT_access_ ## type(lua_State *L, type *data, int parentIndex, int set, int valueIndex) \
     { \
         if (set) { \
-            *data = *type ## _todata(L, valueIndex, STRUCT_REQUIRED); \
+            *data = *CHECK_STRUCT(L, valueIndex, type); \
             return 0; \
         } else { \
             return type ## _newref(L, parentIndex, data); \
@@ -283,7 +276,7 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
     static int type ## _fieldaccess(lua_State *L, int index, int set) \
     { \
         static const char *typeName = # type; \
-        type *data = type ## _todata(L, index, STRUCT_REQUIRED); \
+        type *data = CHECK_STRUCT(L, index, type); \
         size_t length = 0; \
         const char *field = STRUCT_fieldname(L, index + 1, &length);
 
