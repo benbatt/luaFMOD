@@ -28,15 +28,6 @@ DEALINGS IN THE SOFTWARE.
 #define CONSTANT_ACCESS_DECLARE(type) \
     int CONSTANT_access_ ## type(lua_State *L, type *data, int set, int valueIndex)
 
-CONSTANT_ACCESS_DECLARE(FMOD_DEBUG_FLAGS);
-CONSTANT_ACCESS_DECLARE(FMOD_TIMEUNIT);
-CONSTANT_ACCESS_DECLARE(FMOD_CHANNELORDER);
-CONSTANT_ACCESS_DECLARE(FMOD_SOUND_FORMAT);
-CONSTANT_ACCESS_DECLARE(FMOD_SOUND_TYPE);
-CONSTANT_ACCESS_DECLARE(FMOD_STUDIO_PARAMETER_TYPE);
-CONSTANT_ACCESS_DECLARE(FMOD_STUDIO_EVENT_CALLBACK_TYPE);
-CONSTANT_ACCESS_DECLARE(FMOD_STUDIO_PARAMETER_FLAGS);
-
 #define STRUCT_REQUIRED 1
 #define STRUCT_OPTIONAL 0
 
@@ -67,6 +58,10 @@ int getOptionalConstant(lua_State *L, int index, const char *metatable, int defa
 
 #define CHECK_CONSTANT(index, type) *(int*)luaL_checkudata(L, index, # type)
 #define OPTIONAL_CONSTANT(index, type, defaultValue) getOptionalConstant(L, index, # type, defaultValue)
+
+int CONSTANT_new(lua_State *L, const char *metatable, int value);
+
+#define PUSH_CONSTANT(L, type, value) CONSTANT_new(L, #type, value)
 
 /* If an FMOD error is encountered, raise a Lua error */
 #define REQUIRE_OK(result) \

@@ -159,7 +159,7 @@ static void pumpChunkMessages(lua_State *L, Chunk *chunk)
         LogRecord *record = &chunk->records[i];
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, sLuaCallback);
-        CONSTANT_access_FMOD_DEBUG_FLAGS(L, &record->flags, 0, 0);
+        PUSH_CONSTANT(L, FMOD_DEBUG_FLAGS, record->flags);
         lua_pushstring(L, record->func);
         lua_pushstring(L, record->message);
 

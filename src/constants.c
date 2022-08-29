@@ -40,7 +40,7 @@ static void CONSTANT_TABLE_create(lua_State *L, const char *name)
     lua_setfield(L, -3, name);
 }
 
-static int CONSTANT_new(lua_State *L, const char *metatable, int value)
+int CONSTANT_new(lua_State *L, const char *metatable, int value)
 {
     *(int*)lua_newuserdata(L, sizeof(int)) = value;
 

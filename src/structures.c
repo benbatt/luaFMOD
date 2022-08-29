@@ -292,6 +292,7 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
 
 #define STRUCT_FIELD_CONSTANT(name, type) \
         if (strncmp(# name, field, length) == 0) { \
+            CONSTANT_ACCESS_DECLARE(type); \
             return CONSTANT_access_ ## type(L, &data->name, set, index + 2); \
         }
 
