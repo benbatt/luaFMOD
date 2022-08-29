@@ -27,7 +27,7 @@ static int setSoftwareFormat(lua_State *L)
     GET_SELF;
 
     int samplerate = luaL_checkint(L, 2);
-    int speakermode = CHECK_CONSTANT(3, FMOD_SPEAKERMODE);
+    int speakermode = CHECK_CONSTANT(L, 3, FMOD_SPEAKERMODE);
     int numrawspeakers = luaL_checkint(L, 4);
 
     REQUIRE_OK(FMOD_System_SetSoftwareFormat(self, samplerate, speakermode, numrawspeakers));
@@ -41,7 +41,7 @@ static int createSound(lua_State *L)
 
     size_t name_or_data_length = 0;
     const char *name_or_data = luaL_checklstring(L, 2, &name_or_data_length);
-    int mode = CHECK_CONSTANT(3, FMOD_MODE);
+    int mode = CHECK_CONSTANT(L, 3, FMOD_MODE);
 
     FMOD_CREATESOUNDEXINFO *exinfo = OPTIONAL_STRUCT(L, 4, FMOD_CREATESOUNDEXINFO);
     if (exinfo) {

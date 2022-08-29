@@ -84,7 +84,7 @@ static void CONSTANT_TABLE_entry(lua_State *L, const char *metatable, const char
     CONSTANT_ACCESS_DECLARE(type) \
     { \
         if (set) { \
-            *data = CHECK_CONSTANT(valueIndex, type); \
+            *data = CHECK_CONSTANT(L, valueIndex, type); \
             return 0; \
         } else { \
             return CONSTANT_new(L, # type, *data); \

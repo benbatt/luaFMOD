@@ -24,8 +24,8 @@ DEALINGS IN THE SOFTWARE.
 
 static int Debug_Initialize(lua_State *L)
 {
-    int flags = CHECK_CONSTANT(1, FMOD_DEBUG_FLAGS);
-    int mode = OPTIONAL_CONSTANT(2, FMOD_DEBUG_MODE, FMOD_DEBUG_MODE_TTY);
+    int flags = CHECK_CONSTANT(L, 1, FMOD_DEBUG_FLAGS);
+    int mode = OPTIONAL_CONSTANT(L, 2, FMOD_DEBUG_MODE, FMOD_DEBUG_MODE_TTY);
 
     int callback = 0;
 

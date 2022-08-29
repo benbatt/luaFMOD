@@ -39,8 +39,8 @@ static int initialize(lua_State *L)
     GET_SELF;
 
     int maxchannels = luaL_checkint(L, 2);
-    int studioflags = CHECK_CONSTANT(3, FMOD_STUDIO_INITFLAGS);
-    int coreflags = CHECK_CONSTANT(4, FMOD_INITFLAGS);
+    int studioflags = CHECK_CONSTANT(L, 3, FMOD_STUDIO_INITFLAGS);
+    int coreflags = CHECK_CONSTANT(L, 4, FMOD_INITFLAGS);
 
     /* TODO extradriverdata? */
 
@@ -74,7 +74,7 @@ static int loadBankFile(lua_State *L)
     GET_SELF;
 
     const char *filename = luaL_checkstring(L, 2);
-    int flags = CHECK_CONSTANT(3, FMOD_STUDIO_LOAD_BANK_FLAGS);
+    int flags = CHECK_CONSTANT(L, 3, FMOD_STUDIO_LOAD_BANK_FLAGS);
 
     FMOD_STUDIO_BANK *bank = NULL;
     RETURN_IF_ERROR(FMOD_Studio_System_LoadBankFile(self, filename, flags, &bank));

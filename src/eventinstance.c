@@ -52,7 +52,7 @@ static int stop(lua_State *L)
 {
     GET_SELF;
 
-    int mode = CHECK_CONSTANT(2, FMOD_STUDIO_STOP_MODE);
+    int mode = CHECK_CONSTANT(L, 2, FMOD_STUDIO_STOP_MODE);
 
     RETURN_STATUS(FMOD_Studio_EventInstance_Stop(self, mode));
 }

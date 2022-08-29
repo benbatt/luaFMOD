@@ -55,8 +55,8 @@ DEALINGS IN THE SOFTWARE.
 STRUCT_NEW_DECLARE(FMOD_STUDIO_PARAMETER_DESCRIPTION);
 STRUCT_NEWREF_DECLARE(FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES);
 
-#define CHECK_CONSTANT(index, type) *(int*)luaL_checkudata(L, index, # type)
-#define OPTIONAL_CONSTANT(index, type, defaultValue) getOptionalConstant(L, index, # type, defaultValue)
+#define CHECK_CONSTANT(L, index, type) *(int*)luaL_checkudata(L, index, # type)
+#define OPTIONAL_CONSTANT(L, index, type, defaultValue) getOptionalConstant(L, index, # type, defaultValue)
 
 #define PUSH_CONSTANT(L, type, value) CONSTANT_new(L, #type, value)
 
