@@ -46,14 +46,14 @@ DEALINGS IN THE SOFTWARE.
 #define CHECK_STRUCT(L, index, type) ((type*)STRUCT_todata(L, # type, index, STRUCT_REQUIRED))
 #define OPTIONAL_STRUCT(L, index, type) ((type*)STRUCT_todata(L, # type, index, STRUCT_OPTIONAL))
 
-#define STRUCT_NEW_DECLARE(type) \
-    int type ## _new(lua_State *L)
+#define PUSH_STRUCT(L, type, value) \
+    do { \
+        STRUCT_new(L, # type, sizeof(type)); \
+        *CHECK_STRUCT(L, -1, type) = (value); \
+    } while(0)
 
-#define STRUCT_NEWREF_DECLARE(type) \
-    int type ## _newref(lua_State *L, int parentIndex, type *data)
-
-STRUCT_NEW_DECLARE(FMOD_STUDIO_PARAMETER_DESCRIPTION);
-STRUCT_NEWREF_DECLARE(FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES);
+/* parentIndex is the stack index of the containing object, or 0 for no containing object */
+#define PUSH_STRUCT_REF(L, type, parentIndex, pointer) STRUCT_newref(L, # type, parentIndex, pointer)
 
 #define CHECK_CONSTANT(L, index, type) *(int*)luaL_checkudata(L, index, # type)
 #define OPTIONAL_CONSTANT(L, index, type, defaultValue) getOptionalConstant(L, index, # type, defaultValue)
@@ -102,6 +102,8 @@ STRUCT_NEWREF_DECLARE(FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES);
 #define STRUCT_REQUIRED 1
 #define STRUCT_OPTIONAL 0
 
+int STRUCT_new(lua_State *L, const char *metatable, size_t size);
+int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data);
 void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required);
 
 int getOptionalConstant(lua_State *L, int index, const char *metatable, int defaultValue);

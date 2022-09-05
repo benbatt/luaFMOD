@@ -32,7 +32,7 @@ static void STRUCT_setmetatable(lua_State *L, const char *metatable, int index)
     lua_setmetatable(L, index - 1);
 }
 
-static int STRUCT_new(lua_State *L, const char *metatable, size_t size)
+int STRUCT_new(lua_State *L, const char *metatable, size_t size)
 {
     int *reference = (int*)lua_newuserdata(L, sizeof(int) + size);
 
@@ -48,7 +48,7 @@ static int STRUCT_new(lua_State *L, const char *metatable, size_t size)
 }
 
 /* parentIndex is the stack index of the containing object, or 0 for no containing object */
-static int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data)
+int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data)
 {
     int *reference = (int*)lua_newuserdata(L, sizeof(int) + sizeof(data));
 
@@ -226,13 +226,13 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
 #define STRUCT_END STRUCT_FIELDACCESS_END
 
 #define STRUCT_NEW(type) \
-    STRUCT_NEW_DECLARE(type) \
+    int type ## _new(lua_State *L) \
     { \
         return STRUCT_new(L, # type, sizeof(type)); \
     }
 
 #define STRUCT_NEWREF(type) \
-    STRUCT_NEWREF_DECLARE(type) \
+    int type ## _newref(lua_State *L, int parentIndex, type *data) \
     { \
         return STRUCT_newref(L, # type, parentIndex, data); \
     }
