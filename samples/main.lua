@@ -15,6 +15,11 @@ package.cpath = package.cpath .. ";..\\bin\\?.dll;..\\external\\luaTextLoop\\bin
 require("luaFMOD")
 require("luaTextLoop")
 
+local id = FMOD.Studio.parseID("{11111111-2222-3333-4455-66778899aabb}")
+print(string.format("Parsed id = {%8x-%4x-%4x-%2x%2x-%2x%2x%2x%2x%2x%2x}",
+  id.Data1, id.Data2, id.Data3, id.Data4[0], id.Data4[1], id.Data4[2],
+  id.Data4[3], id.Data4[4], id.Data4[5], id.Data4[6], id.Data4[7]))
+
 local system = FMOD.Studio.System.create()
 
 local coreSystem = assert(system:getCoreSystem())

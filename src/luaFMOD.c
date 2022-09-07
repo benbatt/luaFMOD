@@ -41,8 +41,24 @@ static int Debug_Initialize(lua_State *L)
     return 0;
 }
 
-FUNCTION_TABLE_BEGIN(FMODStaticFunctions)
+FUNCTION_TABLE_BEGIN(CoreStaticFunctions)
     FUNCTION_TABLE_ENTRY(Debug_Initialize)
+FUNCTION_TABLE_END
+
+static int parseID(lua_State *L)
+{
+    const char *idstring = luaL_checkstring(L, 1);
+
+    FMOD_GUID id;
+    RETURN_IF_ERROR(FMOD_Studio_ParseID(idstring, &id));
+
+    PUSH_STRUCT(L, FMOD_GUID, id);
+
+    return 1;
+}
+
+FUNCTION_TABLE_BEGIN(StudioStaticFunctions)
+    FUNCTION_TABLE_ENTRY(parseID)
 FUNCTION_TABLE_END
 
 #define REGISTER_FUNCTION_TABLE(L, name, table) \
@@ -80,10 +96,11 @@ extern int LUAFMOD_EXPORT luaopen_luaFMOD(lua_State *L)
     platformInitialize(L);
 
     /* The FMOD table */
-    REGISTER_FUNCTION_TABLE(L, "FMOD", FMODStaticFunctions);
+    REGISTER_FUNCTION_TABLE(L, "FMOD", CoreStaticFunctions);
 
     /* The FMOD.Studio table */
     lua_createtable(L, 0, 1);
+    REGISTER_FUNCTION_TABLE(L, NULL, StudioStaticFunctions);
 
     /* The FMOD.Studio.System table */
     lua_createtable(L, 0, 1);
