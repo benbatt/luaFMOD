@@ -385,6 +385,15 @@ STRUCT_BEGIN(FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES)
     STRUCT_FIELD(subsoundIndex, int)
 STRUCT_END
 
+STRUCT_BEGIN(FMOD_STUDIO_ADVANCEDSETTINGS)
+    STRUCT_FIELD(commandqueuesize, uint)
+    STRUCT_FIELD(handleinitialsize, uint)
+    STRUCT_FIELD(studioupdateperiod, int)
+    STRUCT_FIELD(idlesampledatapoolsize, int)
+    STRUCT_FIELD(streamingscheduledelay, uint)
+    // TODO STRUCT_FIELD(encryptionkey, cstring)
+STRUCT_END
+
 void createStructTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD structs first */
@@ -401,6 +410,7 @@ void createStructTables(lua_State *L)
     FMOD_STUDIO_PARAMETER_ID_create(L, "PARAMETER_ID");
     FMOD_STUDIO_PARAMETER_DESCRIPTION_create(L, "PARAMETER_DESCRIPTION");
     FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES_create(L, "PROGRAMMER_SOUND_PROPERTIES");
+    FMOD_STUDIO_ADVANCEDSETTINGS_create(L, "ADVANCEDSETTINGS");
 
     /* Tidy up the FMOD.Studio table */
     lua_pop(L, 1);

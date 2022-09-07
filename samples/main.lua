@@ -25,6 +25,11 @@ local system = FMOD.Studio.System.create()
 local coreSystem = assert(system:getCoreSystem())
 coreSystem:setSoftwareFormat(0, FMOD.SPEAKERMODE['5POINT1'], 0)
 
+local advancedSettings = FMOD.Studio.ADVANCEDSETTINGS.new()
+advancedSettings.studioupdateperiod = 50
+
+assert(system:setAdvancedSettings(advancedSettings))
+
 system:initialize(1024, FMOD.Studio.INIT.LIVEUPDATE, FMOD.INIT.NORMAL)
 
 local attributes = FMOD._3D_ATTRIBUTES.new()

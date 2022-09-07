@@ -34,6 +34,16 @@ static int create(lua_State *L)
     return 1;
 }
 
+static int setAdvancedSettings(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_ADVANCEDSETTINGS *settings = CHECK_STRUCT(L, 2, FMOD_STUDIO_ADVANCEDSETTINGS);
+    settings->cbsize = sizeof(*settings);
+
+    RETURN_STATUS(FMOD_Studio_System_SetAdvancedSettings(self, settings));
+}
+
 static int initialize(lua_State *L)
 {
     GET_SELF;
@@ -127,6 +137,7 @@ FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
 FUNCTION_TABLE_END
 
 METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(setAdvancedSettings)
     METHODS_TABLE_ENTRY(initialize)
     METHODS_TABLE_ENTRY(release)
     METHODS_TABLE_ENTRY(update)
