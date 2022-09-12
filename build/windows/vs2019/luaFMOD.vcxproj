@@ -197,6 +197,7 @@ xcopy /y external\FMOD\lib\fmodstudio.dll bin</Command>
     <ClCompile Include="..\..\..\src\sound.c" />
     <ClCompile Include="..\..\..\src\structures.c" />
     <ClCompile Include="..\..\..\src\studiosystem.c" />
+    <ClCompile Include="..\..\..\src\vca.c" />
     <ClCompile Include="..\dllmain.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -133,6 +133,20 @@ static int getBus(lua_State *L)
     return 1;
 }
 
+static int getVCA(lua_State *L)
+{
+    GET_SELF;
+
+    const char *path = luaL_checkstring(L, 2);
+
+    FMOD_STUDIO_VCA *vca = NULL;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetVCA(self, path, &vca));
+
+    PUSH_HANDLE(L, FMOD_STUDIO_VCA, vca);
+
+    return 1;
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -173,6 +187,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getCoreSystem)
     METHODS_TABLE_ENTRY(getEvent)
     METHODS_TABLE_ENTRY(getBus)
+    METHODS_TABLE_ENTRY(getVCA)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
 METHODS_TABLE_END
