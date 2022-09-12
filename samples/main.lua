@@ -53,7 +53,8 @@ local ambienceInstance = assert(ambience:createInstance())
 
 assert(ambienceInstance:start())
 
-local cancel = assert(system:getEvent("event:/UI/Cancel"))
+local cancelID = assert(FMOD.Studio.parseID("{2a3e48e6-94fc-4363-9468-33d2dd4d7b00}"))
+local cancel = assert(system:getEventByID(cancelID))
 local cancelInstance = assert(cancel:createInstance())
 
 local explosion = assert(system:getEvent("event:/Weapons/Explosion"))

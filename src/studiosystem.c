@@ -161,6 +161,20 @@ static int getBank(lua_State *L)
     return 1;
 }
 
+static int getEventByID(lua_State *L)
+{
+    GET_SELF;
+
+    const FMOD_GUID *guid = CHECK_STRUCT(L, 2, FMOD_GUID);
+
+    FMOD_STUDIO_EVENTDESCRIPTION *description = NULL;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetEventByID(self, guid, &description));
+
+    PUSH_HANDLE(L, FMOD_STUDIO_EVENTDESCRIPTION, description);
+
+    return 1;
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -203,6 +217,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getBus)
     METHODS_TABLE_ENTRY(getVCA)
     METHODS_TABLE_ENTRY(getBank)
+    METHODS_TABLE_ENTRY(getEventByID)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
 METHODS_TABLE_END
