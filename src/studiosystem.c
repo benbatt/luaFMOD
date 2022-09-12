@@ -147,6 +147,20 @@ static int getVCA(lua_State *L)
     return 1;
 }
 
+static int getBank(lua_State *L)
+{
+    GET_SELF;
+
+    const char *path = luaL_checkstring(L, 2);
+
+    FMOD_STUDIO_BANK *bank = NULL;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetBank(self, path, &bank));
+
+    PUSH_HANDLE(L, FMOD_STUDIO_BANK, bank);
+
+    return 1;
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -188,6 +202,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getEvent)
     METHODS_TABLE_ENTRY(getBus)
     METHODS_TABLE_ENTRY(getVCA)
+    METHODS_TABLE_ENTRY(getBank)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
 METHODS_TABLE_END
