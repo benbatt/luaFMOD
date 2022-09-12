@@ -71,5 +71,8 @@
     <ClCompile Include="..\..\..\src\callbacks.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\bus.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -107,6 +107,8 @@ local dialogueData = {
 
 assert(dialogueInstance:setUserData(dialogueData))
 
+local masterBus = assert(system:getBus("bus:/"))
+
 local menu = {
   "=============== FMOD Example ===============",
   ". A: toggle Ambience | R: toggle Rain      .",
@@ -114,6 +116,7 @@ local menu = {
   ". F: play Footsteps  | +/-: change surface .",
   ". M: toggle Mower    | D: play Dialogue    .",
   ". Left/Right/Up/Down: move Mower           .",
+  ". Spacebar: toggle mute                    .",
   ". Escape: quit                             .",
   "============================================",
 }
@@ -122,6 +125,7 @@ menu.x = 80 - #menu[1]
 
 TextLoop.setOverlay(menu)
 
+local muted = false
 local ambienceStarted = true
 local rain = false
 local mowerStarted = false
@@ -132,6 +136,9 @@ TextLoop.start(10, function(keyCodes)
 
       if key == KeyCode.Escape then
         return false
+      elseif key == KeyCode.Space then
+        muted = not muted
+        assert(masterBus:setMute(muted))
       elseif key == KeyCode.C then
         print("Playing Cancel")
         assert(cancelInstance:start())

@@ -184,6 +184,7 @@ xcopy /y external\FMOD\lib\fmodstudio.dll bin</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\src\bank.c" />
+    <ClCompile Include="..\..\..\src\bus.c" />
     <ClCompile Include="..\..\..\src\callbacks.c" />
     <ClCompile Include="..\..\..\src\channel.c" />
     <ClCompile Include="..\..\..\src\constants.c" />
