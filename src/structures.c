@@ -21,6 +21,59 @@ DEALINGS IN THE SOFTWARE.
 #include "common.h"
 #include <string.h>
 
+static int sReferenceTable = LUA_NOREF;
+
+/* Pops a struct instance from the top of the stack.
+   Pushes the reference table for the struct instance onto the stack.
+*/
+static void affirmReferenceTable(lua_State *L)
+{
+    int instanceIndex = lua_gettop(L);
+
+    if (sReferenceTable == LUA_NOREF) {
+        /* Create the global reference table */
+        lua_newtable(L);
+
+        /* Create the metatable */
+        lua_newtable(L);
+
+        /* Use weak keys so instance reference tables get cleaned up automatically */
+        lua_pushstring(L, "k");
+        lua_setfield(L, -2, "__mode");
+
+        /* Set the metatable on the global reference table */
+        lua_setmetatable(L, -2);
+
+        /* Store a reference to the global reference table */
+        sReferenceTable = luaL_ref(L, LUA_REGISTRYINDEX);
+    }
+
+    /* Get the global reference table */
+    lua_rawgeti(L, LUA_REGISTRYINDEX, sReferenceTable);
+
+    int globalIndex = lua_gettop(L);
+
+    /* Get the instance reference table */
+    lua_pushvalue(L, instanceIndex);
+    lua_gettable(L, globalIndex);
+
+    if (lua_isnil(L, -1)) {
+        lua_pop(L, 1);
+
+        /* Create the instance reference table */
+        lua_newtable(L);
+
+        /* Add to the global reference table */
+        lua_pushvalue(L, instanceIndex);
+        lua_pushvalue(L, -2);
+        lua_settable(L, globalIndex);
+    }
+
+    /* Move the instance reference table into place, and tidy up */
+    lua_replace(L, instanceIndex);
+    lua_settop(L, instanceIndex);
+}
+
 static void STRUCT_setmetatable(lua_State *L, const char *metatable, int index)
 {
     luaL_getmetatable(L, metatable);
@@ -124,7 +177,8 @@ static const char *STRUCT_fieldname(lua_State *L, int index, size_t *length)
     return lua_tolstring(L, index, length);
 }
 
-static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int set, int valueIndex)
+static int STRUCT_access_float(lua_State *L, const char *fieldName, float *data, int parentIndex, int set,
+    int valueIndex)
 {
     if (set) {
         *data = (float)luaL_checknumber(L, valueIndex);
@@ -135,7 +189,8 @@ static int STRUCT_access_float(lua_State *L, float *data, int parentIndex, int s
     }
 }
 
-static int STRUCT_access_int(lua_State *L, int *data, int parentIndex, int set, int valueIndex)
+static int STRUCT_access_int(lua_State *L, const char *fieldName, int *data, int parentIndex, int set,
+    int valueIndex)
 {
     if (set) {
         *data = luaL_checkint(L, valueIndex);
@@ -146,7 +201,8 @@ static int STRUCT_access_int(lua_State *L, int *data, int parentIndex, int set, 
     }
 }
 
-static int STRUCT_access_uint(lua_State *L, unsigned int *data, int parentIndex, int set, int valueIndex)
+static int STRUCT_access_uint(lua_State *L, const char *fieldName, unsigned int *data, int parentIndex, int set,
+    int valueIndex)
 {
     if (set) {
         *data = luaL_checkint(L, valueIndex);
@@ -157,7 +213,8 @@ static int STRUCT_access_uint(lua_State *L, unsigned int *data, int parentIndex,
     }
 }
 
-static int STRUCT_access_ushort(lua_State *L, unsigned short *data, int parentIndex, int set, int valueIndex)
+static int STRUCT_access_ushort(lua_State *L, const char *fieldName, unsigned short *data, int parentIndex, int set,
+    int valueIndex)
 {
     if (set) {
         *data = luaL_checkint(L, valueIndex);
@@ -168,7 +225,8 @@ static int STRUCT_access_ushort(lua_State *L, unsigned short *data, int parentIn
     }
 }
 
-static int STRUCT_access_uchar(lua_State *L, unsigned char *data, int parentIndex, int set, int valueIndex)
+static int STRUCT_access_uchar(lua_State *L, const char *fieldName, unsigned char *data, int parentIndex, int set,
+    int valueIndex)
 {
     if (set) {
         *data = luaL_checkint(L, valueIndex);
@@ -179,10 +237,49 @@ static int STRUCT_access_uchar(lua_State *L, unsigned char *data, int parentInde
     }
 }
 
-static int STRUCT_access_cstring(lua_State *L, const char **data, int parentIndex, int set, int valueIndex)
+/* Pops struct userdata from the top of the stack.
+   Pushes the root struct userdata onto the stack.
+*/
+static int getRootStruct(lua_State *L)
+{
+    int *reference = lua_touserdata(L, -1);
+
+    if (!reference) {
+        return luaL_error(L, "expected struct userdata at the top of the stack");
+    }
+
+    if (*reference == LUA_NOREF || *reference == LUA_REFNIL) {
+        return 1;
+    } else {
+        lua_pop(L, 1);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, *reference);
+        return getRootStruct(L);
+    }
+}
+
+static int STRUCT_access_cstring(lua_State *L, const char *fieldName, const char **data, int parentIndex, int set,
+    int valueIndex)
 {
     if (set) {
-        return luaL_error(L, "Attempt to set a read-only field");
+        lua_pushvalue(L, valueIndex);
+        *data = lua_tostring(L, -1);
+
+        int copyIndex = lua_gettop(L);
+
+        /* Keep a reference to the Lua string to prevent garbage collection */
+        lua_pushvalue(L, parentIndex);
+        getRootStruct(L);
+        affirmReferenceTable(L);
+
+        if (*data) {
+            lua_pushvalue(L, copyIndex);
+        } else {
+            lua_pushnil(L);
+        }
+
+        lua_setfield(L, -2, fieldName);
+
+        return 0;
     } else {
         lua_pushstring(L, *data);
         return 1;
@@ -256,7 +353,7 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
     }
 
 #define STRUCT_ACCESS(type) \
-    static int STRUCT_access_ ## type(lua_State *L, type *data, int parentIndex, int set, int valueIndex) \
+    static int STRUCT_access_ ## type(lua_State *L, const char *fieldName, type *data, int parentIndex, int set, int valueIndex) \
     { \
         if (set) { \
             *data = *CHECK_STRUCT(L, valueIndex, type); \
@@ -282,7 +379,7 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
 
 #define STRUCT_FIELD(name, type) \
         if (strncmp(# name, field, length) == 0) { \
-            return STRUCT_access_ ## type(L, &data->name, index, set, index + 2); \
+            return STRUCT_access_ ## type(L, # name, &data->name, index, set, index + 2); \
         }
 
 #define STRUCT_FIELD_HANDLE(name, type) \
@@ -391,7 +488,7 @@ STRUCT_BEGIN(FMOD_STUDIO_ADVANCEDSETTINGS)
     STRUCT_FIELD(studioupdateperiod, int)
     STRUCT_FIELD(idlesampledatapoolsize, int)
     STRUCT_FIELD(streamingscheduledelay, uint)
-    // TODO STRUCT_FIELD(encryptionkey, cstring)
+    STRUCT_FIELD(encryptionkey, cstring)
 STRUCT_END
 
 void createStructTables(lua_State *L)

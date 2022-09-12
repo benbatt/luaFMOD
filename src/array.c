@@ -62,13 +62,13 @@ static int ARRAY_uchar8_elementaccess(lua_State *L, int index, int set)
     int elementIndex = luaL_checkint(L, index + 1);
 
     if (0 <= elementIndex && elementIndex < 8) {
-        return STRUCT_access_uchar(L, (*data) + elementIndex, index, set, index + 2);
+        return STRUCT_access_uchar(L, NULL, (*data) + elementIndex, index, set, index + 2);
     }
 
     return luaL_error(L, "Invalid index %d", elementIndex);
 }
 
-static int STRUCT_access_ARRAY_uchar8(lua_State *L, uchar8 *data, int parentIndex, int set, int valueIndex)
+static int STRUCT_access_ARRAY_uchar8(lua_State *L, const char *fieldName, uchar8 *data, int parentIndex, int set, int valueIndex)
 {
     if (set) {
         return luaL_error(L, "Attempt to set a read-only field");
