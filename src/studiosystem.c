@@ -217,6 +217,20 @@ static int getBankByID(lua_State *L)
     return 1;
 }
 
+static int getSoundInfo(lua_State *L)
+{
+    GET_SELF;
+
+    const char *key = luaL_checkstring(L, 2);
+
+    FMOD_STUDIO_SOUND_INFO info;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetSoundInfo(self, key, &info));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_SOUND_INFO, info);
+
+    return 1;
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -244,6 +258,28 @@ static int loadBankFile(lua_State *L)
     return 1;
 }
 
+static int loadBankMemory(lua_State *L)
+{
+    GET_SELF;
+
+    if (lua_type(L, 2) != LUA_TSTRING) {
+        return luaL_error(L, "buffer argument must be a string");
+    }
+
+    size_t length = 0;
+    const char *buffer = lua_tolstring(L, 2, &length);
+
+    int mode = CHECK_CONSTANT(L, 3, FMOD_STUDIO_LOAD_MEMORY_MODE);
+    int flags = CHECK_CONSTANT(L, 4, FMOD_STUDIO_LOAD_BANK_FLAGS);
+
+    FMOD_STUDIO_BANK *bank = NULL;
+    RETURN_IF_ERROR(FMOD_Studio_System_LoadBankMemory(self, buffer, length, mode, flags, &bank));
+
+    PUSH_HANDLE(L, FMOD_STUDIO_BANK, bank);
+
+    return 1;
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -263,6 +299,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getBusByID)
     METHODS_TABLE_ENTRY(getVCAByID)
     METHODS_TABLE_ENTRY(getBankByID)
+    METHODS_TABLE_ENTRY(getSoundInfo)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
+    METHODS_TABLE_ENTRY(loadBankMemory)
 METHODS_TABLE_END

@@ -22,5 +22,20 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_SOUND
 
+static int getSubSound(lua_State *L)
+{
+    GET_SELF;
+
+    int index = luaL_checkint(L, 2);
+
+    FMOD_SOUND *subsound = NULL;
+    RETURN_IF_ERROR(FMOD_Sound_GetSubSound(self, index, &subsound));
+
+    PUSH_HANDLE(L, FMOD_SOUND, subsound);
+
+    return 1;
+}
+
 METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(getSubSound)
 METHODS_TABLE_END

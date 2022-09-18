@@ -1,5 +1,6 @@
 --[[
 This sample requires the following files from the FMOD Engine Windows package:
+  * Dialogue_EN.bank
   * Master.bank
   * Master.strings.bank
   * SFX.bank
@@ -96,9 +97,26 @@ assert(dialogueInstance:setCallback(
     end
   end))
 
+local dialogueBankBuffer
+local mainMenuSound
+
+do
+  local file = io.open("Dialogue_EN.bank", "rb")
+  dialogueBankBuffer = file:read("*a")
+  file:close()
+
+  assert(system:loadBankMemory(dialogueBankBuffer, FMOD.Studio.LOAD_MEMORY_MODE.MEMORY_POINT, FMOD.Studio.LOAD_BANK.NORMAL))
+
+  local soundInfo = assert(system:getSoundInfo("main menu"))
+  local sound = assert(coreSystem:createSound(soundInfo.name_or_data, soundInfo.mode, soundInfo.exinfo));
+
+  mainMenuSound = assert(sound:getSubSound(soundInfo.subsoundindex))
+end
+
 local dialogueData = {
   count = 1,
   sounds = {
+    mainMenuSound,
     assert(coreSystem:createSound("sequence-one.ogg", FMOD.MODE.DEFAULT)),
     assert(coreSystem:createSound("sequence-two.ogg", FMOD.MODE.DEFAULT)),
     assert(coreSystem:createSound("sequence-three.ogg", FMOD.MODE.DEFAULT)),

@@ -102,6 +102,8 @@ DEALINGS IN THE SOFTWARE.
 #define STRUCT_REQUIRED 1
 #define STRUCT_OPTIONAL 0
 
+typedef const char * luaFMOD_Buffer;
+
 int STRUCT_new(lua_State *L, const char *metatable, size_t size);
 int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data);
 void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required);

@@ -39,8 +39,14 @@ static int createSound(lua_State *L)
 {
     GET_SELF;
 
-    size_t name_or_data_length = 0;
-    const char *name_or_data = luaL_checklstring(L, 2, &name_or_data_length);
+    const char *name_or_data = NULL;
+
+    if (lua_type(L, 2) == LUA_TUSERDATA) {
+        name_or_data = *CHECK_STRUCT(L, 2, luaFMOD_Buffer);
+    } else {
+        name_or_data = luaL_checkstring(L, 2);
+    }
+
     int mode = CHECK_CONSTANT(L, 3, FMOD_MODE);
 
     FMOD_CREATESOUNDEXINFO *exinfo = OPTIONAL_STRUCT(L, 4, FMOD_CREATESOUNDEXINFO);

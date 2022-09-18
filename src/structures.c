@@ -101,7 +101,7 @@ int STRUCT_new(lua_State *L, const char *metatable, size_t size)
 }
 
 /* parentIndex is the stack index of the containing object, or 0 for no containing object */
-int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data)
+int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, const void *data)
 {
     int *reference = (int*)lua_newuserdata(L, sizeof(int) + sizeof(data));
 
@@ -113,7 +113,7 @@ int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *da
         *reference = LUA_REFNIL;
     }
 
-    *((void**)(reference + 1)) = data;
+    *((const void**)(reference + 1)) = data;
 
     STRUCT_setmetatable(L, metatable, -1);
 
@@ -491,6 +491,16 @@ STRUCT_BEGIN(FMOD_STUDIO_ADVANCEDSETTINGS)
     STRUCT_FIELD(encryptionkey, cstring)
 STRUCT_END
 
+STRUCT_BEGIN(luaFMOD_Buffer)
+STRUCT_END
+
+STRUCT_BEGIN(FMOD_STUDIO_SOUND_INFO)
+    STRUCT_FIELD(name_or_data, luaFMOD_Buffer)
+    STRUCT_FIELD_CONSTANT(mode, FMOD_MODE)
+    STRUCT_FIELD(exinfo, FMOD_CREATESOUNDEXINFO)
+    STRUCT_FIELD(subsoundindex, int)
+STRUCT_END
+
 void createStructTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD structs first */
@@ -508,10 +518,12 @@ void createStructTables(lua_State *L)
     FMOD_STUDIO_PARAMETER_DESCRIPTION_create(L, "PARAMETER_DESCRIPTION");
     FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES_create(L, "PROGRAMMER_SOUND_PROPERTIES");
     FMOD_STUDIO_ADVANCEDSETTINGS_create(L, "ADVANCEDSETTINGS");
+    FMOD_STUDIO_SOUND_INFO_create(L, "SOUND_INFO");
 
     /* Tidy up the FMOD.Studio table */
     lua_pop(L, 1);
 
     /* Define helper structs */
     ARRAY_uchar8_create(L);
+    luaFMOD_Buffer_create(L, NULL);
 }
