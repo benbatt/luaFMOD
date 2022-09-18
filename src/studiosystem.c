@@ -231,6 +231,34 @@ static int getSoundInfo(lua_State *L)
     return 1;
 }
 
+static int getParameterDescriptionByName(lua_State *L)
+{
+    GET_SELF;
+
+    const char *name = luaL_checkstring(L, 2);
+
+    FMOD_STUDIO_PARAMETER_DESCRIPTION description;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterDescriptionByName(self, name, &description));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_PARAMETER_DESCRIPTION, description);
+
+    return 1;
+}
+
+static int getParameterDescriptionByID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *id = CHECK_STRUCT(L, 2, FMOD_STUDIO_PARAMETER_ID);
+
+    FMOD_STUDIO_PARAMETER_DESCRIPTION description;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterDescriptionByID(self, *id, &description));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_PARAMETER_DESCRIPTION, description);
+
+    return 1;
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -300,6 +328,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getVCAByID)
     METHODS_TABLE_ENTRY(getBankByID)
     METHODS_TABLE_ENTRY(getSoundInfo)
+    METHODS_TABLE_ENTRY(getParameterDescriptionByName)
+    METHODS_TABLE_ENTRY(getParameterDescriptionByID)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)
