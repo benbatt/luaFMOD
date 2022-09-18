@@ -219,7 +219,11 @@ int flagsToString(lua_State *L)
     luaL_Buffer buffer;
     luaL_buffinit(L, &buffer);
 
-    luaL_addchar(&buffer, '(');
+    int multipleBits = ((value & (value - 1)) != 0);
+
+    if (multipleBits) {
+        luaL_addchar(&buffer, '(');
+    }
 
     int first = 1;
 
@@ -243,7 +247,9 @@ int flagsToString(lua_State *L)
         }
     }
 
-    luaL_addchar(&buffer, ')');
+    if (multipleBits) {
+        luaL_addchar(&buffer, ')');
+    }
 
     luaL_pushresult(&buffer);
 
