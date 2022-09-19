@@ -340,6 +340,73 @@ static int setParameterByIDWithLabel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetParameterByIDWithLabel(self, *id, label, ignoreseekspeed));
 }
 
+static int setParametersByIDs(lua_State *L)
+{
+    GET_SELF;
+
+    const int IDS_INDEX = 2;
+    const int VALUES_INDEX = 3;
+
+    luaL_checktype(L, IDS_INDEX, LUA_TTABLE);
+    luaL_checktype(L, VALUES_INDEX, LUA_TTABLE);
+
+    int idCount = lua_objlen(L, IDS_INDEX);
+    luaL_argcheck(L, idCount > 0, IDS_INDEX, "expected at least one ID");
+
+    int valueCount = lua_objlen(L, VALUES_INDEX);
+    luaL_argcheck(L, valueCount > 0, VALUES_INDEX, "expected at least one value");
+
+    int count = (idCount < valueCount) ? idCount : valueCount;
+
+    for (int i = 1; i <= count; ++i) {
+        lua_pushnumber(L, i);
+        lua_gettable(L, IDS_INDEX);
+
+        if (!IS_STRUCT(L, -1, FMOD_STUDIO_PARAMETER_ID)) {
+            return luaL_error(L, "ID list element %d is not a PARAMETER_ID", i);
+        }
+
+        lua_pop(L, 1);
+
+        lua_pushnumber(L, i);
+        lua_gettable(L, VALUES_INDEX);
+
+        if (!lua_isnumber(L, -1)) {
+            return luaL_error(L, "value list element %d is not a number", i);
+        }
+
+        lua_pop(L, 1);
+    }
+
+    FMOD_STUDIO_PARAMETER_ID *ids = malloc(sizeof(*ids) * count);
+    float *values = malloc(sizeof(*values) * count);
+
+    if (!ids || !values) {
+        return luaL_error(L, "Out of memory");
+    }
+
+    for (int i = 1; i <= count; ++i) {
+        lua_pushnumber(L, i);
+        lua_gettable(L, IDS_INDEX);
+        ids[i - 1] = *CHECK_STRUCT(L, -1, FMOD_STUDIO_PARAMETER_ID);
+        lua_pop(L, 1);
+
+        lua_pushnumber(L, i);
+        lua_gettable(L, VALUES_INDEX);
+        values[i - 1] = (float)lua_tonumber(L, -1);
+        lua_pop(L, 1);
+    }
+
+    int ignoreseekspeed = lua_toboolean(L, 4);
+
+    RETURN_IF_ERROR(FMOD_Studio_System_SetParametersByIDs(self, ids, values, count, ignoreseekspeed));
+
+    free(values);
+    free(ids);
+
+    RETURN_STATUS(FMOD_OK);
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -416,6 +483,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterByID)
     METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setParameterByIDWithLabel)
+    METHODS_TABLE_ENTRY(setParametersByIDs)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)

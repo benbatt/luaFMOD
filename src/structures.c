@@ -128,6 +128,25 @@ static int STRUCT_gc(lua_State *L, const char *metatable)
     return 0;
 }
 
+int STRUCT_is(lua_State *L, const char *metatable, int index)
+{
+    if (lua_type(L, index) != LUA_TUSERDATA) {
+        return 0;
+    }
+
+    /* We have to get this metatable first so we don't make index refer to the wrong stack element
+       in cases where it is negative.
+    */
+    lua_getmetatable(L, index);
+    luaL_getmetatable(L, metatable);
+
+    int metatablesMatch = lua_rawequal(L, -1, -2);
+
+    lua_pop(L, 2);
+
+    return metatablesMatch;
+}
+
 void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required)
 {
     if (required == STRUCT_OPTIONAL && lua_isnoneornil(L, index)) {

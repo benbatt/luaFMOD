@@ -43,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
         lua_setmetatable(L, -2); \
     } while(0)
 
+#define IS_STRUCT(L, index, type) STRUCT_is(L, # type, index)
 #define CHECK_STRUCT(L, index, type) ((type*)STRUCT_todata(L, # type, index, STRUCT_REQUIRED))
 #define OPTIONAL_STRUCT(L, index, type) ((type*)STRUCT_todata(L, # type, index, STRUCT_OPTIONAL))
 
@@ -106,6 +107,7 @@ typedef const char * luaFMOD_Buffer;
 
 int STRUCT_new(lua_State *L, const char *metatable, size_t size);
 int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data);
+int STRUCT_is(lua_State *L, const char *metatable, int index);
 void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required);
 
 int getOptionalConstant(lua_State *L, int index, const char *metatable, int defaultValue);
