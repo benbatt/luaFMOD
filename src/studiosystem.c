@@ -302,6 +302,33 @@ static int getParameterLabelByID(lua_State *L)
     return 1;
 }
 
+static int getParameterByID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *id = CHECK_STRUCT(L, 2, FMOD_STUDIO_PARAMETER_ID);
+
+    float value = 0;
+    float finalvalue = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterByID(self, *id, &value, &finalvalue));
+
+    lua_pushnumber(L, value);
+    lua_pushnumber(L, finalvalue);
+
+    return 2;
+}
+
+static int setParameterByID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *id = CHECK_STRUCT(L, 2, FMOD_STUDIO_PARAMETER_ID);
+    float value = (float)luaL_checknumber(L, 3);
+    int ignoreseekspeed = lua_toboolean(L, 4);
+
+    RETURN_STATUS(FMOD_Studio_System_SetParameterByID(self, *id, value, ignoreseekspeed));
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -375,6 +402,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterDescriptionByID)
     METHODS_TABLE_ENTRY(getParameterLabelByName)
     METHODS_TABLE_ENTRY(getParameterLabelByID)
+    METHODS_TABLE_ENTRY(getParameterByID)
+    METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)
