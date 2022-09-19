@@ -20,6 +20,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "common.h"
 #include "logging.h"
+#include <stdlib.h>
 
 #define SELF_TYPE FMOD_STUDIO_SYSTEM
 
@@ -259,6 +260,48 @@ static int getParameterDescriptionByID(lua_State *L)
     return 1;
 }
 
+static int getParameterLabelByName(lua_State *L)
+{
+    GET_SELF;
+
+    const char *name = luaL_checkstring(L, 2);
+    int labelindex = luaL_checkint(L, 3);
+
+    int size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByName(self, name, labelindex, NULL, 0, &size));
+
+    char *label = malloc(size);
+
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByName(self, name, labelindex, label, size, NULL));
+
+    lua_pushstring(L, label);
+
+    free(label);
+
+    return 1;
+}
+
+static int getParameterLabelByID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *id = CHECK_STRUCT(L, 2, FMOD_STUDIO_PARAMETER_ID);
+    int labelindex = luaL_checkint(L, 3);
+
+    int size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByID(self, *id, labelindex, NULL, 0, &size));
+
+    char *label = malloc(size);
+
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByID(self, *id, labelindex, label, size, NULL));
+
+    lua_pushstring(L, label);
+
+    free(label);
+
+    return 1;
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -330,6 +373,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getSoundInfo)
     METHODS_TABLE_ENTRY(getParameterDescriptionByName)
     METHODS_TABLE_ENTRY(getParameterDescriptionByID)
+    METHODS_TABLE_ENTRY(getParameterLabelByName)
+    METHODS_TABLE_ENTRY(getParameterLabelByID)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)
