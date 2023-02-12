@@ -499,6 +499,28 @@ static int lookupPath(lua_State *L)
     return 1;
 }
 
+static int getNumListeners(lua_State *L)
+{
+    GET_SELF;
+
+    int numListeners = 0;
+
+    RETURN_IF_ERROR(FMOD_Studio_System_GetNumListeners(self, &numListeners));
+
+    lua_pushinteger(L, numListeners);
+
+    return 1;
+}
+
+static int setNumListeners(lua_State *L)
+{
+    GET_SELF;
+
+    int numListeners = luaL_checkint(L, 2);
+
+    RETURN_STATUS(FMOD_Studio_System_SetNumListeners(self, numListeners));
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -581,6 +603,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setParameterByNameWithLabel)
     METHODS_TABLE_ENTRY(lookupID)
     METHODS_TABLE_ENTRY(lookupPath)
+    METHODS_TABLE_ENTRY(getNumListeners)
+    METHODS_TABLE_ENTRY(setNumListeners)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)
