@@ -445,6 +445,60 @@ static int setParameterByNameWithLabel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetParameterByNameWithLabel(self, name, label, ignoreseekspeed));
 }
 
+static int lookupID(lua_State *L)
+{
+    GET_SELF;
+
+    const char *path = luaL_checkstring(L, 2);
+
+    FMOD_GUID id;
+    RETURN_IF_ERROR(FMOD_Studio_System_LookupID(self, path, &id));
+
+    PUSH_STRUCT(L, FMOD_GUID, id);
+
+    return 1;
+}
+
+static int lookupPath(lua_State *L)
+{
+    GET_SELF;
+
+    const FMOD_GUID *id = CHECK_STRUCT(L, 2, FMOD_GUID);
+
+    int size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_LookupPath(self, id, NULL, 0, &size));
+
+#define STACKBUFFER_SIZE 256
+	char stackBuffer[STACKBUFFER_SIZE];
+
+    char *buffer = NULL;
+
+	void *userdata = NULL;
+	lua_Alloc alloc = NULL;
+
+    if (size <= STACKBUFFER_SIZE) {
+        buffer = stackBuffer;
+    } else {
+		alloc = lua_getallocf(L, &userdata);
+        buffer = alloc(userdata, NULL, 0, size);
+    }
+
+#define CLEANUP \
+    if (buffer != stackBuffer) { \
+        alloc(userdata, buffer, size, 0); \
+    }
+
+	RETURN_IF_ERROR(FMOD_Studio_System_LookupPath(self, id, buffer, size, NULL), CLEANUP);
+
+	lua_pushlstring(L, buffer, size);
+
+    CLEANUP
+
+#undef CLEANUP
+
+    return 1;
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -525,6 +579,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterByName)
     METHODS_TABLE_ENTRY(setParameterByName)
     METHODS_TABLE_ENTRY(setParameterByNameWithLabel)
+    METHODS_TABLE_ENTRY(lookupID)
+    METHODS_TABLE_ENTRY(lookupPath)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)

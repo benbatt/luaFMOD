@@ -71,10 +71,11 @@ DEALINGS IN THE SOFTWARE.
     } while(0)
 
 /* If an FMOD error is encountered, return nil and the error code */
-#define RETURN_IF_ERROR(result) \
+#define RETURN_IF_ERROR(result, ...) \
     do { \
         FMOD_RESULT _result = (result); \
         if (_result != FMOD_OK) { \
+            __VA_ARGS__ \
             lua_pushnil(L); \
             lua_pushfstring(L, "FMOD error %d: %s", _result, FMOD_ErrorString(_result)); \
             lua_pushinteger(L, _result); \
