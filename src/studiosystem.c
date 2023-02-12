@@ -549,6 +549,30 @@ static int setListenerAttributes(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetListenerAttributes(self, listener, attributes, attenuationposition));
 }
 
+static int getListenerWeight(lua_State *L)
+{
+    GET_SELF;
+
+    int index = luaL_checkint(L, 2);
+
+    float weight = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetListenerWeight(self, index, &weight));
+
+    lua_pushnumber(L, weight);
+
+    return 1;
+}
+
+static int setListenerWeight(lua_State *L)
+{
+    GET_SELF;
+
+    int index = luaL_checkint(L, 2);
+    float weight = (float)luaL_checknumber(L, 3);
+
+    RETURN_STATUS(FMOD_Studio_System_SetListenerWeight(self, index, weight));
+}
+
 static int loadBankFile(lua_State *L)
 {
     GET_SELF;
@@ -623,6 +647,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setNumListeners)
     METHODS_TABLE_ENTRY(getListenerAttributes)
     METHODS_TABLE_ENTRY(setListenerAttributes)
+    METHODS_TABLE_ENTRY(getListenerWeight)
+    METHODS_TABLE_ENTRY(setListenerWeight)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)
 METHODS_TABLE_END
