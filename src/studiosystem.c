@@ -521,6 +521,22 @@ static int setNumListeners(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetNumListeners(self, numListeners));
 }
 
+static int getListenerAttributes(lua_State *L)
+{
+    GET_SELF;
+
+    int listener = luaL_checkint(L, 2);
+
+    FMOD_3D_ATTRIBUTES attributes;
+    FMOD_VECTOR attenuationposition;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetListenerAttributes(self, listener, &attributes, &attenuationposition));
+
+    PUSH_STRUCT(L, FMOD_3D_ATTRIBUTES, attributes);
+    PUSH_STRUCT(L, FMOD_VECTOR, attenuationposition);
+
+    return 2;
+}
+
 static int setListenerAttributes(lua_State *L)
 {
     GET_SELF;
@@ -605,6 +621,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(lookupPath)
     METHODS_TABLE_ENTRY(getNumListeners)
     METHODS_TABLE_ENTRY(setNumListeners)
+    METHODS_TABLE_ENTRY(getListenerAttributes)
     METHODS_TABLE_ENTRY(setListenerAttributes)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)
