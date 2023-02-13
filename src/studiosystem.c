@@ -631,6 +631,23 @@ static int flushSampleLoading(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_FlushSampleLoading(self));
 }
 
+static int startCommandCapture(lua_State *L)
+{
+    GET_SELF;
+
+    const char *filename = luaL_checkstring(L, 2);
+    int flags = CHECK_CONSTANT(L, 3, FMOD_STUDIO_COMMANDCAPTURE_FLAGS);
+
+    RETURN_STATUS(FMOD_Studio_System_StartCommandCapture(self, filename, flags));
+}
+
+static int stopCommandCapture(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_System_StopCommandCapture(self));
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -675,4 +692,6 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(unloadAll)
     METHODS_TABLE_ENTRY(flushCommands)
     METHODS_TABLE_ENTRY(flushSampleLoading)
+    METHODS_TABLE_ENTRY(startCommandCapture)
+    METHODS_TABLE_ENTRY(stopCommandCapture)
 METHODS_TABLE_END
