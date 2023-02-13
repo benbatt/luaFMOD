@@ -648,6 +648,18 @@ static int stopCommandCapture(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_StopCommandCapture(self));
 }
 
+static int getBankCount(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetBankCount(self, &count));
+
+    lua_pushinteger(L, count);
+
+    return 1;
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -694,4 +706,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(flushSampleLoading)
     METHODS_TABLE_ENTRY(startCommandCapture)
     METHODS_TABLE_ENTRY(stopCommandCapture)
+    METHODS_TABLE_ENTRY(getBankCount)
 METHODS_TABLE_END
