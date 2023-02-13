@@ -483,6 +483,8 @@ static int lookupPath(lua_State *L)
         buffer = alloc(userdata, NULL, 0, size);
     }
 
+#undef STACKBUFFER_SIZE
+
 #define CLEANUP \
     if (buffer != stackBuffer) { \
         alloc(userdata, buffer, size, 0); \
@@ -660,6 +662,56 @@ static int getBankCount(lua_State *L)
     return 1;
 }
 
+static int getBankList(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetBankCount(self, &count));
+
+    if (count == 0) {
+        lua_newtable(L);
+        return 1;
+    }
+
+    FMOD_STUDIO_BANK **array = NULL;
+
+#define STACKBUFFER_SIZE 32
+	FMOD_STUDIO_BANK *stackBuffer[STACKBUFFER_SIZE];
+
+	void *userdata = NULL;
+	lua_Alloc alloc = NULL;
+
+    if (count <= STACKBUFFER_SIZE) {
+        array = stackBuffer;
+    } else {
+		alloc = lua_getallocf(L, &userdata);
+        array = alloc(userdata, NULL, 0, sizeof(*array) * count);
+    }
+
+#undef STACKBUFFER_SIZE
+
+#define CLEANUP \
+    if (array != stackBuffer) { \
+        alloc(userdata, array, sizeof(*array) * count, 0); \
+    }
+
+    RETURN_IF_ERROR(FMOD_Studio_System_GetBankList(self, array, count, &count), CLEANUP);
+
+	lua_newtable(L);
+
+    for (int i = 0; i < count; ++i) {
+		PUSH_HANDLE(L, FMOD_STUDIO_BANK, array[i]);
+        lua_rawseti(L, -2, i + 1);
+    }
+
+    CLEANUP
+
+#undef CLEANUP
+
+    return 1;
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -707,4 +759,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(startCommandCapture)
     METHODS_TABLE_ENTRY(stopCommandCapture)
     METHODS_TABLE_ENTRY(getBankCount)
+    METHODS_TABLE_ENTRY(getBankList)
 METHODS_TABLE_END
