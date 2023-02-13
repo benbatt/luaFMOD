@@ -610,6 +610,13 @@ static int loadBankMemory(lua_State *L)
     return 1;
 }
 
+static int unloadAll(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_System_UnloadAll(self));
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -651,4 +658,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setListenerWeight)
     METHODS_TABLE_ENTRY(loadBankFile)
     METHODS_TABLE_ENTRY(loadBankMemory)
+    METHODS_TABLE_ENTRY(unloadAll)
 METHODS_TABLE_END
