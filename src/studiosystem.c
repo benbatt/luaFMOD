@@ -459,6 +459,43 @@ static int lookupID(lua_State *L)
     return 1;
 }
 
+typedef struct {
+    size_t size;
+    char fixedBuffer[256];
+} StackBufferInfo;
+
+void *stackBufferSelect(lua_State *L, StackBufferInfo *info)
+{
+	if (info->size <= sizeof(info->fixedBuffer)) {
+		return info->fixedBuffer;
+	} else {
+		void *userdata = NULL;
+		lua_Alloc alloc = lua_getallocf(L, &userdata);
+		return alloc(userdata, NULL, 0, info->size);
+	}
+}
+
+void stackBufferRelease(lua_State *L, void *pointer, StackBufferInfo *info)
+{
+	if (pointer != info->fixedBuffer) {
+		void *userdata = NULL;
+		lua_Alloc alloc = lua_getallocf(L, &userdata);
+		alloc(userdata, pointer, info->size, 0);
+	}
+}
+
+#define STACKBUFFER_CREATE(type, name, count) \
+    StackBufferInfo _ ## name ## _info = { sizeof(type) * count }; \
+    type *name = NULL; \
+    do { \
+        name = stackBufferSelect(L, &_ ## name ## _info); \
+    } while(0)
+
+#define STACKBUFFER_RELEASE(name) \
+    do { \
+		stackBufferRelease(L, name, &_ ## name ## _info); \
+    } while(0)
+
 static int lookupPath(lua_State *L)
 {
     GET_SELF;
@@ -468,35 +505,13 @@ static int lookupPath(lua_State *L)
     int size = 0;
     RETURN_IF_ERROR(FMOD_Studio_System_LookupPath(self, id, NULL, 0, &size));
 
-#define STACKBUFFER_SIZE 256
-	char stackBuffer[STACKBUFFER_SIZE];
+    STACKBUFFER_CREATE(char, path, size);
 
-    char *buffer = NULL;
+	RETURN_IF_ERROR(FMOD_Studio_System_LookupPath(self, id, path, size, NULL), STACKBUFFER_RELEASE(path););
 
-	void *userdata = NULL;
-	lua_Alloc alloc = NULL;
+	lua_pushlstring(L, path, size);
 
-    if (size <= STACKBUFFER_SIZE) {
-        buffer = stackBuffer;
-    } else {
-		alloc = lua_getallocf(L, &userdata);
-        buffer = alloc(userdata, NULL, 0, size);
-    }
-
-#undef STACKBUFFER_SIZE
-
-#define CLEANUP \
-    if (buffer != stackBuffer) { \
-        alloc(userdata, buffer, size, 0); \
-    }
-
-	RETURN_IF_ERROR(FMOD_Studio_System_LookupPath(self, id, buffer, size, NULL), CLEANUP);
-
-	lua_pushlstring(L, buffer, size);
-
-    CLEANUP
-
-#undef CLEANUP
+    STACKBUFFER_RELEASE(path);
 
     return 1;
 }
@@ -674,29 +689,9 @@ static int getBankList(lua_State *L)
         return 1;
     }
 
-    FMOD_STUDIO_BANK **array = NULL;
+    STACKBUFFER_CREATE(FMOD_STUDIO_BANK*, array, count);
 
-#define STACKBUFFER_SIZE 32
-	FMOD_STUDIO_BANK *stackBuffer[STACKBUFFER_SIZE];
-
-	void *userdata = NULL;
-	lua_Alloc alloc = NULL;
-
-    if (count <= STACKBUFFER_SIZE) {
-        array = stackBuffer;
-    } else {
-		alloc = lua_getallocf(L, &userdata);
-        array = alloc(userdata, NULL, 0, sizeof(*array) * count);
-    }
-
-#undef STACKBUFFER_SIZE
-
-#define CLEANUP \
-    if (array != stackBuffer) { \
-        alloc(userdata, array, sizeof(*array) * count, 0); \
-    }
-
-    RETURN_IF_ERROR(FMOD_Studio_System_GetBankList(self, array, count, &count), CLEANUP);
+    RETURN_IF_ERROR(FMOD_Studio_System_GetBankList(self, array, count, &count), STACKBUFFER_RELEASE(array););
 
 	lua_createtable(L, count, 0);
 
@@ -705,9 +700,7 @@ static int getBankList(lua_State *L)
         lua_rawseti(L, -2, i + 1);
     }
 
-    CLEANUP
-
-#undef CLEANUP
+    STACKBUFFER_RELEASE(array);
 
     return 1;
 }
