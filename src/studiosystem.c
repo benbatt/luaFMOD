@@ -698,7 +698,7 @@ static int getBankList(lua_State *L)
 
     RETURN_IF_ERROR(FMOD_Studio_System_GetBankList(self, array, count, &count), CLEANUP);
 
-	lua_newtable(L);
+	lua_createtable(L, count, 0);
 
     for (int i = 0; i < count; ++i) {
 		PUSH_HANDLE(L, FMOD_STUDIO_BANK, array[i]);
