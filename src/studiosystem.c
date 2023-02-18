@@ -717,6 +717,35 @@ static int getParameterDescriptionCount(lua_State *L)
     return 1;
 }
 
+static int getParameterDescriptionList(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterDescriptionCount(self, &count));
+
+    if (count == 0) {
+        lua_newtable(L);
+        return 1;
+    }
+
+    STACKBUFFER_CREATE(FMOD_STUDIO_PARAMETER_DESCRIPTION, array, count);
+
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterDescriptionList(self, array, count, &count),
+        STACKBUFFER_RELEASE(array););
+
+    lua_createtable(L, count, 0);
+
+    for (int i = 0; i < count; ++i) {
+        PUSH_STRUCT(L, FMOD_STUDIO_PARAMETER_DESCRIPTION, array[i]);
+        lua_rawseti(L, -2, i + 1);
+    }
+
+    STACKBUFFER_RELEASE(array);
+
+    return 1;
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -766,4 +795,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getBankCount)
     METHODS_TABLE_ENTRY(getBankList)
     METHODS_TABLE_ENTRY(getParameterDescriptionCount)
+    METHODS_TABLE_ENTRY(getParameterDescriptionList)
 METHODS_TABLE_END
