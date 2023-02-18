@@ -760,6 +760,18 @@ static int getCPUUsage(lua_State *L)
     return 2;
 }
 
+static int getBufferUsage(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_BUFFER_USAGE usage;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetBufferUsage(self, &usage));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_BUFFER_USAGE, usage);
+
+    return 1;
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -811,4 +823,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterDescriptionCount)
     METHODS_TABLE_ENTRY(getParameterDescriptionList)
     METHODS_TABLE_ENTRY(getCPUUsage)
+    METHODS_TABLE_ENTRY(getBufferUsage)
 METHODS_TABLE_END
