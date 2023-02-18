@@ -705,6 +705,18 @@ static int getBankList(lua_State *L)
     return 1;
 }
 
+static int getParameterDescriptionCount(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterDescriptionCount(self, &count));
+
+    lua_pushinteger(L, count);
+
+    return 1;
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -753,4 +765,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(stopCommandCapture)
     METHODS_TABLE_ENTRY(getBankCount)
     METHODS_TABLE_ENTRY(getBankList)
+    METHODS_TABLE_ENTRY(getParameterDescriptionCount)
 METHODS_TABLE_END
