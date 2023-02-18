@@ -466,22 +466,22 @@ typedef struct {
 
 void *stackBufferSelect(lua_State *L, StackBufferInfo *info)
 {
-	if (info->size <= sizeof(info->fixedBuffer)) {
-		return info->fixedBuffer;
-	} else {
-		void *userdata = NULL;
-		lua_Alloc alloc = lua_getallocf(L, &userdata);
-		return alloc(userdata, NULL, 0, info->size);
-	}
+    if (info->size <= sizeof(info->fixedBuffer)) {
+        return info->fixedBuffer;
+    } else {
+        void *userdata = NULL;
+        lua_Alloc alloc = lua_getallocf(L, &userdata);
+        return alloc(userdata, NULL, 0, info->size);
+    }
 }
 
 void stackBufferRelease(lua_State *L, void *pointer, StackBufferInfo *info)
 {
-	if (pointer != info->fixedBuffer) {
-		void *userdata = NULL;
-		lua_Alloc alloc = lua_getallocf(L, &userdata);
-		alloc(userdata, pointer, info->size, 0);
-	}
+    if (pointer != info->fixedBuffer) {
+        void *userdata = NULL;
+        lua_Alloc alloc = lua_getallocf(L, &userdata);
+        alloc(userdata, pointer, info->size, 0);
+    }
 }
 
 #define STACKBUFFER_CREATE(type, name, count) \
@@ -493,7 +493,7 @@ void stackBufferRelease(lua_State *L, void *pointer, StackBufferInfo *info)
 
 #define STACKBUFFER_RELEASE(name) \
     do { \
-		stackBufferRelease(L, name, &_ ## name ## _info); \
+        stackBufferRelease(L, name, &_ ## name ## _info); \
     } while(0)
 
 static int lookupPath(lua_State *L)
@@ -507,9 +507,9 @@ static int lookupPath(lua_State *L)
 
     STACKBUFFER_CREATE(char, path, size);
 
-	RETURN_IF_ERROR(FMOD_Studio_System_LookupPath(self, id, path, size, NULL), STACKBUFFER_RELEASE(path););
+    RETURN_IF_ERROR(FMOD_Studio_System_LookupPath(self, id, path, size, NULL), STACKBUFFER_RELEASE(path););
 
-	lua_pushlstring(L, path, size);
+    lua_pushlstring(L, path, size);
 
     STACKBUFFER_RELEASE(path);
 
@@ -693,10 +693,10 @@ static int getBankList(lua_State *L)
 
     RETURN_IF_ERROR(FMOD_Studio_System_GetBankList(self, array, count, &count), STACKBUFFER_RELEASE(array););
 
-	lua_createtable(L, count, 0);
+    lua_createtable(L, count, 0);
 
     for (int i = 0; i < count; ++i) {
-		PUSH_HANDLE(L, FMOD_STUDIO_BANK, array[i]);
+        PUSH_HANDLE(L, FMOD_STUDIO_BANK, array[i]);
         lua_rawseti(L, -2, i + 1);
     }
 
