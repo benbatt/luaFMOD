@@ -772,6 +772,13 @@ static int getBufferUsage(lua_State *L)
     return 1;
 }
 
+static int resetBufferUsage(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_System_ResetBufferUsage(self));
+}
+
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
     FUNCTION_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
@@ -824,4 +831,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterDescriptionList)
     METHODS_TABLE_ENTRY(getCPUUsage)
     METHODS_TABLE_ENTRY(getBufferUsage)
+    METHODS_TABLE_ENTRY(resetBufferUsage)
 METHODS_TABLE_END
