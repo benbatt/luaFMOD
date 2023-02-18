@@ -546,6 +546,12 @@ STRUCT_BEGIN(FMOD_STUDIO_SOUND_INFO)
     STRUCT_FIELD(subsoundindex, int)
 STRUCT_END
 
+STRUCT_BEGIN(FMOD_STUDIO_MEMORY_USAGE)
+    STRUCT_FIELD(exclusive, int)
+    STRUCT_FIELD(inclusive, int)
+    STRUCT_FIELD(sampledata, int)
+STRUCT_END
+
 void createStructTables(lua_State *L)
 {
     /* The FMOD table should be on top of the stack, so define FMOD structs first */
@@ -568,6 +574,7 @@ void createStructTables(lua_State *L)
     FMOD_STUDIO_BUFFER_INFO_create(L, "BUFFER_INFO");
     FMOD_STUDIO_BUFFER_USAGE_create(L, "BUFFER_USAGE");
     FMOD_STUDIO_SOUND_INFO_create(L, "SOUND_INFO");
+    FMOD_STUDIO_MEMORY_USAGE_create(L, "MEMORY_USAGE");
 
     /* Tidy up the FMOD.Studio table */
     lua_pop(L, 1);
