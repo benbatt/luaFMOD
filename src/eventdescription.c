@@ -77,6 +77,21 @@ static int getParameterDescriptionCount(lua_State *L)
     return 1;
 }
 
+static int getParameterDescriptionByIndex(lua_State *L)
+{
+    GET_SELF;
+
+    int index = luaL_checkint(L, 2);
+
+    FMOD_STUDIO_PARAMETER_DESCRIPTION description;
+
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetParameterDescriptionByIndex(self, index, &description));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_PARAMETER_DESCRIPTION, description);
+
+    return 1;
+}
+
 static int getParameterDescriptionByName(lua_State *L)
 {
     GET_SELF;
@@ -116,6 +131,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getID)
     METHODS_TABLE_ENTRY(getPath)
     METHODS_TABLE_ENTRY(getParameterDescriptionCount)
+    METHODS_TABLE_ENTRY(getParameterDescriptionByIndex)
     METHODS_TABLE_ENTRY(getParameterDescriptionByName)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
