@@ -326,6 +326,18 @@ static int isDopplerEnabled(lua_State *L)
     return 1;
 }
 
+static int hasSustainPoint(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL sustainpoint = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_HasSustainPoint(self, &sustainpoint));
+
+    lua_pushboolean(L, sustainpoint);
+
+    return 1;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -367,6 +379,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isStream)
     METHODS_TABLE_ENTRY(is3D)
     METHODS_TABLE_ENTRY(isDopplerEnabled)
+    METHODS_TABLE_ENTRY(hasSustainPoint)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
