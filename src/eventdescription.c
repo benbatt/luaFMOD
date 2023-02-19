@@ -410,6 +410,13 @@ static int getSampleLoadingState(lua_State *L)
     return 1;
 }
 
+static int releaseAllInstances(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_EventDescription_ReleaseAllInstances(self));
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
@@ -439,4 +446,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(loadSampleData)
     METHODS_TABLE_ENTRY(unloadSampleData)
     METHODS_TABLE_ENTRY(getSampleLoadingState)
+    METHODS_TABLE_ENTRY(releaseAllInstances)
 METHODS_TABLE_END
