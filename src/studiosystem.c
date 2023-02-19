@@ -270,13 +270,14 @@ static int getParameterLabelByName(lua_State *L)
     int size = 0;
     RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByName(self, name, labelindex, NULL, 0, &size));
 
-    char *label = malloc(size);
+    STACKBUFFER_CREATE(char, label, size);
 
-    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByName(self, name, labelindex, label, size, NULL));
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByName(self, name, labelindex, label, size, NULL),
+        STACKBUFFER_RELEASE(label););
 
     lua_pushstring(L, label);
 
-    free(label);
+    STACKBUFFER_RELEASE(label);
 
     return 1;
 }
@@ -291,13 +292,14 @@ static int getParameterLabelByID(lua_State *L)
     int size = 0;
     RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByID(self, *id, labelindex, NULL, 0, &size));
 
-    char *label = malloc(size);
+    STACKBUFFER_CREATE(char, label, size);
 
-    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByID(self, *id, labelindex, label, size, NULL));
+    RETURN_IF_ERROR(FMOD_Studio_System_GetParameterLabelByID(self, *id, labelindex, label, size, NULL),
+        STACKBUFFER_RELEASE(label););
 
     lua_pushstring(L, label);
 
-    free(label);
+    STACKBUFFER_RELEASE(label);
 
     return 1;
 }
