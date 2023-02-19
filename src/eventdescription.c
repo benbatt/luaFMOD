@@ -58,7 +58,7 @@ static int getPath(lua_State *L)
     RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetPath(self, path, size, &size),
         STACKBUFFER_RELEASE(path););
 
-    lua_pushlstring(L, path, size);
+    lua_pushstring(L, path);
 
     STACKBUFFER_RELEASE(path);
 
@@ -137,7 +137,7 @@ static int getParameterLabelByIndex(lua_State *L)
     RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetParameterLabelByIndex(self, index, labelindex, label, size, &size),
         STACKBUFFER_RELEASE(label););
 
-    lua_pushlstring(L, label, size);
+    lua_pushstring(L, label);
 
     STACKBUFFER_RELEASE(label);
 

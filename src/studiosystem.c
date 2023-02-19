@@ -472,7 +472,7 @@ static int lookupPath(lua_State *L)
 
     RETURN_IF_ERROR(FMOD_Studio_System_LookupPath(self, id, path, size, NULL), STACKBUFFER_RELEASE(path););
 
-    lua_pushlstring(L, path, size);
+    lua_pushstring(L, path);
 
     STACKBUFFER_RELEASE(path);
 
