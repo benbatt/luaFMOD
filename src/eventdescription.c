@@ -266,6 +266,66 @@ static int getSoundSize(lua_State *L)
     return 1;
 }
 
+static int isSnapshot(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL snapshot = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_IsSnapshot(self, &snapshot));
+
+    lua_pushboolean(L, snapshot);
+
+    return 1;
+}
+
+static int isOneshot(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL oneshot = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_IsOneshot(self, &oneshot));
+
+    lua_pushboolean(L, oneshot);
+
+    return 1;
+}
+
+static int isStream(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL isStream = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_IsStream(self, &isStream));
+
+    lua_pushboolean(L, isStream);
+
+    return 1;
+}
+
+static int is3D(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL is3D = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_Is3D(self, &is3D));
+
+    lua_pushboolean(L, is3D);
+
+    return 1;
+}
+
+static int isDopplerEnabled(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL doppler = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_IsDopplerEnabled(self, &doppler));
+
+    lua_pushboolean(L, doppler);
+
+    return 1;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -302,6 +362,11 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getLength)
     METHODS_TABLE_ENTRY(getMinMaxDistance)
     METHODS_TABLE_ENTRY(getSoundSize)
+    METHODS_TABLE_ENTRY(isSnapshot)
+    METHODS_TABLE_ENTRY(isOneshot)
+    METHODS_TABLE_ENTRY(isStream)
+    METHODS_TABLE_ENTRY(is3D)
+    METHODS_TABLE_ENTRY(isDopplerEnabled)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
