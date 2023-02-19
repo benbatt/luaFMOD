@@ -391,6 +391,13 @@ static int loadSampleData(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventDescription_LoadSampleData(self));
 }
 
+static int unloadSampleData(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_EventDescription_UnloadSampleData(self));
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
@@ -418,4 +425,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getInstanceCount)
     METHODS_TABLE_ENTRY(getInstanceList)
     METHODS_TABLE_ENTRY(loadSampleData)
+    METHODS_TABLE_ENTRY(unloadSampleData)
 METHODS_TABLE_END
