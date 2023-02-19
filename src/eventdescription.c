@@ -122,6 +122,28 @@ static int getParameterDescriptionByID(lua_State *L)
     return 1;
 }
 
+static int getParameterLabelByIndex(lua_State *L)
+{
+    GET_SELF;
+
+    int index = luaL_checkint(L, 2);
+    int labelindex = luaL_checkint(L, 3);
+
+    int size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetParameterLabelByIndex(self, index, labelindex, NULL, 0, &size));
+
+    STACKBUFFER_CREATE(char, label, size);
+
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetParameterLabelByIndex(self, index, labelindex, label, size, &size),
+        STACKBUFFER_RELEASE(label););
+
+    lua_pushlstring(L, label, size);
+
+    STACKBUFFER_RELEASE(label);
+
+    return 1;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -149,6 +171,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterDescriptionByIndex)
     METHODS_TABLE_ENTRY(getParameterDescriptionByName)
     METHODS_TABLE_ENTRY(getParameterDescriptionByID)
+    METHODS_TABLE_ENTRY(getParameterLabelByIndex)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
