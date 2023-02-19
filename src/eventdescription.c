@@ -188,6 +188,18 @@ static int getParameterLabelByID(lua_State *L)
     return 1;
 }
 
+static int getUserPropertyCount(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetUserPropertyCount(self, &count));
+
+    lua_pushinteger(L, count);
+
+    return 1;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -218,6 +230,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterLabelByIndex)
     METHODS_TABLE_ENTRY(getParameterLabelByName)
     METHODS_TABLE_ENTRY(getParameterLabelByID)
+    METHODS_TABLE_ENTRY(getUserPropertyCount)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
