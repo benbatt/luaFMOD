@@ -107,6 +107,21 @@ static int getParameterDescriptionByName(lua_State *L)
     return 1;
 }
 
+static int getParameterDescriptionByID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *id = CHECK_STRUCT(L, 2, FMOD_STUDIO_PARAMETER_ID);
+
+    FMOD_STUDIO_PARAMETER_DESCRIPTION description;
+
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetParameterDescriptionByID(self, *id, &description));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_PARAMETER_DESCRIPTION, description);
+
+    return 1;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -133,6 +148,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterDescriptionCount)
     METHODS_TABLE_ENTRY(getParameterDescriptionByIndex)
     METHODS_TABLE_ENTRY(getParameterDescriptionByName)
+    METHODS_TABLE_ENTRY(getParameterDescriptionByID)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
