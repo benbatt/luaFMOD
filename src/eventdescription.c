@@ -214,6 +214,20 @@ static int getUserPropertyByIndex(lua_State *L)
     return 1;
 }
 
+static int getUserProperty(lua_State *L)
+{
+    GET_SELF;
+
+    const char *name = luaL_checkstring(L, 2);
+
+    FMOD_STUDIO_USER_PROPERTY property;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetUserProperty(self, name, &property));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_USER_PROPERTY, property);
+
+    return 1;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -246,6 +260,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterLabelByID)
     METHODS_TABLE_ENTRY(getUserPropertyCount)
     METHODS_TABLE_ENTRY(getUserPropertyByIndex)
+    METHODS_TABLE_ENTRY(getUserProperty)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
