@@ -240,6 +240,20 @@ static int getLength(lua_State *L)
     return 1;
 }
 
+static int getMinMaxDistance(lua_State *L)
+{
+    GET_SELF;
+
+    float min = 0;
+    float max = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetMinMaxDistance(self, &min, &max));
+
+    lua_pushnumber(L, min);
+    lua_pushnumber(L, max);
+
+    return 2;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -274,6 +288,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getUserPropertyByIndex)
     METHODS_TABLE_ENTRY(getUserProperty)
     METHODS_TABLE_ENTRY(getLength)
+    METHODS_TABLE_ENTRY(getMinMaxDistance)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
