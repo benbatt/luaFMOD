@@ -459,43 +459,6 @@ static int lookupID(lua_State *L)
     return 1;
 }
 
-typedef struct {
-    size_t size;
-    char fixedBuffer[256];
-} StackBufferInfo;
-
-void *stackBufferSelect(lua_State *L, StackBufferInfo *info)
-{
-    if (info->size <= sizeof(info->fixedBuffer)) {
-        return info->fixedBuffer;
-    } else {
-        void *userdata = NULL;
-        lua_Alloc alloc = lua_getallocf(L, &userdata);
-        return alloc(userdata, NULL, 0, info->size);
-    }
-}
-
-void stackBufferRelease(lua_State *L, void *pointer, StackBufferInfo *info)
-{
-    if (pointer != info->fixedBuffer) {
-        void *userdata = NULL;
-        lua_Alloc alloc = lua_getallocf(L, &userdata);
-        alloc(userdata, pointer, info->size, 0);
-    }
-}
-
-#define STACKBUFFER_CREATE(type, name, count) \
-    StackBufferInfo _ ## name ## _info = { sizeof(type) * count }; \
-    type *name = NULL; \
-    do { \
-        name = stackBufferSelect(L, &_ ## name ## _info); \
-    } while(0)
-
-#define STACKBUFFER_RELEASE(name) \
-    do { \
-        stackBufferRelease(L, name, &_ ## name ## _info); \
-    } while(0)
-
 static int lookupPath(lua_State *L)
 {
     GET_SELF;

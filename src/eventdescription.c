@@ -46,6 +46,25 @@ static int getID(lua_State *L)
     return 1;
 }
 
+static int getPath(lua_State *L)
+{
+    GET_SELF;
+
+    int size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetPath(self, NULL, 0, &size));
+
+    STACKBUFFER_CREATE(char, path, size);
+
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetPath(self, path, size, &size),
+        STACKBUFFER_RELEASE(path););
+
+    lua_pushlstring(L, path, size);
+
+    STACKBUFFER_RELEASE(path);
+
+    return 1;
+}
+
 static int getParameterDescriptionByName(lua_State *L)
 {
     GET_SELF;
@@ -83,6 +102,7 @@ static int loadSampleData(lua_State *L)
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
+    METHODS_TABLE_ENTRY(getPath)
     METHODS_TABLE_ENTRY(getParameterDescriptionByName)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)

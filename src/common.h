@@ -90,6 +90,23 @@ DEALINGS IN THE SOFTWARE.
         return 1; \
     } while(0)
 
+typedef struct {
+    size_t size;
+    char fixedBuffer[256];
+} StackBufferInfo;
+
+#define STACKBUFFER_CREATE(type, name, count) \
+    StackBufferInfo _ ## name ## _info = { sizeof(type) * count }; \
+    type *name = NULL; \
+    do { \
+        name = stackBufferSelect(L, &_ ## name ## _info); \
+    } while(0)
+
+#define STACKBUFFER_RELEASE(name) \
+    do { \
+        stackBufferRelease(L, name, &_ ## name ## _info); \
+    } while(0)
+
 #define FUNCTION_TABLE_BEGIN(name) const struct luaL_reg name[] = {
 #define FUNCTION_TABLE_ENTRY(function) { #function, function },
 #define FUNCTION_TABLE_END { NULL, NULL } };
@@ -103,6 +120,9 @@ DEALINGS IN THE SOFTWARE.
 
 #define STRUCT_REQUIRED 1
 #define STRUCT_OPTIONAL 0
+
+void *stackBufferSelect(lua_State *L, StackBufferInfo *info);
+void stackBufferRelease(lua_State *L, void *pointer, StackBufferInfo *info);
 
 typedef const char * luaFMOD_Buffer;
 

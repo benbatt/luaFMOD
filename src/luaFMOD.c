@@ -22,6 +22,26 @@ DEALINGS IN THE SOFTWARE.
 #include "platform.h"
 #include "logging.h"
 
+void *stackBufferSelect(lua_State *L, StackBufferInfo *info)
+{
+    if (info->size <= sizeof(info->fixedBuffer)) {
+        return info->fixedBuffer;
+    } else {
+        void *userdata = NULL;
+        lua_Alloc alloc = lua_getallocf(L, &userdata);
+        return alloc(userdata, NULL, 0, info->size);
+    }
+}
+
+void stackBufferRelease(lua_State *L, void *pointer, StackBufferInfo *info)
+{
+    if (pointer != info->fixedBuffer) {
+        void *userdata = NULL;
+        lua_Alloc alloc = lua_getallocf(L, &userdata);
+        alloc(userdata, pointer, info->size, 0);
+    }
+}
+
 static int Debug_Initialize(lua_State *L)
 {
     int flags = CHECK_CONSTANT(L, 1, FMOD_DEBUG_FLAGS);
