@@ -65,6 +65,18 @@ static int getPath(lua_State *L)
     return 1;
 }
 
+static int getParameterDescriptionCount(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetParameterDescriptionCount(self, &count));
+
+    lua_pushinteger(L, count);
+
+    return 1;
+}
+
 static int getParameterDescriptionByName(lua_State *L)
 {
     GET_SELF;
@@ -103,6 +115,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
     METHODS_TABLE_ENTRY(getPath)
+    METHODS_TABLE_ENTRY(getParameterDescriptionCount)
     METHODS_TABLE_ENTRY(getParameterDescriptionByName)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
