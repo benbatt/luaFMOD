@@ -33,6 +33,19 @@ static int isValid(lua_State *L)
     return 1;
 }
 
+static int getID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_GUID id;
+
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetID(self, &id));
+
+    PUSH_STRUCT(L, FMOD_GUID, id);
+
+    return 1;
+}
+
 static int getParameterDescriptionByName(lua_State *L)
 {
     GET_SELF;
@@ -69,6 +82,7 @@ static int loadSampleData(lua_State *L)
 
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
+    METHODS_TABLE_ENTRY(getID)
     METHODS_TABLE_ENTRY(getParameterDescriptionByName)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
