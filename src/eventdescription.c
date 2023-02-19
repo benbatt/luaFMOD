@@ -254,6 +254,18 @@ static int getMinMaxDistance(lua_State *L)
     return 2;
 }
 
+static int getSoundSize(lua_State *L)
+{
+    GET_SELF;
+
+    float size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetSoundSize(self, &size));
+
+    lua_pushnumber(L, size);
+
+    return 1;
+}
+
 static int createInstance(lua_State *L)
 {
     GET_SELF;
@@ -289,6 +301,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getUserProperty)
     METHODS_TABLE_ENTRY(getLength)
     METHODS_TABLE_ENTRY(getMinMaxDistance)
+    METHODS_TABLE_ENTRY(getSoundSize)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
