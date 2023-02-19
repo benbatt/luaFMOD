@@ -350,6 +350,18 @@ static int createInstance(lua_State *L)
     return 1;
 }
 
+static int getInstanceCount(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetInstanceCount(self, &count));
+
+    lua_pushinteger(L, count);
+
+    return 1;
+}
+
 static int loadSampleData(lua_State *L)
 {
     GET_SELF;
@@ -381,5 +393,6 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isDopplerEnabled)
     METHODS_TABLE_ENTRY(hasSustainPoint)
     METHODS_TABLE_ENTRY(createInstance)
+    METHODS_TABLE_ENTRY(getInstanceCount)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
