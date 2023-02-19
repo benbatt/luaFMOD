@@ -256,6 +256,18 @@ static int STRUCT_access_uchar(lua_State *L, const char *fieldName, unsigned cha
     }
 }
 
+static int STRUCT_access_boolean(lua_State *L, const char *fieldName, FMOD_BOOL *data, int parentIndex, int set,
+    int valueIndex)
+{
+    if (set) {
+        *data = lua_toboolean(L, valueIndex);
+        return 0;
+    } else {
+        lua_pushboolean(L, *data);
+        return 1;
+    }
+}
+
 /* Pops struct userdata from the top of the stack.
    Pushes the root struct userdata onto the stack.
 */
@@ -412,6 +424,11 @@ static int STRUCT_access_handle(lua_State *L, void **data, const char *metatable
             return CONSTANT_access_ ## type(L, &data->name, set, index + 2); \
         }
 
+#define STRUCT_FIELD_CUSTOM(name, ...) \
+        if (strncmp(# name, field, length) == 0) { \
+            __VA_ARGS__ \
+        }
+
 #define STRUCT_FIELDACCESS_END \
         return luaL_error(L, "Invalid field %s.%s", typeName, field); \
     }
@@ -504,6 +521,34 @@ STRUCT_BEGIN(FMOD_STUDIO_PARAMETER_DESCRIPTION)
     STRUCT_FIELD(guid, FMOD_GUID)
 STRUCT_END
 
+static int STRUCT_access_user_property_value(lua_State *L, FMOD_STUDIO_USER_PROPERTY *property, int index, int set,
+    int valueIndex)
+{
+    switch (property->type) {
+    case FMOD_STUDIO_USER_PROPERTY_TYPE_INTEGER:
+        return STRUCT_access_int(L, "value", &property->intvalue, index, set, index + 2);
+    case FMOD_STUDIO_USER_PROPERTY_TYPE_BOOLEAN:
+        return STRUCT_access_boolean(L, "value", &property->boolvalue, index, set, index + 2);
+    case FMOD_STUDIO_USER_PROPERTY_TYPE_FLOAT:
+        return STRUCT_access_float(L, "value", &property->floatvalue, index, set, index + 2);
+    case FMOD_STUDIO_USER_PROPERTY_TYPE_STRING:
+        return STRUCT_access_cstring(L, "value", &property->stringvalue, index, set, index + 2);
+    }
+
+    return -1;
+}
+
+STRUCT_BEGIN(FMOD_STUDIO_USER_PROPERTY)
+    STRUCT_FIELD(name, cstring)
+    STRUCT_FIELD_CONSTANT(type, FMOD_STUDIO_USER_PROPERTY_TYPE)
+    STRUCT_FIELD_CUSTOM(value,
+        int result = STRUCT_access_user_property_value(L, data, index, set, index + 2);
+        if (result >= 0) {
+            return result;
+        }
+    )
+STRUCT_END
+
 STRUCT_BEGIN(FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES)
     STRUCT_FIELD(name, cstring)
     STRUCT_FIELD_HANDLE(sound, FMOD_SOUND)
@@ -568,6 +613,7 @@ void createStructTables(lua_State *L)
     /* Define FMOD.Studio structs */
     FMOD_STUDIO_PARAMETER_ID_create(L, "PARAMETER_ID");
     FMOD_STUDIO_PARAMETER_DESCRIPTION_create(L, "PARAMETER_DESCRIPTION");
+    FMOD_STUDIO_USER_PROPERTY_create(L, "USER_PROPERTY");
     FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES_create(L, "PROGRAMMER_SOUND_PROPERTIES");
     FMOD_STUDIO_ADVANCEDSETTINGS_create(L, "ADVANCEDSETTINGS");
     FMOD_STUDIO_CPU_USAGE_create(L, "CPU_USAGE");
