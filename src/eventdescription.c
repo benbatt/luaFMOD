@@ -232,7 +232,7 @@ static int getLength(lua_State *L)
 {
     GET_SELF;
 
-    float length = 0;
+    int length = 0;
     RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetLength(self, &length));
 
     lua_pushnumber(L, length);
