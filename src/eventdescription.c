@@ -22,6 +22,17 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_EVENTDESCRIPTION
 
+static int isValid(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL valid = FMOD_Studio_EventDescription_IsValid(self);
+
+    lua_pushboolean(L, valid);
+
+    return 1;
+}
+
 static int getParameterDescriptionByName(lua_State *L)
 {
     GET_SELF;
@@ -57,6 +68,7 @@ static int loadSampleData(lua_State *L)
 }
 
 METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getParameterDescriptionByName)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(loadSampleData)
