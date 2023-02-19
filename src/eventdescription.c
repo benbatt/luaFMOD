@@ -362,6 +362,28 @@ static int getInstanceCount(lua_State *L)
     return 1;
 }
 
+static int getInstanceList(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetInstanceCount(self, &count));
+
+    STACKBUFFER_CREATE(FMOD_STUDIO_EVENTINSTANCE*, array, count);
+
+    RETURN_IF_ERROR(FMOD_Studio_EventDescription_GetInstanceList(self, array, count, NULL));
+
+    lua_createtable(L, count, 0);
+
+    for (int i = 0; i < count; ++i)
+    {
+        PUSH_HANDLE(L, FMOD_STUDIO_EVENTINSTANCE, array[i]);
+        lua_rawseti(L, -2, i + 1);
+    }
+
+    return 1;
+}
+
 static int loadSampleData(lua_State *L)
 {
     GET_SELF;
@@ -394,5 +416,6 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(hasSustainPoint)
     METHODS_TABLE_ENTRY(createInstance)
     METHODS_TABLE_ENTRY(getInstanceCount)
+    METHODS_TABLE_ENTRY(getInstanceList)
     METHODS_TABLE_ENTRY(loadSampleData)
 METHODS_TABLE_END
