@@ -34,6 +34,18 @@ static int isValid(lua_State *L)
     return 1;
 }
 
+static int getDescription(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_EVENTDESCRIPTION *description = NULL;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetDescription(self, &description));
+
+    PUSH_HANDLE(L, FMOD_STUDIO_EVENTDESCRIPTION, description);
+
+    return 1;
+}
+
 static int set3DAttributes(lua_State *L)
 {
     GET_SELF;
@@ -146,6 +158,7 @@ static int setUserData(lua_State *L)
 
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
+    METHODS_TABLE_ENTRY(getDescription)
     METHODS_TABLE_ENTRY(set3DAttributes)
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
