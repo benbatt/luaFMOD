@@ -23,6 +23,17 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_EVENTINSTANCE
 
+static int isValid(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL valid = FMOD_Studio_EventInstance_IsValid(self);
+
+    lua_pushboolean(L, valid);
+
+    return 1;
+}
+
 static int set3DAttributes(lua_State *L)
 {
     GET_SELF;
@@ -134,6 +145,7 @@ static int setUserData(lua_State *L)
 }
 
 METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(set3DAttributes)
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
