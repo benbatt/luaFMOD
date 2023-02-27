@@ -46,6 +46,20 @@ static int getDescription(lua_State *L)
     return 1;
 }
 
+static int getVolume(lua_State *L)
+{
+    GET_SELF;
+
+    float volume = 0;
+    float finalvolume = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetVolume(self, &volume, &finalvolume));
+
+    lua_pushnumber(L, volume);
+    lua_pushnumber(L, finalvolume);
+
+    return 2;
+}
+
 static int set3DAttributes(lua_State *L)
 {
     GET_SELF;
@@ -159,6 +173,7 @@ static int setUserData(lua_State *L)
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getDescription)
+    METHODS_TABLE_ENTRY(getVolume)
     METHODS_TABLE_ENTRY(set3DAttributes)
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
