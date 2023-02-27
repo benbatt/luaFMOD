@@ -87,6 +87,24 @@ FUNCTION_TABLE_END
         luaL_register(L, name, table); \
     } while (0)
 
+static int handlesAreEqual(lua_State *L)
+{
+    lua_getmetatable(L, 1);
+    lua_getmetatable(L, 2);
+
+    if (lua_rawequal(L, -1, -2)) {
+        // the operands have the same handle type
+        void *handle1 = *(void**)lua_touserdata(L, 1);
+        void *handle2 = *(void**)lua_touserdata(L, 2);
+
+        lua_pushboolean(L, handle1 == handle2);
+    } else {
+        lua_pushboolean(L, 0);
+    }
+
+    return 1;
+}
+
 static void registerMethodsTable(lua_State *L, const char *name, const luaL_reg *methods)
 {
     luaL_newmetatable(L, name);
@@ -96,6 +114,10 @@ static void registerMethodsTable(lua_State *L, const char *name, const luaL_reg 
     */
     lua_pushvalue(L, -1);           /* copy the metatable to the stack top */
     lua_setfield(L, -2, "__index"); /* set the __index field */
+
+    /* Support testing handles for equality */
+    lua_pushcfunction(L, handlesAreEqual);
+    lua_setfield(L, -2, "__eq");
 
     luaL_register(L, NULL, methods);
 
