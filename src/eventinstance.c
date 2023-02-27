@@ -92,6 +92,18 @@ static int setPitch(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetPitch(self, pitch));
 }
 
+static int get3DAttributes(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_3D_ATTRIBUTES attributes;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_Get3DAttributes(self, &attributes));
+
+    PUSH_STRUCT(L, FMOD_3D_ATTRIBUTES, attributes);
+
+    return 1;
+}
+
 static int set3DAttributes(lua_State *L)
 {
     GET_SELF;
@@ -209,6 +221,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setVolume)
     METHODS_TABLE_ENTRY(getPitch)
     METHODS_TABLE_ENTRY(setPitch)
+    METHODS_TABLE_ENTRY(get3DAttributes)
     METHODS_TABLE_ENTRY(set3DAttributes)
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
