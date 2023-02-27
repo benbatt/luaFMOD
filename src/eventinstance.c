@@ -60,6 +60,15 @@ static int getVolume(lua_State *L)
     return 2;
 }
 
+static int setVolume(lua_State *L)
+{
+    GET_SELF;
+
+    float volume = (float)lua_tonumber(L, 2);
+
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetVolume(self, volume));
+}
+
 static int set3DAttributes(lua_State *L)
 {
     GET_SELF;
@@ -174,6 +183,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getDescription)
     METHODS_TABLE_ENTRY(getVolume)
+    METHODS_TABLE_ENTRY(setVolume)
     METHODS_TABLE_ENTRY(set3DAttributes)
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
