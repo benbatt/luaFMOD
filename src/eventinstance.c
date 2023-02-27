@@ -69,6 +69,29 @@ static int setVolume(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetVolume(self, volume));
 }
 
+static int getPitch(lua_State *L)
+{
+    GET_SELF;
+
+    float pitch = 0;
+    float finalpitch = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetPitch(self, &pitch, &finalpitch));
+
+    lua_pushnumber(L, pitch);
+    lua_pushnumber(L, finalpitch);
+
+    return 2;
+}
+
+static int setPitch(lua_State *L)
+{
+    GET_SELF;
+
+    float pitch = (float)lua_tonumber(L, 2);
+
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetPitch(self, pitch));
+}
+
 static int set3DAttributes(lua_State *L)
 {
     GET_SELF;
@@ -184,6 +207,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getDescription)
     METHODS_TABLE_ENTRY(getVolume)
     METHODS_TABLE_ENTRY(setVolume)
+    METHODS_TABLE_ENTRY(getPitch)
+    METHODS_TABLE_ENTRY(setPitch)
     METHODS_TABLE_ENTRY(set3DAttributes)
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
