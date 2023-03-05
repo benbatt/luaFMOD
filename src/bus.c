@@ -46,6 +46,25 @@ static int getID(lua_State *L)
     return 1;
 }
 
+static int getPath(lua_State *L)
+{
+    GET_SELF;
+
+    int size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bus_GetPath(self, NULL, 0, &size));
+
+    STACKBUFFER_CREATE(char, path, size);
+
+    RETURN_IF_ERROR(FMOD_Studio_Bus_GetPath(self, path, size, &size),
+        STACKBUFFER_RELEASE(path););
+
+    lua_pushstring(L, path);
+
+    STACKBUFFER_RELEASE(path);
+
+    return 1;
+}
+
 static int setMute(lua_State *L)
 {
     GET_SELF;
@@ -58,5 +77,6 @@ static int setMute(lua_State *L)
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
+    METHODS_TABLE_ENTRY(getPath)
     METHODS_TABLE_ENTRY(setMute)
 METHODS_TABLE_END
