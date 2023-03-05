@@ -33,6 +33,19 @@ static int isValid(lua_State *L)
     return 1;
 }
 
+static int getID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_GUID id;
+
+    RETURN_IF_ERROR(FMOD_Studio_Bus_GetID(self, &id));
+
+    PUSH_STRUCT(L, FMOD_GUID, id);
+
+    return 1;
+}
+
 static int setMute(lua_State *L)
 {
     GET_SELF;
@@ -44,5 +57,6 @@ static int setMute(lua_State *L)
 
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
+    METHODS_TABLE_ENTRY(getID)
     METHODS_TABLE_ENTRY(setMute)
 METHODS_TABLE_END
