@@ -134,4 +134,7 @@ void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required
 int getOptionalConstant(lua_State *L, int index, const char *metatable, int defaultValue);
 int CONSTANT_new(lua_State *L, const char *metatable, int value);
 
+void getParameterIDsAndValues(lua_State *L, const int IDS_INDEX, const int VALUES_INDEX,
+    FMOD_STUDIO_PARAMETER_ID **idsOut, float **valuesOut, int *countOut);
+
 #endif /* COMMON_H */

@@ -342,13 +342,9 @@ static int setParameterByIDWithLabel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetParameterByIDWithLabel(self, *id, label, ignoreseekspeed));
 }
 
-static int setParametersByIDs(lua_State *L)
+void getParameterIDsAndValues(lua_State *L, const int IDS_INDEX, const int VALUES_INDEX,
+    FMOD_STUDIO_PARAMETER_ID **idsOut, float **valuesOut, int *countOut)
 {
-    GET_SELF;
-
-    const int IDS_INDEX = 2;
-    const int VALUES_INDEX = 3;
-
     luaL_checktype(L, IDS_INDEX, LUA_TTABLE);
     luaL_checktype(L, VALUES_INDEX, LUA_TTABLE);
 
@@ -365,7 +361,7 @@ static int setParametersByIDs(lua_State *L)
         lua_gettable(L, IDS_INDEX);
 
         if (!IS_STRUCT(L, -1, FMOD_STUDIO_PARAMETER_ID)) {
-            return luaL_error(L, "ID list element %d is not a PARAMETER_ID", i);
+            luaL_error(L, "ID list element %d is not a PARAMETER_ID", i);
         }
 
         lua_pop(L, 1);
@@ -374,7 +370,7 @@ static int setParametersByIDs(lua_State *L)
         lua_gettable(L, VALUES_INDEX);
 
         if (!lua_isnumber(L, -1)) {
-            return luaL_error(L, "value list element %d is not a number", i);
+            luaL_error(L, "value list element %d is not a number", i);
         }
 
         lua_pop(L, 1);
@@ -384,7 +380,7 @@ static int setParametersByIDs(lua_State *L)
     float *values = malloc(sizeof(*values) * count);
 
     if (!ids || !values) {
-        return luaL_error(L, "Out of memory");
+        luaL_error(L, "Out of memory");
     }
 
     for (int i = 1; i <= count; ++i) {
@@ -399,12 +395,33 @@ static int setParametersByIDs(lua_State *L)
         lua_pop(L, 1);
     }
 
+    *idsOut = ids;
+    *valuesOut = values;
+    *countOut = count;
+}
+
+static int setParametersByIDs(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *ids = NULL;
+    float *values = NULL;
+    int count = 0;
+    getParameterIDsAndValues(L, 2, 3, &ids, &values, &count);
+
     int ignoreseekspeed = lua_toboolean(L, 4);
 
-    RETURN_IF_ERROR(FMOD_Studio_System_SetParametersByIDs(self, ids, values, count, ignoreseekspeed));
+#define CLEANUP \
+    do { \
+        free(values); \
+        free(ids); \
+    } while(0)
 
-    free(values);
-    free(ids);
+    RETURN_IF_ERROR(FMOD_Studio_System_SetParametersByIDs(self, ids, values, count, ignoreseekspeed), CLEANUP; );
+
+    CLEANUP;
+
+#undef CLEANUP
 
     RETURN_STATUS(FMOD_OK);
 }

@@ -20,6 +20,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "callbacks.h"
 #include "common.h"
+#include <stdlib.h>
 
 #define SELF_TYPE FMOD_STUDIO_EVENTINSTANCE
 
@@ -373,6 +374,32 @@ static int setParameterByIDWithLabel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByIDWithLabel(self, *id, label, ignoreseekspeed));
 }
 
+static int setParametersByIDs(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *ids = NULL;
+    float *values = NULL;
+    int count = 0;
+    getParameterIDsAndValues(L, 2, 3, &ids, &values, &count);
+
+    int ignoreseekspeed = lua_toboolean(L, 4);
+
+#define CLEANUP \
+    do { \
+        free(values); \
+        free(ids); \
+    } while(0)
+
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_SetParametersByIDs(self, ids, values, count, ignoreseekspeed), CLEANUP; );
+
+    CLEANUP;
+
+#undef CLEANUP
+
+    RETURN_STATUS(FMOD_OK);
+}
+
 static int setCallback(lua_State *L)
 {
     GET_SELF;
@@ -452,6 +479,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getParameterByID)
     METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setParameterByIDWithLabel)
+    METHODS_TABLE_ENTRY(setParametersByIDs)
     METHODS_TABLE_ENTRY(setCallback)
     METHODS_TABLE_ENTRY(getUserData)
     METHODS_TABLE_ENTRY(setUserData)
