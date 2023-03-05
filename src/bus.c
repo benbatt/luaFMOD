@@ -88,6 +88,27 @@ static int setVolume(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_SetVolume(self, volume));
 }
 
+static int getPaused(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL paused = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bus_GetPaused(self, &paused));
+
+    lua_pushboolean(L, paused);
+
+    return 1;
+}
+
+static int setPaused(lua_State *L)
+{
+    GET_SELF;
+
+    int paused = lua_toboolean(L, 2);
+
+    RETURN_STATUS(FMOD_Studio_Bus_SetPaused(self, paused));
+}
+
 static int setMute(lua_State *L)
 {
     GET_SELF;
@@ -103,5 +124,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getPath)
     METHODS_TABLE_ENTRY(getVolume)
     METHODS_TABLE_ENTRY(setVolume)
+    METHODS_TABLE_ENTRY(getPaused)
+    METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(setMute)
 METHODS_TABLE_END
