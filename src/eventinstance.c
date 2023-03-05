@@ -400,6 +400,13 @@ static int setParametersByIDs(lua_State *L)
     RETURN_STATUS(FMOD_OK);
 }
 
+static int keyOff(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_EventInstance_KeyOff(self));
+}
+
 static int setCallback(lua_State *L)
 {
     GET_SELF;
@@ -480,6 +487,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setParameterByIDWithLabel)
     METHODS_TABLE_ENTRY(setParametersByIDs)
+    METHODS_TABLE_ENTRY(keyOff)
     METHODS_TABLE_ENTRY(setCallback)
     METHODS_TABLE_ENTRY(getUserData)
     METHODS_TABLE_ENTRY(setUserData)
