@@ -130,6 +130,15 @@ static int setMute(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_SetMute(self, mute));
 }
 
+static int stopAllEvents(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_STOP_MODE mode = CHECK_CONSTANT(L, 2, FMOD_STUDIO_STOP_MODE);
+
+    RETURN_STATUS(FMOD_Studio_Bus_StopAllEvents(self, mode));
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
@@ -140,4 +149,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(getMute)
     METHODS_TABLE_ENTRY(setMute)
+    METHODS_TABLE_ENTRY(stopAllEvents)
 METHODS_TABLE_END
