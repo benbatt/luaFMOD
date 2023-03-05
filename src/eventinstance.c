@@ -264,6 +264,20 @@ static int getChannelGroup(lua_State *L)
     return 1;
 }
 
+static int getMinMaxDistance(lua_State *L)
+{
+    GET_SELF;
+
+    float min = 0;
+    float max = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetMinMaxDistance(self, &min, &max));
+
+    lua_pushnumber(L, min);
+    lua_pushnumber(L, max);
+
+    return 2;
+}
+
 static int release(lua_State *L)
 {
     GET_SELF;
@@ -363,6 +377,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setTimelinePosition)
     METHODS_TABLE_ENTRY(getPlaybackState)
     METHODS_TABLE_ENTRY(getChannelGroup)
+    METHODS_TABLE_ENTRY(getMinMaxDistance)
     METHODS_TABLE_ENTRY(release)
     METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setParameterByName)
