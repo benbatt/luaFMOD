@@ -468,6 +468,18 @@ static int getCPUUsage(lua_State *L)
     return 2;
 }
 
+static int getMemoryUsage(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_MEMORY_USAGE usage;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetMemoryUsage(self, &usage));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_MEMORY_USAGE, usage);
+
+    return 1;
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getDescription)
@@ -506,4 +518,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getUserData)
     METHODS_TABLE_ENTRY(setUserData)
     METHODS_TABLE_ENTRY(getCPUUsage)
+    METHODS_TABLE_ENTRY(getMemoryUsage)
 METHODS_TABLE_END
