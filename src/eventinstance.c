@@ -362,6 +362,17 @@ static int setParameterByID(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByID(self, *id, value, ignoreseekspeed));
 }
 
+static int setParameterByIDWithLabel(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PARAMETER_ID *id = CHECK_STRUCT(L, 2, FMOD_STUDIO_PARAMETER_ID);
+    const char *label = luaL_checkstring(L, 3);
+    int ignoreseekspeed = lua_toboolean(L, 4);
+
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByIDWithLabel(self, *id, label, ignoreseekspeed));
+}
+
 static int setCallback(lua_State *L)
 {
     GET_SELF;
@@ -440,6 +451,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setParameterByNameWithLabel)
     METHODS_TABLE_ENTRY(getParameterByID)
     METHODS_TABLE_ENTRY(setParameterByID)
+    METHODS_TABLE_ENTRY(setParameterByIDWithLabel)
     METHODS_TABLE_ENTRY(setCallback)
     METHODS_TABLE_ENTRY(getUserData)
     METHODS_TABLE_ENTRY(setUserData)
