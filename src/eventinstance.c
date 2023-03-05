@@ -252,6 +252,18 @@ static int getPlaybackState(lua_State *L)
     return 1;
 }
 
+static int getChannelGroup(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_CHANNELGROUP *group = NULL;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetChannelGroup(self, &group));
+
+    PUSH_HANDLE(L, FMOD_CHANNELGROUP, group);
+
+    return 1;
+}
+
 static int release(lua_State *L)
 {
     GET_SELF;
@@ -350,6 +362,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getTimelinePosition)
     METHODS_TABLE_ENTRY(setTimelinePosition)
     METHODS_TABLE_ENTRY(getPlaybackState)
+    METHODS_TABLE_ENTRY(getChannelGroup)
     METHODS_TABLE_ENTRY(release)
     METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setParameterByName)
