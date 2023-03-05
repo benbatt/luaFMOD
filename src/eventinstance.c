@@ -182,6 +182,18 @@ static int setReverbLevel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetReverbLevel(self, index, level));
 }
 
+static int getPaused(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL paused = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetPaused(self, &paused));
+
+    lua_pushboolean(L, paused);
+
+    return 1;
+}
+
 static int setPaused(lua_State *L)
 {
     GET_SELF;
@@ -298,6 +310,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setProperty)
     METHODS_TABLE_ENTRY(getReverbLevel)
     METHODS_TABLE_ENTRY(setReverbLevel)
+    METHODS_TABLE_ENTRY(getPaused)
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
     METHODS_TABLE_ENTRY(stop)
