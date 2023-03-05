@@ -113,6 +113,27 @@ static int set3DAttributes(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_Set3DAttributes(self, attributes));
 }
 
+static int getListenerMask(lua_State *L)
+{
+    GET_SELF;
+
+    unsigned int mask = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetListenerMask(self, &mask));
+
+    lua_pushinteger(L, mask);
+
+    return 1;
+}
+
+static int setListenerMask(lua_State *L)
+{
+    GET_SELF;
+
+    unsigned int mask = lua_tointeger(L, 2);
+
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetListenerMask(self, mask));
+}
+
 static int setPaused(lua_State *L)
 {
     GET_SELF;
@@ -223,6 +244,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setPitch)
     METHODS_TABLE_ENTRY(get3DAttributes)
     METHODS_TABLE_ENTRY(set3DAttributes)
+    METHODS_TABLE_ENTRY(getListenerMask)
+    METHODS_TABLE_ENTRY(setListenerMask)
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
     METHODS_TABLE_ENTRY(stop)
