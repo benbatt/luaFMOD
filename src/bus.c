@@ -22,6 +22,17 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_BUS
 
+static int isValid(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL valid = FMOD_Studio_Bus_IsValid(self);
+
+    lua_pushboolean(L, valid);
+
+    return 1;
+}
+
 static int setMute(lua_State *L)
 {
     GET_SELF;
@@ -32,5 +43,6 @@ static int setMute(lua_State *L)
 }
 
 METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(setMute)
 METHODS_TABLE_END
