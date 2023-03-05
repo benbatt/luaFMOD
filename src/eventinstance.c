@@ -240,6 +240,18 @@ static int setTimelinePosition(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetTimelinePosition(self, position));
 }
 
+static int getPlaybackState(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_PLAYBACK_STATE state;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetPlaybackState(self, &state));
+
+    PUSH_CONSTANT(L, FMOD_STUDIO_PLAYBACK_STATE, state);
+
+    return 1;
+}
+
 static int release(lua_State *L)
 {
     GET_SELF;
@@ -337,6 +349,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(stop)
     METHODS_TABLE_ENTRY(getTimelinePosition)
     METHODS_TABLE_ENTRY(setTimelinePosition)
+    METHODS_TABLE_ENTRY(getPlaybackState)
     METHODS_TABLE_ENTRY(release)
     METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setParameterByName)
