@@ -297,6 +297,22 @@ static int isVirtual(lua_State *L)
     return 1;
 }
 
+static int getParameterByName(lua_State *L)
+{
+    GET_SELF;
+
+    const char *name = luaL_checkstring(L, 2);
+
+    float value = 0;
+    float finalvalue = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetParameterByName(self, name, &value, &finalvalue));
+
+    lua_pushnumber(L, value);
+    lua_pushnumber(L, finalvalue);
+
+    return 2;
+}
+
 static int setParameterByID(lua_State *L)
 {
     GET_SELF;
@@ -392,8 +408,9 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getMinMaxDistance)
     METHODS_TABLE_ENTRY(release)
     METHODS_TABLE_ENTRY(isVirtual)
-    METHODS_TABLE_ENTRY(setParameterByID)
+    METHODS_TABLE_ENTRY(getParameterByName)
     METHODS_TABLE_ENTRY(setParameterByName)
+    METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setCallback)
     METHODS_TABLE_ENTRY(getUserData)
     METHODS_TABLE_ENTRY(setUserData)
