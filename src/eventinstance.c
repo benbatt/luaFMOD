@@ -64,7 +64,7 @@ static int setVolume(lua_State *L)
 {
     GET_SELF;
 
-    float volume = (float)lua_tonumber(L, 2);
+    float volume = (float)luaL_checknumber(L, 2);
 
     RETURN_STATUS(FMOD_Studio_EventInstance_SetVolume(self, volume));
 }
@@ -87,7 +87,7 @@ static int setPitch(lua_State *L)
 {
     GET_SELF;
 
-    float pitch = (float)lua_tonumber(L, 2);
+    float pitch = (float)luaL_checknumber(L, 2);
 
     RETURN_STATUS(FMOD_Studio_EventInstance_SetPitch(self, pitch));
 }
@@ -153,7 +153,7 @@ static int setProperty(lua_State *L)
     GET_SELF;
 
     FMOD_STUDIO_EVENT_PROPERTY property = CHECK_CONSTANT(L, 2, FMOD_STUDIO_EVENT_PROPERTY);
-    float value = luaL_checknumber(L, 3);
+    float value = (float)luaL_checknumber(L, 3);
 
     RETURN_STATUS(FMOD_Studio_EventInstance_SetProperty(self, property, value));
 }
@@ -177,7 +177,7 @@ static int setReverbLevel(lua_State *L)
     GET_SELF;
 
     int index = luaL_checkinteger(L, 2);
-    float level = luaL_checknumber(L, 3);
+    float level = (float)luaL_checknumber(L, 3);
 
     RETURN_STATUS(FMOD_Studio_EventInstance_SetReverbLevel(self, index, level));
 }
