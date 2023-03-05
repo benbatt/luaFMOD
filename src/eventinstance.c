@@ -454,6 +454,20 @@ static int setUserData(lua_State *L)
     RETURN_STATUS(FMOD_OK);
 }
 
+static int getCPUUsage(lua_State *L)
+{
+    GET_SELF;
+
+    unsigned int exclusive = 0;
+    unsigned int inclusive = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetCPUUsage(self, &exclusive, &inclusive));
+
+    lua_pushinteger(L, exclusive);
+    lua_pushinteger(L, inclusive);
+
+    return 2;
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getDescription)
@@ -491,4 +505,5 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setCallback)
     METHODS_TABLE_ENTRY(getUserData)
     METHODS_TABLE_ENTRY(setUserData)
+    METHODS_TABLE_ENTRY(getCPUUsage)
 METHODS_TABLE_END
