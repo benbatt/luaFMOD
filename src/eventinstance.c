@@ -219,6 +219,27 @@ static int stop(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_Stop(self, mode));
 }
 
+static int getTimelinePosition(lua_State *L)
+{
+    GET_SELF;
+
+    int position = 0;
+    RETURN_IF_ERROR(FMOD_Studio_EventInstance_GetTimelinePosition(self, &position));
+
+    lua_pushinteger(L, position);
+
+    return 1;
+}
+
+static int setTimelinePosition(lua_State *L)
+{
+    GET_SELF;
+
+    int position = luaL_checkinteger(L, 2);
+
+    RETURN_STATUS(FMOD_Studio_EventInstance_SetTimelinePosition(self, position));
+}
+
 static int release(lua_State *L)
 {
     GET_SELF;
@@ -314,6 +335,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(setPaused)
     METHODS_TABLE_ENTRY(start)
     METHODS_TABLE_ENTRY(stop)
+    METHODS_TABLE_ENTRY(getTimelinePosition)
+    METHODS_TABLE_ENTRY(setTimelinePosition)
     METHODS_TABLE_ENTRY(release)
     METHODS_TABLE_ENTRY(setParameterByID)
     METHODS_TABLE_ENTRY(setParameterByName)
