@@ -65,6 +65,29 @@ static int getPath(lua_State *L)
     return 1;
 }
 
+static int getVolume(lua_State *L)
+{
+    GET_SELF;
+
+    float volume = 0;
+    float finalvolume = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bus_GetVolume(self, &volume, &finalvolume));
+
+    lua_pushnumber(L, volume);
+    lua_pushnumber(L, finalvolume);
+
+    return 2;
+}
+
+static int setVolume(lua_State *L)
+{
+    GET_SELF;
+
+    float volume = (float)luaL_checknumber(L, 2);
+
+    RETURN_STATUS(FMOD_Studio_Bus_SetVolume(self, volume));
+}
+
 static int setMute(lua_State *L)
 {
     GET_SELF;
@@ -78,5 +101,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
     METHODS_TABLE_ENTRY(getPath)
+    METHODS_TABLE_ENTRY(getVolume)
+    METHODS_TABLE_ENTRY(setVolume)
     METHODS_TABLE_ENTRY(setMute)
 METHODS_TABLE_END
