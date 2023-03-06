@@ -139,6 +139,31 @@ static int stopAllEvents(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_StopAllEvents(self, mode));
 }
 
+static int getPortIndex(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_PORT_INDEX index = 0xBaadF00dDeadBeef;
+    RETURN_IF_ERROR(FMOD_Studio_Bus_GetPortIndex(self, &index));
+
+    lua_pushinteger(L, (unsigned int)(index & 0xFFFFFFFF));
+    lua_pushinteger(L, (unsigned int)(index >> 32));
+
+    return 2;
+}
+
+static int setPortIndex(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_PORT_INDEX low = (unsigned int)luaL_checkinteger(L, 2);
+    FMOD_PORT_INDEX high = (unsigned int)luaL_optinteger(L, 3, 0);
+
+    FMOD_PORT_INDEX index = (high << 32) | low;
+
+    RETURN_STATUS(FMOD_Studio_Bus_SetPortIndex(self, index));
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
@@ -150,4 +175,6 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getMute)
     METHODS_TABLE_ENTRY(setMute)
     METHODS_TABLE_ENTRY(stopAllEvents)
+    METHODS_TABLE_ENTRY(getPortIndex)
+    METHODS_TABLE_ENTRY(setPortIndex)
 METHODS_TABLE_END
