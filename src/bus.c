@@ -164,6 +164,20 @@ static int setPortIndex(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_SetPortIndex(self, index));
 }
 
+static int lockChannelGroup(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_Bus_LockChannelGroup(self));
+}
+
+static int unlockChannelGroup(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_Bus_UnlockChannelGroup(self));
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
@@ -177,4 +191,6 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(stopAllEvents)
     METHODS_TABLE_ENTRY(getPortIndex)
     METHODS_TABLE_ENTRY(setPortIndex)
+    METHODS_TABLE_ENTRY(lockChannelGroup)
+    METHODS_TABLE_ENTRY(unlockChannelGroup)
 METHODS_TABLE_END
