@@ -72,9 +72,25 @@ static int unload(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bank_Unload(self));
 }
 
+static int loadSampleData(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_Bank_LoadSampleData(self));
+}
+
+static int unloadSampleData(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_Bank_UnloadSampleData(self));
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
     METHODS_TABLE_ENTRY(getPath)
     METHODS_TABLE_ENTRY(unload)
+    METHODS_TABLE_ENTRY(loadSampleData)
+    METHODS_TABLE_ENTRY(unloadSampleData)
 METHODS_TABLE_END
