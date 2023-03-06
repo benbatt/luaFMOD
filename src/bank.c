@@ -65,8 +65,16 @@ static int getPath(lua_State *L)
     return 1;
 }
 
+static int unload(lua_State *L)
+{
+    GET_SELF;
+
+    RETURN_STATUS(FMOD_Studio_Bank_Unload(self));
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
     METHODS_TABLE_ENTRY(getPath)
+    METHODS_TABLE_ENTRY(unload)
 METHODS_TABLE_END
