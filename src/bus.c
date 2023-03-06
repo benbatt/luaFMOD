@@ -190,6 +190,32 @@ static int getChannelGroup(lua_State *L)
     return 1;
 }
 
+static int getCPUUsage(lua_State *L)
+{
+    GET_SELF;
+
+    unsigned int exclusive = 0;
+    unsigned int inclusive = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bus_GetCPUUsage(self, &exclusive, &inclusive));
+
+    lua_pushinteger(L, exclusive);
+    lua_pushinteger(L, inclusive);
+
+    return 2;
+}
+
+static int getMemoryUsage(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_STUDIO_MEMORY_USAGE usage;
+    RETURN_IF_ERROR(FMOD_Studio_Bus_GetMemoryUsage(self, &usage));
+
+    PUSH_STRUCT(L, FMOD_STUDIO_MEMORY_USAGE, usage);
+
+    return 1;
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
@@ -206,4 +232,6 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(lockChannelGroup)
     METHODS_TABLE_ENTRY(unlockChannelGroup)
     METHODS_TABLE_ENTRY(getChannelGroup)
+    METHODS_TABLE_ENTRY(getCPUUsage)
+    METHODS_TABLE_ENTRY(getMemoryUsage)
 METHODS_TABLE_END
