@@ -22,5 +22,51 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_BANK
 
+static int isValid(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_BOOL valid = FMOD_Studio_Bank_IsValid(self);
+
+    lua_pushboolean(L, valid);
+
+    return 1;
+}
+
+static int getID(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_GUID id;
+
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetID(self, &id));
+
+    PUSH_STRUCT(L, FMOD_GUID, id);
+
+    return 1;
+}
+
+static int getPath(lua_State *L)
+{
+    GET_SELF;
+
+    int size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetPath(self, NULL, 0, &size));
+
+    STACKBUFFER_CREATE(char, path, size);
+
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetPath(self, path, size, &size),
+        STACKBUFFER_RELEASE(path););
+
+    lua_pushstring(L, path);
+
+    STACKBUFFER_RELEASE(path);
+
+    return 1;
+}
+
 METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(isValid)
+    METHODS_TABLE_ENTRY(getID)
+    METHODS_TABLE_ENTRY(getPath)
 METHODS_TABLE_END
