@@ -110,6 +110,41 @@ static int getSampleLoadingState(lua_State *L)
     return 1;
 }
 
+static int getStringCount(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetStringCount(self, &count));
+
+    lua_pushinteger(L, count);
+
+    return 1;
+}
+
+static int getStringInfo(lua_State *L)
+{
+    GET_SELF;
+
+    int index = luaL_checkinteger(L, 2);
+
+    int size = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetStringInfo(self, index, NULL, NULL, 0, &size));
+
+    STACKBUFFER_CREATE(char, path, size);
+
+    FMOD_GUID id;
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetStringInfo(self, index, &id, path, size, &size),
+        STACKBUFFER_RELEASE(path););
+
+    PUSH_STRUCT(L, FMOD_GUID, id);
+    lua_pushstring(L, path);
+
+    STACKBUFFER_RELEASE(path);
+
+    return 2;
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
@@ -119,4 +154,6 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(unloadSampleData)
     METHODS_TABLE_ENTRY(getLoadingState)
     METHODS_TABLE_ENTRY(getSampleLoadingState)
+    METHODS_TABLE_ENTRY(getStringCount)
+    METHODS_TABLE_ENTRY(getStringInfo)
 METHODS_TABLE_END
