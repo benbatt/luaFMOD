@@ -182,6 +182,43 @@ static int getEventList(lua_State *L)
     return 1;
 }
 
+static int getBusCount(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetBusCount(self, &count));
+
+    lua_pushinteger(L, count);
+
+    return 1;
+}
+
+static int getBusList(lua_State *L)
+{
+    GET_SELF;
+
+    int count = 0;
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetBusCount(self, &count));
+
+    STACKBUFFER_CREATE(FMOD_STUDIO_BUS*, array, count);
+
+    RETURN_IF_ERROR(FMOD_Studio_Bank_GetBusList(self, array, count, NULL),
+        STACKBUFFER_RELEASE(array););
+
+    lua_createtable(L, count, 0);
+
+    for (int i = 0; i < count; ++i)
+    {
+        PUSH_HANDLE(L, FMOD_STUDIO_BUS, array[i]);
+        lua_rawseti(L, -2, i + 1);
+    }
+
+    STACKBUFFER_RELEASE(array);
+
+    return 1;
+}
+
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(isValid)
     METHODS_TABLE_ENTRY(getID)
@@ -195,4 +232,6 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getStringInfo)
     METHODS_TABLE_ENTRY(getEventCount)
     METHODS_TABLE_ENTRY(getEventList)
+    METHODS_TABLE_ENTRY(getBusCount)
+    METHODS_TABLE_ENTRY(getBusList)
 METHODS_TABLE_END
