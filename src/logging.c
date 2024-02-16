@@ -102,14 +102,14 @@ static FMOD_RESULT F_CALL debugCallback(FMOD_DEBUG_FLAGS flags, const char *file
 
     LogRecord *record = &chunk->records[chunk->count];
     record->flags = flags;
-    record->func = _strdup(func);
+    record->func = strdup(func);
 
     if (!record->func) {
         criticalSectionLeave(sCriticalSection);
         return FMOD_ERR_MEMORY;
     }
 
-    record->message = _strdup(message);
+    record->message = strdup(message);
 
     if (!record->message) {
         criticalSectionLeave(sCriticalSection);
