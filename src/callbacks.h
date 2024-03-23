@@ -6,10 +6,10 @@
 
 int callbackPrepare(lua_State *L, int index, void *owner);
 
-FMOD_RESULT callbacks_checkUserData(lua_State *L, int index);
+int callbacks_checkUserData(lua_State *L, int index);
 
-FMOD_RESULT callbacks_getUserData(lua_State *L, void *owner);
-FMOD_RESULT callbacks_setUserData(lua_State *L, int index, void *owner);
+int callbacks_getUserData(lua_State *L, void *owner);
+int callbacks_setUserData(lua_State *L, int index, void *owner);
 
 FMOD_RESULT F_CALLBACK eventCallback(FMOD_STUDIO_EVENT_CALLBACK_TYPE type, FMOD_STUDIO_EVENTINSTANCE *event,
     void *parameters);

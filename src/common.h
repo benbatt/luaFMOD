@@ -127,7 +127,7 @@ void stackBufferRelease(lua_State *L, void *pointer, StackBufferInfo *info);
 typedef const char * luaFMOD_Buffer;
 
 int STRUCT_new(lua_State *L, const char *metatable, size_t size);
-int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, void *data);
+int STRUCT_newref(lua_State *L, const char *metatable, int parentIndex, const void *data);
 int STRUCT_is(lua_State *L, const char *metatable, int index);
 void *STRUCT_todata(lua_State *L, const char *metatable, int index, int required);
 

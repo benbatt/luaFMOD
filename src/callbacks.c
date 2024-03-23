@@ -110,7 +110,7 @@ static int chunkListWrite(lua_State *L, const void *p, size_t size, void *userda
     Chunk *chunk = list->last;
 
     if (!chunk || (chunk->size + size) > chunk->capacity) {
-        size_t capacity = max(CHUNK_CAPACITY_DEFAULT, size);
+        size_t capacity = (size < CHUNK_CAPACITY_DEFAULT) ? CHUNK_CAPACITY_DEFAULT : size;
 
         chunk = malloc(sizeof(*chunk) + capacity);
 
