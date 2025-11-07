@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_BUS
 
-static int isValid(lua_State *L)
+static int METHOD_NAME(isValid)(lua_State *L)
 {
     GET_SELF;
 
@@ -33,7 +33,7 @@ static int isValid(lua_State *L)
     return 1;
 }
 
-static int getID(lua_State *L)
+static int METHOD_NAME(getID)(lua_State *L)
 {
     GET_SELF;
 
@@ -46,7 +46,7 @@ static int getID(lua_State *L)
     return 1;
 }
 
-static int getPath(lua_State *L)
+static int METHOD_NAME(getPath)(lua_State *L)
 {
     GET_SELF;
 
@@ -65,7 +65,7 @@ static int getPath(lua_State *L)
     return 1;
 }
 
-static int getVolume(lua_State *L)
+static int METHOD_NAME(getVolume)(lua_State *L)
 {
     GET_SELF;
 
@@ -79,7 +79,7 @@ static int getVolume(lua_State *L)
     return 2;
 }
 
-static int setVolume(lua_State *L)
+static int METHOD_NAME(setVolume)(lua_State *L)
 {
     GET_SELF;
 
@@ -88,7 +88,7 @@ static int setVolume(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_SetVolume(self, volume));
 }
 
-static int getPaused(lua_State *L)
+static int METHOD_NAME(getPaused)(lua_State *L)
 {
     GET_SELF;
 
@@ -100,7 +100,7 @@ static int getPaused(lua_State *L)
     return 1;
 }
 
-static int setPaused(lua_State *L)
+static int METHOD_NAME(setPaused)(lua_State *L)
 {
     GET_SELF;
 
@@ -109,7 +109,7 @@ static int setPaused(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_SetPaused(self, paused));
 }
 
-static int getMute(lua_State *L)
+static int METHOD_NAME(getMute)(lua_State *L)
 {
     GET_SELF;
 
@@ -121,7 +121,7 @@ static int getMute(lua_State *L)
     return 1;
 }
 
-static int setMute(lua_State *L)
+static int METHOD_NAME(setMute)(lua_State *L)
 {
     GET_SELF;
 
@@ -130,7 +130,7 @@ static int setMute(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_SetMute(self, mute));
 }
 
-static int stopAllEvents(lua_State *L)
+static int METHOD_NAME(stopAllEvents)(lua_State *L)
 {
     GET_SELF;
 
@@ -139,7 +139,7 @@ static int stopAllEvents(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_StopAllEvents(self, mode));
 }
 
-static int getPortIndex(lua_State *L)
+static int METHOD_NAME(getPortIndex)(lua_State *L)
 {
     GET_SELF;
 
@@ -152,7 +152,7 @@ static int getPortIndex(lua_State *L)
     return 2;
 }
 
-static int setPortIndex(lua_State *L)
+static int METHOD_NAME(setPortIndex)(lua_State *L)
 {
     GET_SELF;
 
@@ -164,21 +164,21 @@ static int setPortIndex(lua_State *L)
     RETURN_STATUS(FMOD_Studio_Bus_SetPortIndex(self, index));
 }
 
-static int lockChannelGroup(lua_State *L)
+static int METHOD_NAME(lockChannelGroup)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_Bus_LockChannelGroup(self));
 }
 
-static int unlockChannelGroup(lua_State *L)
+static int METHOD_NAME(unlockChannelGroup)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_Bus_UnlockChannelGroup(self));
 }
 
-static int getChannelGroup(lua_State *L)
+static int METHOD_NAME(getChannelGroup)(lua_State *L)
 {
     GET_SELF;
 
@@ -190,7 +190,7 @@ static int getChannelGroup(lua_State *L)
     return 1;
 }
 
-static int getCPUUsage(lua_State *L)
+static int METHOD_NAME(getCPUUsage)(lua_State *L)
 {
     GET_SELF;
 
@@ -204,7 +204,7 @@ static int getCPUUsage(lua_State *L)
     return 2;
 }
 
-static int getMemoryUsage(lua_State *L)
+static int METHOD_NAME(getMemoryUsage)(lua_State *L)
 {
     GET_SELF;
 

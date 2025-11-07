@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_SYSTEM
 
-static int create(lua_State *L)
+static int METHOD_NAME(create)(lua_State *L)
 {
     FMOD_STUDIO_SYSTEM *system = NULL;
 
@@ -35,7 +35,7 @@ static int create(lua_State *L)
     return 1;
 }
 
-static int setAdvancedSettings(lua_State *L)
+static int METHOD_NAME(setAdvancedSettings)(lua_State *L)
 {
     GET_SELF;
 
@@ -45,7 +45,7 @@ static int setAdvancedSettings(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetAdvancedSettings(self, settings));
 }
 
-static int getAdvancedSettings(lua_State *L)
+static int METHOD_NAME(getAdvancedSettings)(lua_State *L)
 {
     GET_SELF;
 
@@ -59,7 +59,7 @@ static int getAdvancedSettings(lua_State *L)
     return 1;
 }
 
-static int initialize(lua_State *L)
+static int METHOD_NAME(initialize)(lua_State *L)
 {
     GET_SELF;
 
@@ -74,7 +74,7 @@ static int initialize(lua_State *L)
     return 0;
 }
 
-static int release(lua_State *L)
+static int METHOD_NAME(release)(lua_State *L)
 {
     GET_SELF;
 
@@ -83,7 +83,7 @@ static int release(lua_State *L)
     return 0;
 }
 
-static int update(lua_State *L)
+static int METHOD_NAME(update)(lua_State *L)
 {
     GET_SELF;
 
@@ -94,7 +94,7 @@ static int update(lua_State *L)
     return 0;
 }
 
-static int getCoreSystem(lua_State *L)
+static int METHOD_NAME(getCoreSystem)(lua_State *L)
 {
     GET_SELF;
 
@@ -106,7 +106,7 @@ static int getCoreSystem(lua_State *L)
     return 1;
 }
 
-static int getEvent(lua_State *L)
+static int METHOD_NAME(getEvent)(lua_State *L)
 {
     GET_SELF;
 
@@ -120,7 +120,7 @@ static int getEvent(lua_State *L)
     return 1;
 }
 
-static int getBus(lua_State *L)
+static int METHOD_NAME(getBus)(lua_State *L)
 {
     GET_SELF;
 
@@ -134,7 +134,7 @@ static int getBus(lua_State *L)
     return 1;
 }
 
-static int getVCA(lua_State *L)
+static int METHOD_NAME(getVCA)(lua_State *L)
 {
     GET_SELF;
 
@@ -148,7 +148,7 @@ static int getVCA(lua_State *L)
     return 1;
 }
 
-static int getBank(lua_State *L)
+static int METHOD_NAME(getBank)(lua_State *L)
 {
     GET_SELF;
 
@@ -162,7 +162,7 @@ static int getBank(lua_State *L)
     return 1;
 }
 
-static int getEventByID(lua_State *L)
+static int METHOD_NAME(getEventByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -176,7 +176,7 @@ static int getEventByID(lua_State *L)
     return 1;
 }
 
-static int getBusByID(lua_State *L)
+static int METHOD_NAME(getBusByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -190,7 +190,7 @@ static int getBusByID(lua_State *L)
     return 1;
 }
 
-static int getVCAByID(lua_State *L)
+static int METHOD_NAME(getVCAByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -204,7 +204,7 @@ static int getVCAByID(lua_State *L)
     return 1;
 }
 
-static int getBankByID(lua_State *L)
+static int METHOD_NAME(getBankByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -218,7 +218,7 @@ static int getBankByID(lua_State *L)
     return 1;
 }
 
-static int getSoundInfo(lua_State *L)
+static int METHOD_NAME(getSoundInfo)(lua_State *L)
 {
     GET_SELF;
 
@@ -232,7 +232,7 @@ static int getSoundInfo(lua_State *L)
     return 1;
 }
 
-static int getParameterDescriptionByName(lua_State *L)
+static int METHOD_NAME(getParameterDescriptionByName)(lua_State *L)
 {
     GET_SELF;
 
@@ -246,7 +246,7 @@ static int getParameterDescriptionByName(lua_State *L)
     return 1;
 }
 
-static int getParameterDescriptionByID(lua_State *L)
+static int METHOD_NAME(getParameterDescriptionByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -260,7 +260,7 @@ static int getParameterDescriptionByID(lua_State *L)
     return 1;
 }
 
-static int getParameterLabelByName(lua_State *L)
+static int METHOD_NAME(getParameterLabelByName)(lua_State *L)
 {
     GET_SELF;
 
@@ -282,7 +282,7 @@ static int getParameterLabelByName(lua_State *L)
     return 1;
 }
 
-static int getParameterLabelByID(lua_State *L)
+static int METHOD_NAME(getParameterLabelByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -304,7 +304,7 @@ static int getParameterLabelByID(lua_State *L)
     return 1;
 }
 
-static int getParameterByID(lua_State *L)
+static int METHOD_NAME(getParameterByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -320,7 +320,7 @@ static int getParameterByID(lua_State *L)
     return 2;
 }
 
-static int setParameterByID(lua_State *L)
+static int METHOD_NAME(setParameterByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -331,7 +331,7 @@ static int setParameterByID(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetParameterByID(self, *id, value, ignoreseekspeed));
 }
 
-static int setParameterByIDWithLabel(lua_State *L)
+static int METHOD_NAME(setParameterByIDWithLabel)(lua_State *L)
 {
     GET_SELF;
 
@@ -400,7 +400,7 @@ void getParameterIDsAndValues(lua_State *L, const int IDS_INDEX, const int VALUE
     *countOut = count;
 }
 
-static int setParametersByIDs(lua_State *L)
+static int METHOD_NAME(setParametersByIDs)(lua_State *L)
 {
     GET_SELF;
 
@@ -426,7 +426,7 @@ static int setParametersByIDs(lua_State *L)
     RETURN_STATUS(FMOD_OK);
 }
 
-static int getParameterByName(lua_State *L)
+static int METHOD_NAME(getParameterByName)(lua_State *L)
 {
     GET_SELF;
 
@@ -442,7 +442,7 @@ static int getParameterByName(lua_State *L)
     return 2;
 }
 
-static int setParameterByName(lua_State *L)
+static int METHOD_NAME(setParameterByName)(lua_State *L)
 {
     GET_SELF;
 
@@ -453,7 +453,7 @@ static int setParameterByName(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetParameterByName(self, name, value, ignoreseekspeed));
 }
 
-static int setParameterByNameWithLabel(lua_State *L)
+static int METHOD_NAME(setParameterByNameWithLabel)(lua_State *L)
 {
     GET_SELF;
 
@@ -464,7 +464,7 @@ static int setParameterByNameWithLabel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetParameterByNameWithLabel(self, name, label, ignoreseekspeed));
 }
 
-static int lookupID(lua_State *L)
+static int METHOD_NAME(lookupID)(lua_State *L)
 {
     GET_SELF;
 
@@ -478,7 +478,7 @@ static int lookupID(lua_State *L)
     return 1;
 }
 
-static int lookupPath(lua_State *L)
+static int METHOD_NAME(lookupPath)(lua_State *L)
 {
     GET_SELF;
 
@@ -498,7 +498,7 @@ static int lookupPath(lua_State *L)
     return 1;
 }
 
-static int getNumListeners(lua_State *L)
+static int METHOD_NAME(getNumListeners)(lua_State *L)
 {
     GET_SELF;
 
@@ -511,7 +511,7 @@ static int getNumListeners(lua_State *L)
     return 1;
 }
 
-static int setNumListeners(lua_State *L)
+static int METHOD_NAME(setNumListeners)(lua_State *L)
 {
     GET_SELF;
 
@@ -520,7 +520,7 @@ static int setNumListeners(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetNumListeners(self, numListeners));
 }
 
-static int getListenerAttributes(lua_State *L)
+static int METHOD_NAME(getListenerAttributes)(lua_State *L)
 {
     GET_SELF;
 
@@ -536,7 +536,7 @@ static int getListenerAttributes(lua_State *L)
     return 2;
 }
 
-static int setListenerAttributes(lua_State *L)
+static int METHOD_NAME(setListenerAttributes)(lua_State *L)
 {
     GET_SELF;
 
@@ -548,7 +548,7 @@ static int setListenerAttributes(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetListenerAttributes(self, listener, attributes, attenuationposition));
 }
 
-static int getListenerWeight(lua_State *L)
+static int METHOD_NAME(getListenerWeight)(lua_State *L)
 {
     GET_SELF;
 
@@ -562,7 +562,7 @@ static int getListenerWeight(lua_State *L)
     return 1;
 }
 
-static int setListenerWeight(lua_State *L)
+static int METHOD_NAME(setListenerWeight)(lua_State *L)
 {
     GET_SELF;
 
@@ -572,7 +572,7 @@ static int setListenerWeight(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_SetListenerWeight(self, index, weight));
 }
 
-static int loadBankFile(lua_State *L)
+static int METHOD_NAME(loadBankFile)(lua_State *L)
 {
     GET_SELF;
 
@@ -587,7 +587,7 @@ static int loadBankFile(lua_State *L)
     return 1;
 }
 
-static int loadBankMemory(lua_State *L)
+static int METHOD_NAME(loadBankMemory)(lua_State *L)
 {
     GET_SELF;
 
@@ -609,28 +609,28 @@ static int loadBankMemory(lua_State *L)
     return 1;
 }
 
-static int unloadAll(lua_State *L)
+static int METHOD_NAME(unloadAll)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_System_UnloadAll(self));
 }
 
-static int flushCommands(lua_State *L)
+static int METHOD_NAME(flushCommands)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_System_FlushCommands(self));
 }
 
-static int flushSampleLoading(lua_State *L)
+static int METHOD_NAME(flushSampleLoading)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_System_FlushSampleLoading(self));
 }
 
-static int startCommandCapture(lua_State *L)
+static int METHOD_NAME(startCommandCapture)(lua_State *L)
 {
     GET_SELF;
 
@@ -640,14 +640,14 @@ static int startCommandCapture(lua_State *L)
     RETURN_STATUS(FMOD_Studio_System_StartCommandCapture(self, filename, flags));
 }
 
-static int stopCommandCapture(lua_State *L)
+static int METHOD_NAME(stopCommandCapture)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_System_StopCommandCapture(self));
 }
 
-static int getBankCount(lua_State *L)
+static int METHOD_NAME(getBankCount)(lua_State *L)
 {
     GET_SELF;
 
@@ -659,7 +659,7 @@ static int getBankCount(lua_State *L)
     return 1;
 }
 
-static int getBankList(lua_State *L)
+static int METHOD_NAME(getBankList)(lua_State *L)
 {
     GET_SELF;
 
@@ -687,7 +687,7 @@ static int getBankList(lua_State *L)
     return 1;
 }
 
-static int getParameterDescriptionCount(lua_State *L)
+static int METHOD_NAME(getParameterDescriptionCount)(lua_State *L)
 {
     GET_SELF;
 
@@ -699,7 +699,7 @@ static int getParameterDescriptionCount(lua_State *L)
     return 1;
 }
 
-static int getParameterDescriptionList(lua_State *L)
+static int METHOD_NAME(getParameterDescriptionList)(lua_State *L)
 {
     GET_SELF;
 
@@ -728,7 +728,7 @@ static int getParameterDescriptionList(lua_State *L)
     return 1;
 }
 
-static int getCPUUsage(lua_State *L)
+static int METHOD_NAME(getCPUUsage)(lua_State *L)
 {
     GET_SELF;
 
@@ -742,7 +742,7 @@ static int getCPUUsage(lua_State *L)
     return 2;
 }
 
-static int getBufferUsage(lua_State *L)
+static int METHOD_NAME(getBufferUsage)(lua_State *L)
 {
     GET_SELF;
 
@@ -754,14 +754,14 @@ static int getBufferUsage(lua_State *L)
     return 1;
 }
 
-static int resetBufferUsage(lua_State *L)
+static int METHOD_NAME(resetBufferUsage)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_System_ResetBufferUsage(self));
 }
 
-static int getMemoryUsage(lua_State *L)
+static int METHOD_NAME(getMemoryUsage)(lua_State *L)
 {
     GET_SELF;
 
@@ -774,7 +774,7 @@ static int getMemoryUsage(lua_State *L)
 }
 
 FUNCTION_TABLE_BEGIN(StudioSystemStaticFunctions)
-    FUNCTION_TABLE_ENTRY(create)
+    METHODS_TABLE_ENTRY(create)
 FUNCTION_TABLE_END
 
 METHODS_TABLE_BEGIN

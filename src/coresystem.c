@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_SYSTEM
 
-static int setSoftwareFormat(lua_State *L)
+static int METHOD_NAME(setSoftwareFormat)(lua_State *L)
 {
     GET_SELF;
 
@@ -35,7 +35,7 @@ static int setSoftwareFormat(lua_State *L)
     return 0;
 }
 
-static int createSound(lua_State *L)
+static int METHOD_NAME(createSound)(lua_State *L)
 {
     GET_SELF;
 
@@ -62,7 +62,7 @@ static int createSound(lua_State *L)
     return 1;
 }
 
-static int playSound(lua_State *L)
+static int METHOD_NAME(playSound)(lua_State *L)
 {
     GET_SELF;
 

@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_CHANNEL
 
-int setPaused(lua_State *L)
+int METHOD_NAME(setPaused)(lua_State *L)
 {
     GET_SELF;
 

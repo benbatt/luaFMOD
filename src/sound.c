@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_SOUND
 
-static int getSubSound(lua_State *L)
+static int METHOD_NAME(getSubSound)(lua_State *L)
 {
     GET_SELF;
 

@@ -126,8 +126,8 @@ static void registerMethodsTable(lua_State *L, const char *name, const luaL_reg 
 
 #define REGISTER_METHODS_TABLE(L, type) \
     do { \
-        extern const struct luaL_reg type ## _methods[]; \
-        registerMethodsTable(L, #type, type ## _methods); \
+        extern const struct luaL_reg METHODS_TABLE_NAME(type)[]; \
+        registerMethodsTable(L, #type, METHODS_TABLE_NAME(type)); \
     } while (0)
 
 extern void createConstantTables(lua_State *L);

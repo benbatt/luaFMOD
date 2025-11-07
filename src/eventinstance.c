@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_EVENTINSTANCE
 
-static int isValid(lua_State *L)
+static int METHOD_NAME(isValid)(lua_State *L)
 {
     GET_SELF;
 
@@ -35,7 +35,7 @@ static int isValid(lua_State *L)
     return 1;
 }
 
-static int getDescription(lua_State *L)
+static int METHOD_NAME(getDescription)(lua_State *L)
 {
     GET_SELF;
 
@@ -47,7 +47,7 @@ static int getDescription(lua_State *L)
     return 1;
 }
 
-static int getVolume(lua_State *L)
+static int METHOD_NAME(getVolume)(lua_State *L)
 {
     GET_SELF;
 
@@ -61,7 +61,7 @@ static int getVolume(lua_State *L)
     return 2;
 }
 
-static int setVolume(lua_State *L)
+static int METHOD_NAME(setVolume)(lua_State *L)
 {
     GET_SELF;
 
@@ -70,7 +70,7 @@ static int setVolume(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetVolume(self, volume));
 }
 
-static int getPitch(lua_State *L)
+static int METHOD_NAME(getPitch)(lua_State *L)
 {
     GET_SELF;
 
@@ -84,7 +84,7 @@ static int getPitch(lua_State *L)
     return 2;
 }
 
-static int setPitch(lua_State *L)
+static int METHOD_NAME(setPitch)(lua_State *L)
 {
     GET_SELF;
 
@@ -93,7 +93,7 @@ static int setPitch(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetPitch(self, pitch));
 }
 
-static int get3DAttributes(lua_State *L)
+static int METHOD_NAME(get3DAttributes)(lua_State *L)
 {
     GET_SELF;
 
@@ -105,7 +105,7 @@ static int get3DAttributes(lua_State *L)
     return 1;
 }
 
-static int set3DAttributes(lua_State *L)
+static int METHOD_NAME(set3DAttributes)(lua_State *L)
 {
     GET_SELF;
 
@@ -114,7 +114,7 @@ static int set3DAttributes(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_Set3DAttributes(self, attributes));
 }
 
-static int getListenerMask(lua_State *L)
+static int METHOD_NAME(getListenerMask)(lua_State *L)
 {
     GET_SELF;
 
@@ -126,7 +126,7 @@ static int getListenerMask(lua_State *L)
     return 1;
 }
 
-static int setListenerMask(lua_State *L)
+static int METHOD_NAME(setListenerMask)(lua_State *L)
 {
     GET_SELF;
 
@@ -135,7 +135,7 @@ static int setListenerMask(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetListenerMask(self, mask));
 }
 
-static int getProperty(lua_State *L)
+static int METHOD_NAME(getProperty)(lua_State *L)
 {
     GET_SELF;
 
@@ -149,7 +149,7 @@ static int getProperty(lua_State *L)
     return 1;
 }
 
-static int setProperty(lua_State *L)
+static int METHOD_NAME(setProperty)(lua_State *L)
 {
     GET_SELF;
 
@@ -159,7 +159,7 @@ static int setProperty(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetProperty(self, property, value));
 }
 
-static int getReverbLevel(lua_State *L)
+static int METHOD_NAME(getReverbLevel)(lua_State *L)
 {
     GET_SELF;
 
@@ -173,7 +173,7 @@ static int getReverbLevel(lua_State *L)
     return 1;
 }
 
-static int setReverbLevel(lua_State *L)
+static int METHOD_NAME(setReverbLevel)(lua_State *L)
 {
     GET_SELF;
 
@@ -183,7 +183,7 @@ static int setReverbLevel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetReverbLevel(self, index, level));
 }
 
-static int getPaused(lua_State *L)
+static int METHOD_NAME(getPaused)(lua_State *L)
 {
     GET_SELF;
 
@@ -195,7 +195,7 @@ static int getPaused(lua_State *L)
     return 1;
 }
 
-static int setPaused(lua_State *L)
+static int METHOD_NAME(setPaused)(lua_State *L)
 {
     GET_SELF;
 
@@ -204,14 +204,14 @@ static int setPaused(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetPaused(self, paused));
 }
 
-static int start(lua_State *L)
+static int METHOD_NAME(start)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_EventInstance_Start(self));
 }
 
-static int stop(lua_State *L)
+static int METHOD_NAME(stop)(lua_State *L)
 {
     GET_SELF;
 
@@ -220,7 +220,7 @@ static int stop(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_Stop(self, mode));
 }
 
-static int getTimelinePosition(lua_State *L)
+static int METHOD_NAME(getTimelinePosition)(lua_State *L)
 {
     GET_SELF;
 
@@ -232,7 +232,7 @@ static int getTimelinePosition(lua_State *L)
     return 1;
 }
 
-static int setTimelinePosition(lua_State *L)
+static int METHOD_NAME(setTimelinePosition)(lua_State *L)
 {
     GET_SELF;
 
@@ -241,7 +241,7 @@ static int setTimelinePosition(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetTimelinePosition(self, position));
 }
 
-static int getPlaybackState(lua_State *L)
+static int METHOD_NAME(getPlaybackState)(lua_State *L)
 {
     GET_SELF;
 
@@ -253,7 +253,7 @@ static int getPlaybackState(lua_State *L)
     return 1;
 }
 
-static int getChannelGroup(lua_State *L)
+static int METHOD_NAME(getChannelGroup)(lua_State *L)
 {
     GET_SELF;
 
@@ -265,7 +265,7 @@ static int getChannelGroup(lua_State *L)
     return 1;
 }
 
-static int getMinMaxDistance(lua_State *L)
+static int METHOD_NAME(getMinMaxDistance)(lua_State *L)
 {
     GET_SELF;
 
@@ -279,14 +279,14 @@ static int getMinMaxDistance(lua_State *L)
     return 2;
 }
 
-static int release(lua_State *L)
+static int METHOD_NAME(release)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_EventInstance_Release(self));
 }
 
-static int isVirtual(lua_State *L)
+static int METHOD_NAME(isVirtual)(lua_State *L)
 {
     GET_SELF;
 
@@ -298,7 +298,7 @@ static int isVirtual(lua_State *L)
     return 1;
 }
 
-static int getParameterByName(lua_State *L)
+static int METHOD_NAME(getParameterByName)(lua_State *L)
 {
     GET_SELF;
 
@@ -314,7 +314,7 @@ static int getParameterByName(lua_State *L)
     return 2;
 }
 
-static int setParameterByName(lua_State *L)
+static int METHOD_NAME(setParameterByName)(lua_State *L)
 {
     GET_SELF;
 
@@ -325,7 +325,7 @@ static int setParameterByName(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByName(self, name, value, ignoreseekspeed));
 }
 
-static int setParameterByNameWithLabel(lua_State *L)
+static int METHOD_NAME(setParameterByNameWithLabel)(lua_State *L)
 {
     GET_SELF;
 
@@ -336,7 +336,7 @@ static int setParameterByNameWithLabel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByNameWithLabel(self, name, label, ignoreseekspeed));
 }
 
-static int getParameterByID(lua_State *L)
+static int METHOD_NAME(getParameterByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -352,7 +352,7 @@ static int getParameterByID(lua_State *L)
     return 2;
 }
 
-static int setParameterByID(lua_State *L)
+static int METHOD_NAME(setParameterByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -363,7 +363,7 @@ static int setParameterByID(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByID(self, *id, value, ignoreseekspeed));
 }
 
-static int setParameterByIDWithLabel(lua_State *L)
+static int METHOD_NAME(setParameterByIDWithLabel)(lua_State *L)
 {
     GET_SELF;
 
@@ -374,7 +374,7 @@ static int setParameterByIDWithLabel(lua_State *L)
     RETURN_STATUS(FMOD_Studio_EventInstance_SetParameterByIDWithLabel(self, *id, label, ignoreseekspeed));
 }
 
-static int setParametersByIDs(lua_State *L)
+static int METHOD_NAME(setParametersByIDs)(lua_State *L)
 {
     GET_SELF;
 
@@ -400,14 +400,14 @@ static int setParametersByIDs(lua_State *L)
     RETURN_STATUS(FMOD_OK);
 }
 
-static int keyOff(lua_State *L)
+static int METHOD_NAME(keyOff)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_EventInstance_KeyOff(self));
 }
 
-static int setCallback(lua_State *L)
+static int METHOD_NAME(setCallback)(lua_State *L)
 {
     GET_SELF;
 
@@ -435,14 +435,14 @@ static int setCallback(lua_State *L)
     */
 }
 
-static int getUserData(lua_State *L)
+static int METHOD_NAME(getUserData)(lua_State *L)
 {
     GET_SELF;
 
     return callbacks_getUserData(L, self);
 }
 
-static int setUserData(lua_State *L)
+static int METHOD_NAME(setUserData)(lua_State *L)
 {
     GET_SELF;
 
@@ -454,7 +454,7 @@ static int setUserData(lua_State *L)
     RETURN_STATUS(FMOD_OK);
 }
 
-static int getCPUUsage(lua_State *L)
+static int METHOD_NAME(getCPUUsage)(lua_State *L)
 {
     GET_SELF;
 
@@ -468,7 +468,7 @@ static int getCPUUsage(lua_State *L)
     return 2;
 }
 
-static int getMemoryUsage(lua_State *L)
+static int METHOD_NAME(getMemoryUsage)(lua_State *L)
 {
     GET_SELF;
 

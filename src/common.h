@@ -25,6 +25,8 @@ DEALINGS IN THE SOFTWARE.
 #include <fmod_studio.h>
 #include <lauxlib.h>
 
+#define MODULE_PREFIX luaFMOD_
+
 #define STRINGIZE(x) STRINGIZE_IMPL(x)
 #define STRINGIZE_IMPL(x) #x
 
@@ -111,8 +113,12 @@ typedef struct {
 #define FUNCTION_TABLE_ENTRY(function) { #function, function },
 #define FUNCTION_TABLE_END { NULL, NULL } };
 
-#define METHODS_TABLE_BEGIN FUNCTION_TABLE_BEGIN(JOIN(SELF_TYPE, _methods))
-#define METHODS_TABLE_ENTRY(method) FUNCTION_TABLE_ENTRY(method)
+#define TYPE_PREFIX(type) JOIN(MODULE_PREFIX, JOIN(type, _))
+#define METHOD_NAME(method) JOIN(TYPE_PREFIX(SELF_TYPE), method)
+#define METHODS_TABLE_NAME(type) JOIN(TYPE_PREFIX(type), methods)
+
+#define METHODS_TABLE_BEGIN FUNCTION_TABLE_BEGIN(METHODS_TABLE_NAME(SELF_TYPE))
+#define METHODS_TABLE_ENTRY(method) { #method, METHOD_NAME(method) },
 #define METHODS_TABLE_END FUNCTION_TABLE_END
 
 #define CONSTANT_ACCESS_DECLARE(type) \

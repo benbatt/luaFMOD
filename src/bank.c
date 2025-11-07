@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_BANK
 
-static int isValid(lua_State *L)
+static int METHOD_NAME(isValid)(lua_State *L)
 {
     GET_SELF;
 
@@ -33,7 +33,7 @@ static int isValid(lua_State *L)
     return 1;
 }
 
-static int getID(lua_State *L)
+static int METHOD_NAME(getID)(lua_State *L)
 {
     GET_SELF;
 
@@ -46,7 +46,7 @@ static int getID(lua_State *L)
     return 1;
 }
 
-static int getPath(lua_State *L)
+static int METHOD_NAME(getPath)(lua_State *L)
 {
     GET_SELF;
 
@@ -65,28 +65,28 @@ static int getPath(lua_State *L)
     return 1;
 }
 
-static int unload(lua_State *L)
+static int METHOD_NAME(unload)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_Bank_Unload(self));
 }
 
-static int loadSampleData(lua_State *L)
+static int METHOD_NAME(loadSampleData)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_Bank_LoadSampleData(self));
 }
 
-static int unloadSampleData(lua_State *L)
+static int METHOD_NAME(unloadSampleData)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_Bank_UnloadSampleData(self));
 }
 
-static int getLoadingState(lua_State *L)
+static int METHOD_NAME(getLoadingState)(lua_State *L)
 {
     GET_SELF;
 
@@ -98,7 +98,7 @@ static int getLoadingState(lua_State *L)
     return 1;
 }
 
-static int getSampleLoadingState(lua_State *L)
+static int METHOD_NAME(getSampleLoadingState)(lua_State *L)
 {
     GET_SELF;
 
@@ -110,7 +110,7 @@ static int getSampleLoadingState(lua_State *L)
     return 1;
 }
 
-static int getStringCount(lua_State *L)
+static int METHOD_NAME(getStringCount)(lua_State *L)
 {
     GET_SELF;
 
@@ -122,7 +122,7 @@ static int getStringCount(lua_State *L)
     return 1;
 }
 
-static int getStringInfo(lua_State *L)
+static int METHOD_NAME(getStringInfo)(lua_State *L)
 {
     GET_SELF;
 
@@ -145,7 +145,7 @@ static int getStringInfo(lua_State *L)
     return 2;
 }
 
-static int getEventCount(lua_State *L)
+static int METHOD_NAME(getEventCount)(lua_State *L)
 {
     GET_SELF;
 
@@ -157,7 +157,7 @@ static int getEventCount(lua_State *L)
     return 1;
 }
 
-static int getEventList(lua_State *L)
+static int METHOD_NAME(getEventList)(lua_State *L)
 {
     GET_SELF;
 
@@ -182,7 +182,7 @@ static int getEventList(lua_State *L)
     return 1;
 }
 
-static int getBusCount(lua_State *L)
+static int METHOD_NAME(getBusCount)(lua_State *L)
 {
     GET_SELF;
 
@@ -194,7 +194,7 @@ static int getBusCount(lua_State *L)
     return 1;
 }
 
-static int getBusList(lua_State *L)
+static int METHOD_NAME(getBusList)(lua_State *L)
 {
     GET_SELF;
 
@@ -219,7 +219,7 @@ static int getBusList(lua_State *L)
     return 1;
 }
 
-static int getVCACount(lua_State *L)
+static int METHOD_NAME(getVCACount)(lua_State *L)
 {
     GET_SELF;
 
@@ -231,7 +231,7 @@ static int getVCACount(lua_State *L)
     return 1;
 }
 
-static int getVCAList(lua_State *L)
+static int METHOD_NAME(getVCAList)(lua_State *L)
 {
     GET_SELF;
 

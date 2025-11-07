@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_EVENTDESCRIPTION
 
-static int isValid(lua_State *L)
+static int METHOD_NAME(isValid)(lua_State *L)
 {
     GET_SELF;
 
@@ -33,7 +33,7 @@ static int isValid(lua_State *L)
     return 1;
 }
 
-static int getID(lua_State *L)
+static int METHOD_NAME(getID)(lua_State *L)
 {
     GET_SELF;
 
@@ -46,7 +46,7 @@ static int getID(lua_State *L)
     return 1;
 }
 
-static int getPath(lua_State *L)
+static int METHOD_NAME(getPath)(lua_State *L)
 {
     GET_SELF;
 
@@ -65,7 +65,7 @@ static int getPath(lua_State *L)
     return 1;
 }
 
-static int getParameterDescriptionCount(lua_State *L)
+static int METHOD_NAME(getParameterDescriptionCount)(lua_State *L)
 {
     GET_SELF;
 
@@ -77,7 +77,7 @@ static int getParameterDescriptionCount(lua_State *L)
     return 1;
 }
 
-static int getParameterDescriptionByIndex(lua_State *L)
+static int METHOD_NAME(getParameterDescriptionByIndex)(lua_State *L)
 {
     GET_SELF;
 
@@ -92,7 +92,7 @@ static int getParameterDescriptionByIndex(lua_State *L)
     return 1;
 }
 
-static int getParameterDescriptionByName(lua_State *L)
+static int METHOD_NAME(getParameterDescriptionByName)(lua_State *L)
 {
     GET_SELF;
 
@@ -107,7 +107,7 @@ static int getParameterDescriptionByName(lua_State *L)
     return 1;
 }
 
-static int getParameterDescriptionByID(lua_State *L)
+static int METHOD_NAME(getParameterDescriptionByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -122,7 +122,7 @@ static int getParameterDescriptionByID(lua_State *L)
     return 1;
 }
 
-static int getParameterLabelByIndex(lua_State *L)
+static int METHOD_NAME(getParameterLabelByIndex)(lua_State *L)
 {
     GET_SELF;
 
@@ -144,7 +144,7 @@ static int getParameterLabelByIndex(lua_State *L)
     return 1;
 }
 
-static int getParameterLabelByName(lua_State *L)
+static int METHOD_NAME(getParameterLabelByName)(lua_State *L)
 {
     GET_SELF;
 
@@ -166,7 +166,7 @@ static int getParameterLabelByName(lua_State *L)
     return 1;
 }
 
-static int getParameterLabelByID(lua_State *L)
+static int METHOD_NAME(getParameterLabelByID)(lua_State *L)
 {
     GET_SELF;
 
@@ -188,7 +188,7 @@ static int getParameterLabelByID(lua_State *L)
     return 1;
 }
 
-static int getUserPropertyCount(lua_State *L)
+static int METHOD_NAME(getUserPropertyCount)(lua_State *L)
 {
     GET_SELF;
 
@@ -200,7 +200,7 @@ static int getUserPropertyCount(lua_State *L)
     return 1;
 }
 
-static int getUserPropertyByIndex(lua_State *L)
+static int METHOD_NAME(getUserPropertyByIndex)(lua_State *L)
 {
     GET_SELF;
 
@@ -214,7 +214,7 @@ static int getUserPropertyByIndex(lua_State *L)
     return 1;
 }
 
-static int getUserProperty(lua_State *L)
+static int METHOD_NAME(getUserProperty)(lua_State *L)
 {
     GET_SELF;
 
@@ -228,7 +228,7 @@ static int getUserProperty(lua_State *L)
     return 1;
 }
 
-static int getLength(lua_State *L)
+static int METHOD_NAME(getLength)(lua_State *L)
 {
     GET_SELF;
 
@@ -240,7 +240,7 @@ static int getLength(lua_State *L)
     return 1;
 }
 
-static int getMinMaxDistance(lua_State *L)
+static int METHOD_NAME(getMinMaxDistance)(lua_State *L)
 {
     GET_SELF;
 
@@ -254,7 +254,7 @@ static int getMinMaxDistance(lua_State *L)
     return 2;
 }
 
-static int getSoundSize(lua_State *L)
+static int METHOD_NAME(getSoundSize)(lua_State *L)
 {
     GET_SELF;
 
@@ -266,7 +266,7 @@ static int getSoundSize(lua_State *L)
     return 1;
 }
 
-static int isSnapshot(lua_State *L)
+static int METHOD_NAME(isSnapshot)(lua_State *L)
 {
     GET_SELF;
 
@@ -278,7 +278,7 @@ static int isSnapshot(lua_State *L)
     return 1;
 }
 
-static int isOneshot(lua_State *L)
+static int METHOD_NAME(isOneshot)(lua_State *L)
 {
     GET_SELF;
 
@@ -290,7 +290,7 @@ static int isOneshot(lua_State *L)
     return 1;
 }
 
-static int isStream(lua_State *L)
+static int METHOD_NAME(isStream)(lua_State *L)
 {
     GET_SELF;
 
@@ -302,7 +302,7 @@ static int isStream(lua_State *L)
     return 1;
 }
 
-static int is3D(lua_State *L)
+static int METHOD_NAME(is3D)(lua_State *L)
 {
     GET_SELF;
 
@@ -314,7 +314,7 @@ static int is3D(lua_State *L)
     return 1;
 }
 
-static int isDopplerEnabled(lua_State *L)
+static int METHOD_NAME(isDopplerEnabled)(lua_State *L)
 {
     GET_SELF;
 
@@ -326,7 +326,7 @@ static int isDopplerEnabled(lua_State *L)
     return 1;
 }
 
-static int hasSustainPoint(lua_State *L)
+static int METHOD_NAME(hasSustainPoint)(lua_State *L)
 {
     GET_SELF;
 
@@ -338,7 +338,7 @@ static int hasSustainPoint(lua_State *L)
     return 1;
 }
 
-static int createInstance(lua_State *L)
+static int METHOD_NAME(createInstance)(lua_State *L)
 {
     GET_SELF;
 
@@ -350,7 +350,7 @@ static int createInstance(lua_State *L)
     return 1;
 }
 
-static int getInstanceCount(lua_State *L)
+static int METHOD_NAME(getInstanceCount)(lua_State *L)
 {
     GET_SELF;
 
@@ -362,7 +362,7 @@ static int getInstanceCount(lua_State *L)
     return 1;
 }
 
-static int getInstanceList(lua_State *L)
+static int METHOD_NAME(getInstanceList)(lua_State *L)
 {
     GET_SELF;
 
@@ -384,21 +384,21 @@ static int getInstanceList(lua_State *L)
     return 1;
 }
 
-static int loadSampleData(lua_State *L)
+static int METHOD_NAME(loadSampleData)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_EventDescription_LoadSampleData(self));
 }
 
-static int unloadSampleData(lua_State *L)
+static int METHOD_NAME(unloadSampleData)(lua_State *L)
 {
     GET_SELF;
 
     RETURN_STATUS(FMOD_Studio_EventDescription_UnloadSampleData(self));
 }
 
-static int getSampleLoadingState(lua_State *L)
+static int METHOD_NAME(getSampleLoadingState)(lua_State *L)
 {
     GET_SELF;
 
@@ -410,7 +410,7 @@ static int getSampleLoadingState(lua_State *L)
     return 1;
 }
 
-static int releaseAllInstances(lua_State *L)
+static int METHOD_NAME(releaseAllInstances)(lua_State *L)
 {
     GET_SELF;
 

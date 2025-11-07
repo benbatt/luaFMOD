@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_STUDIO_VCA
 
-static int isValid(lua_State *L)
+static int METHOD_NAME(isValid)(lua_State *L)
 {
     GET_SELF;
 
@@ -33,7 +33,7 @@ static int isValid(lua_State *L)
     return 1;
 }
 
-static int getID(lua_State *L)
+static int METHOD_NAME(getID)(lua_State *L)
 {
     GET_SELF;
 
@@ -46,7 +46,7 @@ static int getID(lua_State *L)
     return 1;
 }
 
-static int getPath(lua_State *L)
+static int METHOD_NAME(getPath)(lua_State *L)
 {
     GET_SELF;
 
@@ -65,7 +65,7 @@ static int getPath(lua_State *L)
     return 1;
 }
 
-static int getVolume(lua_State *L)
+static int METHOD_NAME(getVolume)(lua_State *L)
 {
     GET_SELF;
 
@@ -79,7 +79,7 @@ static int getVolume(lua_State *L)
     return 2;
 }
 
-static int setVolume(lua_State *L)
+static int METHOD_NAME(setVolume)(lua_State *L)
 {
     GET_SELF;
 
