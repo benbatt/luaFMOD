@@ -5,6 +5,7 @@ sources = [
   'src/bus.c',
   'src/callbacks.c',
   'src/channel.c',
+  'src/channelgroup.c',
   'src/constants.c',
   'src/coresystem.c',
   'src/eventdescription.c',

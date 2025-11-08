@@ -164,6 +164,7 @@ extern int LUAFMOD_EXPORT luaopen_luaFMOD(lua_State *L)
     REGISTER_METHODS_TABLE(L, FMOD_SYSTEM);
     REGISTER_METHODS_TABLE(L, FMOD_SOUND);
     REGISTER_METHODS_TABLE(L, FMOD_CHANNEL);
+    REGISTER_METHODS_TABLE(L, FMOD_CHANNELGROUP);
 
     /* Create constants */
     createConstantTables(L);
