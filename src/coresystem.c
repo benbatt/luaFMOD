@@ -22,6 +22,58 @@ DEALINGS IN THE SOFTWARE.
 
 #define SELF_TYPE FMOD_SYSTEM
 
+static int METHOD_NAME(create)(lua_State *L)
+{
+    FMOD_SYSTEM *system = NULL;
+
+    REQUIRE_OK(FMOD_System_Create(&system, FMOD_VERSION));
+
+    PUSH_HANDLE(L, FMOD_SYSTEM, system);
+
+    return 1;
+}
+
+static int METHOD_NAME(release)(lua_State *L)
+{
+    GET_SELF;
+
+    REQUIRE_OK(FMOD_System_Release(self));
+
+    return 0;
+}
+
+static int METHOD_NAME(init)(lua_State *L)
+{
+    GET_SELF;
+
+    int maxchannels = luaL_checkint(L, 2);
+    int flags = CHECK_CONSTANT(L, 3, FMOD_INITFLAGS);
+
+    /* TODO extradriverdata? */
+
+    REQUIRE_OK(FMOD_System_Init(self, maxchannels, flags, NULL));
+
+    return 0;
+}
+
+static int METHOD_NAME(close)(lua_State *L)
+{
+    GET_SELF;
+
+    REQUIRE_OK(FMOD_System_Close(self));
+
+    return 0;
+}
+
+static int METHOD_NAME(update)(lua_State *L)
+{
+    GET_SELF;
+
+    REQUIRE_OK(FMOD_System_Update(self));
+
+    return 0;
+}
+
 static int METHOD_NAME(setSoftwareFormat)(lua_State *L)
 {
     GET_SELF;
@@ -78,8 +130,45 @@ static int METHOD_NAME(playSound)(lua_State *L)
     return 1;
 }
 
+static int METHOD_NAME(createChannelGroup)(lua_State *L)
+{
+    GET_SELF;
+
+    const char *name = luaL_optstring(L, 2, NULL);
+
+    FMOD_CHANNELGROUP *channelgroup = NULL;
+    RETURN_IF_ERROR(FMOD_System_CreateChannelGroup(self, name, &channelgroup));
+
+    PUSH_HANDLE(L, FMOD_CHANNELGROUP, channelgroup);
+
+    return 1;
+}
+
+
+static int METHOD_NAME(getMasterChannelGroup)(lua_State *L)
+{
+    GET_SELF;
+
+    FMOD_CHANNELGROUP *channelgroup = NULL;
+    RETURN_IF_ERROR(FMOD_System_GetMasterChannelGroup(self, &channelgroup));
+
+    PUSH_HANDLE(L, FMOD_CHANNELGROUP, channelgroup);
+
+    return 1;
+}
+
+FUNCTION_TABLE_BEGIN(SystemStaticFunctions)
+    METHODS_TABLE_ENTRY(create)
+FUNCTION_TABLE_END
+
 METHODS_TABLE_BEGIN
+    METHODS_TABLE_ENTRY(release)
     METHODS_TABLE_ENTRY(setSoftwareFormat)
+    METHODS_TABLE_ENTRY(init)
+    METHODS_TABLE_ENTRY(close)
+    METHODS_TABLE_ENTRY(update)
     METHODS_TABLE_ENTRY(createSound)
     METHODS_TABLE_ENTRY(playSound)
+    METHODS_TABLE_ENTRY(createChannelGroup)
+    METHODS_TABLE_ENTRY(getMasterChannelGroup)
 METHODS_TABLE_END

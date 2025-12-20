@@ -140,6 +140,13 @@ extern int LUAFMOD_EXPORT luaopen_luaFMOD(lua_State *L)
     /* The FMOD table */
     REGISTER_FUNCTION_TABLE(L, "FMOD", CoreStaticFunctions);
 
+    /* The FMOD.System table */
+    lua_createtable(L, 0, 1);
+    REGISTER_FUNCTION_TABLE(L, NULL, SystemStaticFunctions);
+
+    /* Set FMOD.System */
+    lua_setfield(L, -2, "System");
+
     /* The FMOD.Studio table */
     lua_createtable(L, 0, 1);
     REGISTER_FUNCTION_TABLE(L, NULL, StudioStaticFunctions);
