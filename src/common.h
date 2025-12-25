@@ -34,6 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #define JOIN_IMPL(a, b) a ## b
 
 #define CHECK_HANDLE(L, index, type) *((type **)luaL_checkudata(L, index, STRINGIZE(type)))
+#define OPTIONAL_HANDLE(L, index, type) lua_isnil(L, index) ? NULL : CHECK_HANDLE(L, index, type);
 
 #define GET_SELF \
     SELF_TYPE *self = CHECK_HANDLE(L, 1, SELF_TYPE)

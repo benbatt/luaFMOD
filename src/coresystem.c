@@ -119,11 +119,11 @@ static int METHOD_NAME(playSound)(lua_State *L)
     GET_SELF;
 
     FMOD_SOUND *sound = CHECK_HANDLE(L, 2, FMOD_SOUND);
-    int paused = lua_toboolean(L, 3);
+    FMOD_CHANNELGROUP *channelGroup = OPTIONAL_HANDLE(L, 3, FMOD_CHANNELGROUP);
+    int paused = lua_toboolean(L, 4);
 
     FMOD_CHANNEL *channel = NULL;
-    // TODO channelgroup
-    RETURN_IF_ERROR(FMOD_System_PlaySound(self, sound, NULL, paused, &channel));
+    RETURN_IF_ERROR(FMOD_System_PlaySound(self, sound, channelGroup, paused, &channel));
 
     PUSH_HANDLE(L, FMOD_CHANNEL, channel);
 
