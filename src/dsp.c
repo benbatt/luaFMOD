@@ -25,16 +25,16 @@ DEALINGS IN THE SOFTWARE.
 
 #include "templates.h"
 
-GET(FMOD_SYSTEM, SystemObject)
-GET(int, NumInputs)
-GET(int, NumOutputs)
+GET(SystemObject, FMOD_SYSTEM)
+GET(NumInputs, int)
+GET(NumOutputs, int)
 GET_HANDLE_INDEXED_MULTI(Input, FMOD_DSP, FMOD_DSPCONNECTION)
 GET_HANDLE_INDEXED_MULTI(Output, FMOD_DSP, FMOD_DSPCONNECTION)
-PROPERTY(FMOD_BOOL, Active)
-PROPERTY(FMOD_BOOL, Bypass)
+PROPERTY(Active, FMOD_BOOL)
+PROPERTY(Bypass, FMOD_BOOL)
 PROPERTY_MULTI(WetDryMix, float, float, float)
-GET(int, NumParameters)
-GET(FMOD_BOOL, Idle)
+GET(NumParameters, int)
+GET(Idle, FMOD_BOOL)
 PROPERTY_MULTI(MeteringEnabled, FMOD_BOOL, FMOD_BOOL)
 GET_MULTI(CPUUsage, unsigned, unsigned)
 

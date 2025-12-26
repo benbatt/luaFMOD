@@ -39,16 +39,16 @@ static int GET_FMOD_SOUND_indexed(lua_State *L, FMOD_RESULT F_API (*getter)(SELF
   return 1;
 }
 
-GET(FMOD_SYSTEM, SystemObject)
-HANDLE_LIST(FMOD_SOUND, SubSound)
+GET(SystemObject, FMOD_SYSTEM)
+HANDLE_LIST(SubSound, FMOD_SOUND)
 PROPERTY_MULTI(Defaults, float, int)
 PROPERTY_MULTI(3DMinMaxDistance, float, float)
 PROPERTY_MULTI(3DConeSettings, float, float, float)
-PROPERTY_CONSTANT(FMOD_MODE, Mode)
-PROPERTY(int, LoopCount)
-GET(int, MusicNumChannels)
+PROPERTY_CONSTANT(Mode, FMOD_MODE)
+PROPERTY(LoopCount, int)
+GET(MusicNumChannels, int)
 PROPERTY_FLOAT_INDEXED(MusicChannelVolume)
-PROPERTY(float, MusicSpeed)
+PROPERTY(MusicSpeed, float)
 
 METHODS_TABLE_BEGIN
 #if 0

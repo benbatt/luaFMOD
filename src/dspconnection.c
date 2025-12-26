@@ -38,9 +38,9 @@ static int GET_FMOD_DSP(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, F
   return 1;
 }
 
-GET(FMOD_DSP, Input)
-GET(FMOD_DSP, Output)
-PROPERTY(float, Mix)
+GET(Input, FMOD_DSP)
+GET(Output, FMOD_DSP)
+PROPERTY(Mix, float)
 
 METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getInput)

@@ -54,7 +54,7 @@ static int GET_FMOD_CHANNELGROUP_indexed(lua_State *L,
   return 1;
 }
 
-GET(FMOD_SYSTEM, SystemObject)
+GET(SystemObject, FMOD_SYSTEM)
 
 static int METHOD_NAME(stop)(lua_State *L)
 {
@@ -63,31 +63,31 @@ static int METHOD_NAME(stop)(lua_State *L)
     RETURN_STATUS(FMOD_ChannelGroup_Stop(self));
 }
 
-PROPERTY(FMOD_BOOL, Paused)
-PROPERTY(float, Volume)
-PROPERTY(FMOD_BOOL, VolumeRamp)
-GET(float, Audibility)
-PROPERTY(float, Pitch)
-PROPERTY(FMOD_BOOL, Mute)
+PROPERTY(Paused, FMOD_BOOL)
+PROPERTY(Volume, float)
+PROPERTY(VolumeRamp, FMOD_BOOL)
+GET(Audibility, float)
+PROPERTY(Pitch, float)
+PROPERTY(Mute, FMOD_BOOL)
 PROPERTY_FLOAT_INDEXED(ReverbProperties)
-PROPERTY(float, LowPassGain)
-PROPERTY_CONSTANT(FMOD_MODE, Mode)
-GET_CUSTOM(FMOD_BOOL, isPlaying, IsPlaying)
-SET(float, Pan)
+PROPERTY(LowPassGain, float)
+PROPERTY_CONSTANT(Mode, FMOD_MODE)
+GET_CUSTOM(isPlaying, FMOD_BOOL, IsPlaying)
+SET(Pan, float)
 SET_MULTI(MixLevelsOutput, float, float, float, float, float, float, float, float)
-HANDLE_LIST(FMOD_DSP, DSP)
+HANDLE_LIST(DSP, FMOD_DSP)
 PROPERTY_MULTI(3DAttributes, (FMOD_VECTOR, STRUCT), (FMOD_VECTOR, STRUCT))
 PROPERTY_MULTI(3DMinMaxDistance, float, float)
 PROPERTY_MULTI(3DConeSettings, float, float, float)
-PROPERTY(FMOD_VECTOR, 3DConeOrientation)
+PROPERTY(3DConeOrientation, FMOD_VECTOR)
 PROPERTY_MULTI(3DOcclusion, float, float)
-PROPERTY(float, 3DSpread)
-PROPERTY(float, 3DLevel)
-PROPERTY(float, 3DDopplerLevel)
+PROPERTY(3DSpread, float)
+PROPERTY(3DLevel, float)
+PROPERTY(3DDopplerLevel, float)
 PROPERTY_MULTI(3DDistanceFilter, FMOD_BOOL, float, float)
-HANDLE_LIST(FMOD_CHANNELGROUP, Group)
-GET(FMOD_CHANNELGROUP, ParentGroup)
-HANDLE_LIST(FMOD_CHANNEL, Channel)
+HANDLE_LIST(Group, FMOD_CHANNELGROUP)
+GET(ParentGroup, FMOD_CHANNELGROUP)
+HANDLE_LIST(Channel, FMOD_CHANNEL)
 
 METHODS_TABLE_BEGIN
   METHODS_TABLE_ENTRY(getSystemObject)
