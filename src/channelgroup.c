@@ -54,7 +54,7 @@ static int GET_FMOD_CHANNELGROUP_indexed(lua_State *L,
   return 1;
 }
 
-GET_HANDLE(FMOD_SYSTEM, SystemObject)
+GET(FMOD_SYSTEM, SystemObject)
 
 static int METHOD_NAME(stop)(lua_State *L)
 {
@@ -76,7 +76,7 @@ GET_CUSTOM(FMOD_BOOL, isPlaying, IsPlaying)
 SET(float, Pan)
 SET_MULTI(MixLevelsOutput, float, float, float, float, float, float, float, float)
 HANDLE_LIST(FMOD_DSP, DSP)
-PROPERTY_MULTI(3DAttributes, FMOD_VECTOR, FMOD_VECTOR)
+PROPERTY_MULTI(3DAttributes, (FMOD_VECTOR, STRUCT), (FMOD_VECTOR, STRUCT))
 PROPERTY_MULTI(3DMinMaxDistance, float, float)
 PROPERTY_MULTI(3DConeSettings, float, float, float)
 PROPERTY(FMOD_VECTOR, 3DConeOrientation)
@@ -86,6 +86,7 @@ PROPERTY(float, 3DLevel)
 PROPERTY(float, 3DDopplerLevel)
 PROPERTY_MULTI(3DDistanceFilter, FMOD_BOOL, float, float)
 HANDLE_LIST(FMOD_CHANNELGROUP, Group)
+GET(FMOD_CHANNELGROUP, ParentGroup)
 HANDLE_LIST(FMOD_CHANNEL, Channel)
 
 METHODS_TABLE_BEGIN
@@ -166,8 +167,8 @@ METHODS_TABLE_BEGIN
 #endif
   METHODS_TABLE_ENTRY(getNumGroups)
   METHODS_TABLE_ENTRY(getGroup)
-#if 0
   METHODS_TABLE_ENTRY(getParentGroup)
+#if 0
   METHODS_TABLE_ENTRY(getName)
 #endif
   METHODS_TABLE_ENTRY(getNumChannels)

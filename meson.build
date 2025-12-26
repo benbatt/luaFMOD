@@ -8,6 +8,8 @@ sources = [
   'src/channelgroup.c',
   'src/constants.c',
   'src/coresystem.c',
+  'src/dsp.c',
+  'src/dspconnection.c',
   'src/eventdescription.c',
   'src/eventinstance.c',
   'src/logging.c',

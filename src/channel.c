@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "templates.h"
 
-GET_HANDLE(FMOD_SYSTEM, SystemObject)
+GET(FMOD_SYSTEM, SystemObject)
 PROPERTY(FMOD_BOOL, Paused)
 PROPERTY(float, Volume)
 PROPERTY(FMOD_BOOL, VolumeRamp)
@@ -39,7 +39,7 @@ GET_CUSTOM(FMOD_BOOL, isPlaying, IsPlaying)
 SET(float, Pan)
 SET_MULTI(MixLevelsOutput, float, float, float, float, float, float, float, float)
 HANDLE_LIST(FMOD_DSP, DSP)
-PROPERTY_MULTI(3DAttributes, FMOD_VECTOR, FMOD_VECTOR)
+PROPERTY_MULTI(3DAttributes, (FMOD_VECTOR, STRUCT), (FMOD_VECTOR, STRUCT))
 PROPERTY_MULTI(3DMinMaxDistance, float, float)
 PROPERTY_MULTI(3DConeSettings, float, float, float)
 PROPERTY(FMOD_VECTOR, 3DConeOrientation)

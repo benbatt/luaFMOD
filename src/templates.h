@@ -37,26 +37,26 @@
       return GET_constant(L, #type, JOIN(FMOD_PREFIX, Get ## name)); \
   }
 
-#define GET_HANDLE(type, name) \
-  static int METHOD_NAME(get ## name)(lua_State *L) \
-  { \
-      return GET_ ## type(L, JOIN(FMOD_PREFIX, Get ## name)); \
-  }
-
 #define GET_HANDLE_INDEXED(type, name) \
   static int METHOD_NAME(get ## name)(lua_State *L) \
   { \
     return GET_ ## type ## _indexed(L, JOIN(FMOD_PREFIX, Get ## name)); \
   }
 
-#define READ_float(index) float value ## index = (float)luaL_checknumber(L, index);
 #define PUSH_float(index) lua_pushnumber(L, value ## index);
+#define CHECK_float(index) (float)luaL_checknumber(L, index)
 
-#define READ_FMOD_BOOL(index) int value ## index = lua_toboolean(L, index);
+#define PUSH_int(index) lua_pushinteger(L, value ## index);
+#define CHECK_int(index) luaL_checkinteger(L, index)
+
+#define PUSH_unsigned(index) lua_pushinteger(L, value ## index);
+#define CHECK_unsigned(index) luaL_checkinteger(L, index)
+
 #define PUSH_FMOD_BOOL(index) lua_pushboolean(L, value ## index);
+#define CHECK_FMOD_BOOL(index) lua_toboolean(L, index)
 
-#define READ_FMOD_VECTOR(index) FMOD_VECTOR *value ## index = CHECK_STRUCT(L, index, FMOD_VECTOR);
 #define PUSH_FMOD_VECTOR(index) PUSH_STRUCT(L, FMOD_VECTOR, value ## index);
+#define CHECK_FMOD_VECTOR(index) CHECK_STRUCT(L, index, FMOD_VECTOR)
 
 #define EXPAND(...) __VA_ARGS__
 
@@ -112,7 +112,17 @@
 #define PREFIX_INDEX(prefix) JOIN BRACKETS(prefix COMMA INDEX)
 #define PREFIX_CURRENT(prefix) JOIN BRACKETS(prefix COMMA CURRENT)
 
+#define PASTE_FIRST_TWO(...) PASTE_FIRST_TWO_IMPL(__VA_ARGS__)
+#define PASTE_FIRST_TWO_IMPL(a, b, ...) a ## b __VA_ARGS__
+
+#define REMOVE_BRACKETS(x) PASTE_FIRST_TWO(EAT_, REMOVE_BRACKETS_IMPL x)
+#define REMOVE_BRACKETS_IMPL(...) REMOVE_BRACKETS_IMPL, __VA_ARGS__
+#define EAT_REMOVE_BRACKETS_IMPL
+
 #define FIRST(x, ...) x
+#define SECOND(x, y, ...) y
+
+#define APPEND(x, y) (REMOVE_BRACKETS(x), y)
 #define REMOVE_FIRST(x, ...) __VA_ARGS__
 
 #define FOR_EACH(index, sequence, ...) EXPAND(JOIN(FOR_EACH_, VA_COUNT sequence)(index, sequence, __VA_ARGS__))
@@ -137,13 +147,34 @@
 #define FOR_EACH_10(index, sequence, ...) EXPAND(PROVIDE_PAYLOAD((index, FIRST sequence), __VA_ARGS__) \
     FOR_EACH_9(INCREMENT(index), (REMOVE_FIRST sequence), __VA_ARGS__))
 
+#define READ(index, info) READ_IMPL(APPEND(info, BASIC), index)
+#define READ_IMPL(info, index) JOIN(READ_, SECOND info)(FIRST info, index)
+
+#define READ_BASIC(type, index) type JOIN(value, index) = JOIN(CHECK_, type)(index);
+#define READ_HANDLE(type, index) type *JOIN(value, index) = CHECK_HANDLE(L, index, type);
+#define READ_STRUCT(type, index) type *JOIN(value, index) = CHECK_STRUCT(L, index, type);
+
+#define DECLARE(index, info) DECLARE_IMPL(APPEND(info, BASIC), index)
+#define DECLARE_IMPL(info, index) JOIN(DECLARE_, SECOND info)(FIRST info, index)
+
+#define DECLARE_BASIC(type, index) type JOIN(value, index);
+#define DECLARE_HANDLE(type, index) type *JOIN(value, index);
+#define DECLARE_STRUCT(type, index) type JOIN(value, index);
+
+#define RETURN(index, info) RETURN_IMPL(APPEND(info, BASIC), index)
+#define RETURN_IMPL(info, index) JOIN(RETURN_, SECOND info)(FIRST info, index)
+
+#define RETURN_BASIC(type, index) JOIN(PUSH_, type)(index)
+#define RETURN_HANDLE(type, index) PUSH_HANDLE(L, type, JOIN(value, index));
+#define RETURN_STRUCT(type, index) PUSH_STRUCT(L, type, JOIN(value, index));
+
 #define GET_MULTI(name, ...) \
   static int METHOD_NAME(get ## name)(lua_State *L) \
   { \
     GET_SELF; \
-    FOR_EACH(1, (__VA_ARGS__), CURRENT PREFIX_INDEX(value);) \
+    FOR_EACH(1, (__VA_ARGS__), DECLARE, ) \
     RETURN_IF_ERROR(JOIN(FMOD_PREFIX, Get ## name)(self FOR_EACH(1, (__VA_ARGS__), COMMA &PREFIX_INDEX(value)))); \
-    FOR_EACH(1, (__VA_ARGS__), PREFIX_CURRENT(PUSH_) BRACKETS(INDEX)) \
+    FOR_EACH(1, (__VA_ARGS__), RETURN, ) \
     return VA_COUNT(__VA_ARGS__); \
   }
 
@@ -151,8 +182,20 @@
   static int METHOD_NAME(set ## name)(lua_State *L) \
   { \
     GET_SELF; \
-    FOR_EACH(2, (__VA_ARGS__), PREFIX_CURRENT(READ_) BRACKETS(INDEX)) \
+    FOR_EACH(2, (__VA_ARGS__), READ, ) \
     RETURN_STATUS(JOIN(FMOD_PREFIX, Set ## name)(self FOR_EACH(2, (__VA_ARGS__), COMMA PREFIX_INDEX(value)))); \
+  }
+
+#define GET_HANDLE_INDEXED_MULTI(name, ...) \
+  static int METHOD_NAME(get ## name)(lua_State *L) \
+  { \
+    GET_SELF; \
+    int index = luaL_checkinteger(L, 2); \
+    FOR_EACH(1, (__VA_ARGS__), CURRENT *PREFIX_INDEX(value);) \
+    RETURN_IF_ERROR(JOIN(FMOD_PREFIX, Get ## name)(self, \
+        index FOR_EACH(1, (__VA_ARGS__), COMMA &PREFIX_INDEX(value)))); \
+    FOR_EACH(1, (__VA_ARGS__), PUSH_HANDLE BRACKETS(L COMMA CURRENT COMMA PREFIX_INDEX(value));) \
+    return VA_COUNT(__VA_ARGS__); \
   }
 
 #define PROPERTY(type, name) \
@@ -305,6 +348,19 @@ static int SET_constant(lua_State *L, const char *type, FMOD_RESULT F_API (*sett
   RETURN_STATUS(setter(self, value));
 }
 
+static int GET_FMOD_CHANNELGROUP(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, FMOD_CHANNELGROUP **))
+{
+  GET_SELF;
+
+  FMOD_CHANNELGROUP *handle = NULL;
+
+  RETURN_IF_ERROR(getter(self, &handle));
+
+  PUSH_HANDLE(L, FMOD_CHANNELGROUP, handle);
+
+  return 1;
+}
+
 static int GET_FMOD_SYSTEM(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, FMOD_SYSTEM **))
 {
   GET_SELF;
@@ -324,7 +380,7 @@ static int GET_FMOD_DSP_indexed(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_T
 
   int index = luaL_checkinteger(L, 2);
 
-  FMOD_DSP *handle;
+  FMOD_DSP *handle = NULL;
   RETURN_IF_ERROR(getter(self, index, &handle));
 
   PUSH_HANDLE(L, FMOD_DSP, handle);
