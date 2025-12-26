@@ -28,13 +28,13 @@
 #define SET_CONSTANT(name, type) \
   static int METHOD_NAME(set ## name)(lua_State *L) \
   { \
-    return SET_constant(L, #type, JOIN(FMOD_PREFIX, Set ## name)); \
+    return SET_constant(L, STRINGIZE(type), JOIN(FMOD_PREFIX, Set ## name)); \
   }
 
 #define GET_CONSTANT(name, type) \
   static int METHOD_NAME(get ## name)(lua_State *L) \
   { \
-      return GET_constant(L, #type, JOIN(FMOD_PREFIX, Get ## name)); \
+      return GET_constant(L, STRINGIZE(type), JOIN(FMOD_PREFIX, Get ## name)); \
   }
 
 #define GET_HANDLE_INDEXED(name, type) \
@@ -198,9 +198,13 @@
     return VA_COUNT(__VA_ARGS__); \
   }
 
-#define PROPERTY(name, type) \
-  SET(name, type) \
-  GET(name, type)
+#define SET_BASIC(name, type) SET(name, type)
+#define GET_BASIC(name, type) GET(name, type)
+
+#define PROPERTY(name, type) PROPERTY_IMPL(name, APPEND(type, BASIC))
+#define PROPERTY_IMPL(name, info) \
+  JOIN(SET_, SECOND info)(name, FIRST info) \
+  JOIN(GET_, SECOND info)(name, FIRST info)
 
 #define PROPERTY_MULTI(name, ...) \
   SET_MULTI(name, __VA_ARGS__) \
@@ -209,10 +213,6 @@
 #define PROPERTY_FLOAT_INDEXED(name) \
   SET_FLOAT_INDEXED(name) \
   GET_FLOAT_INDEXED(name)
-
-#define PROPERTY_CONSTANT(name, type) \
-  SET_CONSTANT(name, type) \
-  GET_CONSTANT(name, type)
 
 #define HANDLE_LIST(name, type) \
   GET(Num ## name ## s, int) \
