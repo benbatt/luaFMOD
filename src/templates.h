@@ -203,6 +203,23 @@
 #define SET_BASIC(name, type) SET(name, type)
 #define GET_BASIC(name, type) GET(name, type)
 
+#define SET_HANDLE(name, type) \
+  static int METHOD_NAME(set ## name)(lua_State *L) \
+  { \
+    GET_SELF; \
+    type *handle = CHECK_HANDLE(L, 2, type); \
+    RETURN_STATUS(JOIN(FMOD_PREFIX, Set ## name)(self, handle)); \
+  }
+#define GET_HANDLE(name, type) \
+  static int METHOD_NAME(get ## name)(lua_State *L) \
+  { \
+    GET_SELF; \
+    type *handle = NULL; \
+    RETURN_IF_ERROR(JOIN(FMOD_PREFIX, Get ## name)(self, &handle)); \
+    PUSH_HANDLE(L, type, handle); \
+    return 1; \
+  }
+
 #define PROPERTY(name, type) PROPERTY_IMPL(name, APPEND(type, BASIC))
 #define PROPERTY_IMPL(name, info) \
   JOIN(SET_, SECOND info)(name, FIRST info) \
