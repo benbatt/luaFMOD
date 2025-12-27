@@ -13,16 +13,24 @@
 #define GET(name, type) GET_IMPL(type, get ## name, Get ## name)
 #define GET_CUSTOM(methodName, type, fmodName) GET_IMPL(type, methodName, fmodName)
 
-#define SET_FLOAT_INDEXED(name) \
+#define SET_INDEXED(name, indexType, resultType) \
   static int METHOD_NAME(set ## name)(lua_State *L) \
   { \
-    return SET_float_indexed(L, JOIN(FMOD_PREFIX, Set ## name)); \
+    GET_SELF; \
+    READ(2, indexType) \
+    READ(3, resultType) \
+    RETURN_STATUS(JOIN(FMOD_PREFIX, Set ## name)(self, value2, value3)); \
   }
 
-#define GET_FLOAT_INDEXED(name) \
+#define GET_INDEXED(name, indexType, resultType) \
   static int METHOD_NAME(get ## name)(lua_State *L) \
   { \
-    return GET_float_indexed(L, JOIN(FMOD_PREFIX, Get ## name)); \
+    GET_SELF; \
+    READ(2, indexType) \
+    DECLARE(3, resultType) \
+    RETURN_IF_ERROR(JOIN(FMOD_PREFIX, Get ## name)(self, value2, &value3)); \
+    RETURN(3, resultType) \
+    return 1; \
   }
 
 #define SET_CONSTANT(name, type) \
@@ -35,12 +43,6 @@
   static int METHOD_NAME(get ## name)(lua_State *L) \
   { \
       return GET_constant(L, STRINGIZE(type), JOIN(FMOD_PREFIX, Get ## name)); \
-  }
-
-#define GET_HANDLE_INDEXED(name, type) \
-  static int METHOD_NAME(get ## name)(lua_State *L) \
-  { \
-    return GET_ ## type ## _indexed(L, JOIN(FMOD_PREFIX, Get ## name)); \
   }
 
 #define PUSH_float(index) lua_pushnumber(L, value ## index);
@@ -186,15 +188,15 @@
     RETURN_STATUS(JOIN(FMOD_PREFIX, Set ## name)(self FOR_EACH(2, (__VA_ARGS__), COMMA PREFIX_INDEX(value)))); \
   }
 
-#define GET_HANDLE_INDEXED_MULTI(name, ...) \
+#define GET_INDEXED_MULTI(name, ...) \
   static int METHOD_NAME(get ## name)(lua_State *L) \
   { \
     GET_SELF; \
     int index = luaL_checkinteger(L, 2); \
-    FOR_EACH(1, (__VA_ARGS__), CURRENT *PREFIX_INDEX(value);) \
+    FOR_EACH(1, (__VA_ARGS__), DECLARE, ) \
     RETURN_IF_ERROR(JOIN(FMOD_PREFIX, Get ## name)(self, \
         index FOR_EACH(1, (__VA_ARGS__), COMMA &PREFIX_INDEX(value)))); \
-    FOR_EACH(1, (__VA_ARGS__), PUSH_HANDLE BRACKETS(L COMMA CURRENT COMMA PREFIX_INDEX(value));) \
+    FOR_EACH(1, (__VA_ARGS__), RETURN, ) \
     return VA_COUNT(__VA_ARGS__); \
   }
 
@@ -210,13 +212,13 @@
   SET_MULTI(name, __VA_ARGS__) \
   GET_MULTI(name, __VA_ARGS__)
 
-#define PROPERTY_FLOAT_INDEXED(name) \
-  SET_FLOAT_INDEXED(name) \
-  GET_FLOAT_INDEXED(name)
+#define PROPERTY_INDEXED(name, indexType, resultType) \
+  SET_INDEXED(name, indexType, resultType) \
+  GET_INDEXED(name, indexType, resultType)
 
 #define HANDLE_LIST(name, type) \
   GET(Num ## name ## s, int) \
-  GET_HANDLE_INDEXED(name, type)
+  GET_INDEXED(name, int, (type, HANDLE))
 
 static int GET_float(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, float *))
 {
@@ -237,30 +239,6 @@ static int SET_float(lua_State *L, FMOD_RESULT F_API (*setter)(SELF_TYPE *, floa
   float value = (float)luaL_checknumber(L, 2);
 
   RETURN_STATUS(setter(self, value));
-}
-
-static int GET_float_indexed(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, int, float *))
-{
-  GET_SELF;
-
-  int index = luaL_checkinteger(L, 2);
-
-  float value = 0;
-  RETURN_IF_ERROR(getter(self, index, &value));
-
-  lua_pushnumber(L, value);
-
-  return 1;
-}
-
-static int SET_float_indexed(lua_State *L, FMOD_RESULT F_API (*setter)(SELF_TYPE *, int, float))
-{
-  GET_SELF;
-
-  int index = luaL_checkinteger(L, 2);
-  float value = (float)luaL_checknumber(L, 3);
-
-  RETURN_STATUS(setter(self, index, value));
 }
 
 static int SET_int(lua_State *L, FMOD_RESULT F_API (*setter)(SELF_TYPE *, int))
@@ -370,20 +348,6 @@ static int GET_FMOD_SYSTEM(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *
   RETURN_IF_ERROR(getter(self, &handle));
 
   PUSH_HANDLE(L, FMOD_SYSTEM, handle);
-
-  return 1;
-}
-
-static int GET_FMOD_DSP_indexed(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, int, FMOD_DSP **))
-{
-  GET_SELF;
-
-  int index = luaL_checkinteger(L, 2);
-
-  FMOD_DSP *handle = NULL;
-  RETURN_IF_ERROR(getter(self, index, &handle));
-
-  PUSH_HANDLE(L, FMOD_DSP, handle);
 
   return 1;
 }

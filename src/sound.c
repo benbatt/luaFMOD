@@ -47,7 +47,7 @@ PROPERTY_MULTI(3DConeSettings, float, float, float)
 PROPERTY(Mode, (FMOD_MODE, CONSTANT))
 PROPERTY(LoopCount, int)
 GET(MusicNumChannels, int)
-PROPERTY_FLOAT_INDEXED(MusicChannelVolume)
+PROPERTY_INDEXED(MusicChannelVolume, int, float)
 PROPERTY(MusicSpeed, float)
 
 METHODS_TABLE_BEGIN

@@ -25,35 +25,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include "templates.h"
 
-static int GET_FMOD_CHANNEL_indexed(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, int, FMOD_CHANNEL **))
-{
-  GET_SELF;
-
-  int index = luaL_checkinteger(L, 2);
-
-  FMOD_CHANNEL *handle;
-  RETURN_IF_ERROR(getter(self, index, &handle));
-
-  PUSH_HANDLE(L, FMOD_CHANNEL, handle);
-
-  return 1;
-}
-
-static int GET_FMOD_CHANNELGROUP_indexed(lua_State *L,
-  FMOD_RESULT F_API (*getter)(SELF_TYPE *, int, FMOD_CHANNELGROUP **))
-{
-  GET_SELF;
-
-  int index = luaL_checkinteger(L, 2);
-
-  FMOD_CHANNELGROUP *handle;
-  RETURN_IF_ERROR(getter(self, index, &handle));
-
-  PUSH_HANDLE(L, FMOD_CHANNELGROUP, handle);
-
-  return 1;
-}
-
 GET(SystemObject, FMOD_SYSTEM)
 
 static int METHOD_NAME(stop)(lua_State *L)
@@ -69,13 +40,14 @@ PROPERTY(VolumeRamp, FMOD_BOOL)
 GET(Audibility, float)
 PROPERTY(Pitch, float)
 PROPERTY(Mute, FMOD_BOOL)
-PROPERTY_FLOAT_INDEXED(ReverbProperties)
+PROPERTY_INDEXED(ReverbProperties, int, float)
 PROPERTY(LowPassGain, float)
 PROPERTY(Mode, (FMOD_MODE, CONSTANT))
 GET_CUSTOM(isPlaying, FMOD_BOOL, IsPlaying)
 SET(Pan, float)
 SET_MULTI(MixLevelsOutput, float, float, float, float, float, float, float, float)
 HANDLE_LIST(DSP, FMOD_DSP)
+PROPERTY_INDEXED(DSPIndex, (FMOD_DSP, HANDLE), int)
 PROPERTY_MULTI(3DAttributes, (FMOD_VECTOR, STRUCT), (FMOD_VECTOR, STRUCT))
 PROPERTY_MULTI(3DMinMaxDistance, float, float)
 PROPERTY_MULTI(3DConeSettings, float, float, float)
@@ -133,10 +105,8 @@ METHODS_TABLE_BEGIN
   METHODS_TABLE_ENTRY(removeDSP)
 #endif
   METHODS_TABLE_ENTRY(getNumDSPs)
-#if 0
   METHODS_TABLE_ENTRY(setDSPIndex)
   METHODS_TABLE_ENTRY(getDSPIndex)
-#endif
   METHODS_TABLE_ENTRY(set3DAttributes)
   METHODS_TABLE_ENTRY(get3DAttributes)
   METHODS_TABLE_ENTRY(set3DMinMaxDistance)
