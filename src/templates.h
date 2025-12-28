@@ -350,3 +350,15 @@ static int SET_constant(lua_State *L, const char *type, FMOD_RESULT F_API (*sett
 
   RETURN_STATUS(setter(self, value));
 }
+
+static int GET_STRING(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, char *, int))
+{
+  GET_SELF;
+
+  char value[128];
+  RETURN_IF_ERROR(getter(self, value, sizeof(value)));
+
+  lua_pushstring(L, value);
+
+  return 1;
+}
