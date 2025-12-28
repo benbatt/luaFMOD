@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "templates.h"
 
-GET(SystemObject, FMOD_SYSTEM)
+GET(SystemObject, (FMOD_SYSTEM, HANDLE))
 PROPERTY(Paused, FMOD_BOOL)
 PROPERTY(Volume, float)
 PROPERTY(VolumeRamp, FMOD_BOOL)

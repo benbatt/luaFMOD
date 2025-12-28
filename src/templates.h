@@ -1,17 +1,23 @@
-#define SET(name, type) \
+#define SET_BASIC(name, type) \
   static int METHOD_NAME(set ## name)(lua_State *L) \
   { \
-    return SET_ ## type(L, JOIN(FMOD_PREFIX, Set ## name)); \
+    return JOIN(SET_, type)(L, JOIN(FMOD_PREFIX, Set ## name)); \
   }
 
-#define GET_IMPL(type, methodName, fmodName) \
+#define SET(name, type) SET_IMPL(name, APPEND(type, BASIC))
+#define SET_IMPL(name, info) JOIN(SET_, SECOND info)(name, FIRST info)
+
+#define GET_BASIC_IMPL(type, methodName, fmodName) \
   static int METHOD_NAME(methodName)(lua_State *L) \
   { \
-    return GET_ ## type(L, JOIN(FMOD_PREFIX, fmodName)); \
+    return JOIN(GET_, type)(L, JOIN(FMOD_PREFIX, fmodName)); \
   }
 
-#define GET(name, type) GET_IMPL(type, get ## name, Get ## name)
-#define GET_CUSTOM(methodName, type, fmodName) GET_IMPL(type, methodName, fmodName)
+#define GET_BASIC(name, type) GET_BASIC_IMPL(type, get ## name, Get ## name)
+#define GET_CUSTOM(methodName, type, fmodName) GET_BASIC_IMPL(type, methodName, fmodName)
+
+#define GET(name, type) GET_IMPL(name, APPEND(type, BASIC))
+#define GET_IMPL(name, info) JOIN(GET_, SECOND info)(name, FIRST info)
 
 #define SET_INDEXED(name, indexType, resultType) \
   static int METHOD_NAME(set ## name)(lua_State *L) \
@@ -200,9 +206,6 @@
     return VA_COUNT(__VA_ARGS__); \
   }
 
-#define SET_BASIC(name, type) SET(name, type)
-#define GET_BASIC(name, type) GET(name, type)
-
 #define SET_HANDLE(name, type) \
   static int METHOD_NAME(set ## name)(lua_State *L) \
   { \
@@ -341,30 +344,4 @@ static int SET_constant(lua_State *L, const char *type, FMOD_RESULT F_API (*sett
   unsigned int value = *(unsigned int*)luaL_checkudata(L, 2, type);
 
   RETURN_STATUS(setter(self, value));
-}
-
-static int GET_FMOD_CHANNELGROUP(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, FMOD_CHANNELGROUP **))
-{
-  GET_SELF;
-
-  FMOD_CHANNELGROUP *handle = NULL;
-
-  RETURN_IF_ERROR(getter(self, &handle));
-
-  PUSH_HANDLE(L, FMOD_CHANNELGROUP, handle);
-
-  return 1;
-}
-
-static int GET_FMOD_SYSTEM(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, FMOD_SYSTEM **))
-{
-  GET_SELF;
-
-  FMOD_SYSTEM *handle = NULL;
-
-  RETURN_IF_ERROR(getter(self, &handle));
-
-  PUSH_HANDLE(L, FMOD_SYSTEM, handle);
-
-  return 1;
 }

@@ -39,8 +39,9 @@ static int GET_FMOD_SOUND_indexed(lua_State *L, FMOD_RESULT F_API (*getter)(SELF
   return 1;
 }
 
-GET(SystemObject, FMOD_SYSTEM)
+GET(SystemObject, (FMOD_SYSTEM, HANDLE))
 HANDLE_LIST(SubSound, FMOD_SOUND)
+GET(SubSoundParent, (FMOD_SOUND, HANDLE))
 PROPERTY_MULTI(Defaults, float, int)
 PROPERTY_MULTI(3DMinMaxDistance, float, float)
 PROPERTY_MULTI(3DConeSettings, float, float, float)
@@ -70,8 +71,8 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(get3DCustomRolloff)
 #endif
     METHODS_TABLE_ENTRY(getSubSound)
-#if 0
     METHODS_TABLE_ENTRY(getSubSoundParent)
+#if 0
     METHODS_TABLE_ENTRY(getName)
     METHODS_TABLE_ENTRY(getLength)
     METHODS_TABLE_ENTRY(getFormat)

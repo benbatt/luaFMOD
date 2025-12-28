@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "templates.h"
 
-GET(SystemObject, FMOD_SYSTEM)
+GET(SystemObject, (FMOD_SYSTEM, HANDLE))
 GET(NumInputs, int)
 GET(NumOutputs, int)
 GET_INDEXED_MULTI(Input, (FMOD_DSP, HANDLE), (FMOD_DSPCONNECTION, HANDLE))

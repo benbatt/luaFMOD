@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "templates.h"
 
-GET(SystemObject, FMOD_SYSTEM)
+GET(SystemObject, (FMOD_SYSTEM, HANDLE))
 
 static int METHOD_NAME(stop)(lua_State *L)
 {
@@ -58,7 +58,7 @@ PROPERTY(3DLevel, float)
 PROPERTY(3DDopplerLevel, float)
 PROPERTY_MULTI(3DDistanceFilter, FMOD_BOOL, float, float)
 HANDLE_LIST(Group, FMOD_CHANNELGROUP)
-GET(ParentGroup, FMOD_CHANNELGROUP)
+GET(ParentGroup, (FMOD_CHANNELGROUP, HANDLE))
 HANDLE_LIST(Channel, FMOD_CHANNEL)
 
 METHODS_TABLE_BEGIN

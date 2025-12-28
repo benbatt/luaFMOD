@@ -25,21 +25,8 @@ DEALINGS IN THE SOFTWARE.
 
 #include "templates.h"
 
-static int GET_FMOD_DSP(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, FMOD_DSP **))
-{
-  GET_SELF;
-
-  FMOD_DSP *handle = NULL;
-
-  RETURN_IF_ERROR(getter(self, &handle));
-
-  PUSH_HANDLE(L, FMOD_DSP, handle);
-
-  return 1;
-}
-
-GET(Input, FMOD_DSP)
-GET(Output, FMOD_DSP)
+GET(Input, (FMOD_DSP, HANDLE))
+GET(Output, (FMOD_DSP, HANDLE))
 PROPERTY(Mix, float)
 
 METHODS_TABLE_BEGIN
