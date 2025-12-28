@@ -55,6 +55,7 @@ PROPERTY(Priority, int)
 PROPERTY(ChannelGroup, (FMOD_CHANNELGROUP, HANDLE))
 PROPERTY(LoopCount, int)
 GET_CUSTOM(isVirtual, FMOD_BOOL, IsVirtual)
+GET(CurrentSound, (FMOD_SOUND, HANDLE))
 GET(Index, int)
 
 METHODS_TABLE_BEGIN
@@ -150,8 +151,6 @@ METHODS_TABLE_BEGIN
   METHODS_TABLE_ENTRY(getLoopPoints)
 #endif
   METHODS_TABLE_ENTRY(isVirtual)
-#if 0
   METHODS_TABLE_ENTRY(getCurrentSound)
-#endif
   METHODS_TABLE_ENTRY(getIndex)
 METHODS_TABLE_END
