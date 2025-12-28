@@ -63,6 +63,11 @@
 #define PUSH_FMOD_BOOL(index) lua_pushboolean(L, value ## index);
 #define CHECK_FMOD_BOOL(index) lua_toboolean(L, index)
 
+typedef unsigned long long DSP_CLOCK;
+
+#define PUSH_DSP_CLOCK(index) lua_pushinteger(L, value ## index);
+#define CHECK_DSP_CLOCK(index) luaL_checkinteger(L, index)
+
 #define PUSH_FMOD_VECTOR(index) PUSH_STRUCT(L, FMOD_VECTOR, value ## index);
 #define CHECK_FMOD_VECTOR(index) CHECK_STRUCT(L, index, FMOD_VECTOR)
 

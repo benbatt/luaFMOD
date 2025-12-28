@@ -38,6 +38,7 @@ PROPERTY(Mode, (FMOD_MODE, CONSTANT))
 GET_CUSTOM(isPlaying, FMOD_BOOL, IsPlaying)
 SET(Pan, float)
 SET_MULTI(MixLevelsOutput, float, float, float, float, float, float, float, float)
+PROPERTY_MULTI(Delay, DSP_CLOCK, DSP_CLOCK, FMOD_BOOL)
 HANDLE_LIST(DSP, FMOD_DSP)
 PROPERTY_INDEXED(DSPIndex, (FMOD_DSP, HANDLE), int)
 PROPERTY_MULTI(3DAttributes, (FMOD_VECTOR, STRUCT), (FMOD_VECTOR, STRUCT))
@@ -89,8 +90,10 @@ METHODS_TABLE_BEGIN
   METHODS_TABLE_ENTRY(setMixMatrix)
   METHODS_TABLE_ENTRY(getMixMatrix)
   METHODS_TABLE_ENTRY(getDSPClock)
+#endif
   METHODS_TABLE_ENTRY(setDelay)
   METHODS_TABLE_ENTRY(getDelay)
+#if 0
   METHODS_TABLE_ENTRY(addFadePoint)
   METHODS_TABLE_ENTRY(setFadePointRamp)
   METHODS_TABLE_ENTRY(removeFadePoints)
