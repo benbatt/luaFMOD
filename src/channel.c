@@ -52,6 +52,7 @@ PROPERTY(3DDopplerLevel, float)
 PROPERTY_MULTI(3DDistanceFilter, FMOD_BOOL, float, float)
 PROPERTY(Frequency, float)
 PROPERTY(Priority, int)
+PROPERTY(Position, TIMEUNIT)
 PROPERTY(ChannelGroup, (FMOD_CHANNELGROUP, HANDLE))
 PROPERTY(LoopCount, int)
 GET_CUSTOM(isVirtual, FMOD_BOOL, IsVirtual)
@@ -138,10 +139,8 @@ METHODS_TABLE_BEGIN
   METHODS_TABLE_ENTRY(getFrequency)
   METHODS_TABLE_ENTRY(setPriority)
   METHODS_TABLE_ENTRY(getPriority)
-#if 0
   METHODS_TABLE_ENTRY(setPosition)
   METHODS_TABLE_ENTRY(getPosition)
-#endif
   METHODS_TABLE_ENTRY(setChannelGroup)
   METHODS_TABLE_ENTRY(getChannelGroup)
   METHODS_TABLE_ENTRY(setLoopCount)

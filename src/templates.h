@@ -362,3 +362,27 @@ static int GET_STRING(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, cha
 
   return 1;
 }
+
+static int GET_TIMEUNIT(lua_State *L, FMOD_RESULT F_API (*getter)(SELF_TYPE *, unsigned int *, FMOD_TIMEUNIT))
+{
+  GET_SELF;
+
+  FMOD_TIMEUNIT timeUnit = CHECK_CONSTANT(L, 2, FMOD_TIMEUNIT);
+
+  unsigned int value = 0;
+  RETURN_IF_ERROR(getter(self, &value, timeUnit));
+
+  lua_pushinteger(L, value);
+
+  return 1;
+}
+
+static int SET_TIMEUNIT(lua_State *L, FMOD_RESULT F_API (*setter)(SELF_TYPE *, unsigned int, FMOD_TIMEUNIT))
+{
+  GET_SELF;
+
+  unsigned int value = (unsigned int)luaL_checkinteger(L, 2);
+  FMOD_TIMEUNIT timeUnit = CHECK_CONSTANT(L, 3, FMOD_TIMEUNIT);
+
+  RETURN_STATUS(setter(self, value, timeUnit));
+}
