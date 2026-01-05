@@ -44,6 +44,7 @@ HANDLE_LIST(SubSound, FMOD_SOUND)
 GET(SubSoundParent, (FMOD_SOUND, HANDLE))
 GET(Name, STRING)
 GET(Length, TIMEUNIT)
+GET_MULTI(Format, (FMOD_SOUND_TYPE, CONSTANT), (FMOD_SOUND_FORMAT, CONSTANT), int, int)
 PROPERTY_MULTI(Defaults, float, int)
 PROPERTY_MULTI(3DMinMaxDistance, float, float)
 PROPERTY_MULTI(3DConeSettings, float, float, float)
@@ -76,9 +77,7 @@ METHODS_TABLE_BEGIN
     METHODS_TABLE_ENTRY(getSubSoundParent)
     METHODS_TABLE_ENTRY(getName)
     METHODS_TABLE_ENTRY(getLength)
-#if 0
     METHODS_TABLE_ENTRY(getFormat)
-#endif
     METHODS_TABLE_ENTRY(getNumSubSounds)
 #if 0
     METHODS_TABLE_ENTRY(getNumTags)

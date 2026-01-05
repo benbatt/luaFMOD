@@ -173,6 +173,7 @@ typedef unsigned long long DSP_CLOCK;
 #define DECLARE_BASIC(type, index) type JOIN(value, index);
 #define DECLARE_HANDLE(type, index) type *JOIN(value, index);
 #define DECLARE_STRUCT(type, index) type JOIN(value, index);
+#define DECLARE_CONSTANT(type, index) type JOIN(value, index);
 
 #define RETURN(index, info) RETURN_IMPL(APPEND(info, BASIC), index)
 #define RETURN_IMPL(info, index) JOIN(RETURN_, SECOND info)(FIRST info, index)
@@ -180,6 +181,7 @@ typedef unsigned long long DSP_CLOCK;
 #define RETURN_BASIC(type, index) JOIN(PUSH_, type)(index)
 #define RETURN_HANDLE(type, index) PUSH_HANDLE(L, type, JOIN(value, index));
 #define RETURN_STRUCT(type, index) PUSH_STRUCT(L, type, JOIN(value, index));
+#define RETURN_CONSTANT(type, index) PUSH_CONSTANT(L, type, JOIN(value, index));
 
 #define GET_MULTI(name, ...) \
   static int METHOD_NAME(get ## name)(lua_State *L) \
