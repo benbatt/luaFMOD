@@ -46,6 +46,7 @@ PROPERTY(Mode, (FMOD_MODE, CONSTANT))
 GET_CUSTOM(isPlaying, FMOD_BOOL, IsPlaying)
 SET(Pan, float)
 SET_MULTI(MixLevelsOutput, float, float, float, float, float, float, float, float)
+GET_MULTI(DSPClock, DSP_CLOCK, DSP_CLOCK)
 PROPERTY_MULTI(Delay, DSP_CLOCK, DSP_CLOCK, FMOD_BOOL)
 HANDLE_LIST(DSP, FMOD_DSP)
 PROPERTY_INDEXED(DSPIndex, (FMOD_DSP, HANDLE), int)
@@ -93,8 +94,8 @@ METHODS_TABLE_BEGIN
   METHODS_TABLE_ENTRY(setMixLevelsInput)
   METHODS_TABLE_ENTRY(setMixMatrix)
   METHODS_TABLE_ENTRY(getMixMatrix)
-  METHODS_TABLE_ENTRY(getDSPClock)
 #endif
+  METHODS_TABLE_ENTRY(getDSPClock)
   METHODS_TABLE_ENTRY(setDelay)
   METHODS_TABLE_ENTRY(getDelay)
 #if 0
